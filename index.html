@@ -1,0 +1,3572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>弾む思いつき - 物理ピンボール×デッキ構築</title>
+<style>
+  :root {
+    --bg-dark: #060711;
+    --panel-bg: rgba(12, 16, 36, 0.94);
+    --neon-cyan: #00f0ff;
+    --neon-pink: #ff2a85;
+    --neon-yellow: #ffe600;
+    --neon-green: #00ff88;
+    --neon-purple: #b845ff;
+    --neon-orange: #ff8c00;
+    --text-main: #eef4ff;
+    --text-sub: #8a9bc2;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 25%, #121738 0%, #04050c 100%);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    touch-action: none;
+  }
+  #app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-dark);
+    box-shadow: 0 0 48px rgba(0, 240, 255, 0.14);
+    overflow: hidden;
+  }
+
+  /* HUD Header */
+  #hud {
+    flex: 0 0 auto;
+    padding: 7px 11px 6px;
+    background: linear-gradient(180deg, rgba(16, 22, 50, 0.98) 0%, rgba(9, 11, 25, 0.92) 100%);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+    z-index: 10;
+  }
+  .hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .hud-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .round-badge {
+    background: rgba(0, 240, 255, 0.14);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    font-weight: 800;
+    font-size: 12px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+  }
+  .round-badge.boss {
+    background: rgba(255, 42, 133, 0.2);
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(255, 42, 133, 0.8);
+    animation: pulseBoss 1.2s infinite alternate;
+  }
+  @keyframes pulseBoss {
+    from { box-shadow: 0 0 4px rgba(255, 42, 133, 0.4); }
+    to   { box-shadow: 0 0 14px rgba(255, 42, 133, 0.9); }
+  }
+  .balls-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-sub);
+  }
+  .ball-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #1d2440;
+    border: 1px solid #3c4b7c;
+    transition: all 0.2s;
+  }
+  .ball-dot.active {
+    background: var(--neon-cyan);
+    border-color: #fff;
+    box-shadow: 0 0 7px var(--neon-cyan);
+  }
+  .icon-btns {
+    display: flex;
+    gap: 5px;
+  }
+  .icon-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: var(--text-main);
+    min-width: 28px;
+    height: 25px;
+    padding: 0 6px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn:active {
+    transform: scale(0.93);
+  }
+  .icon-btn.muted {
+    color: var(--neon-pink);
+    border-color: rgba(255, 42, 133, 0.5);
+  }
+  .icon-btn.nudge-btn {
+    color: var(--neon-yellow);
+    border-color: rgba(255, 230, 0, 0.4);
+  }
+  .icon-btn.nudge-btn.tilted {
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+    opacity: 0.5;
+  }
+
+  .hud-mid {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .score-area {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+  .score-current {
+    font-size: 19px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    font-variant-numeric: tabular-nums;
+  }
+  .score-norma {
+    font-size: 11.5px;
+    color: var(--text-sub);
+    font-variant-numeric: tabular-nums;
+  }
+  .combo-area {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .synergy-tag {
+    font-size: 10px;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(184, 69, 255, 0.35), rgba(0, 240, 255, 0.35));
+    border: 1px solid var(--neon-purple);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .boost-tag {
+    font-size: 10px;
+    color: var(--neon-green);
+    background: rgba(0, 255, 136, 0.12);
+    border: 1px solid rgba(0, 255, 136, 0.4);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .combo-badge {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+    font-variant-numeric: tabular-nums;
+  }
+  .combo-badge.fever {
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+  }
+
+  .norma-bar-bg {
+    width: 100%;
+    height: 7px;
+    background: #141932;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+  }
+  .norma-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+    box-shadow: 0 0 10px var(--neon-cyan);
+    transition: width 0.12s ease-out;
+  }
+  .norma-bar-fill.fever {
+    background: linear-gradient(90deg, var(--neon-pink), var(--neon-yellow), var(--neon-cyan));
+  }
+
+  /* Canvas Stage */
+  #stage-wrap {
+    flex: 1 1 auto;
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #0e1329 0%, #050711 100%);
+  }
+  canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.08);
+  }
+
+  /* Placement Top Banner */
+  #place-banner {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    right: 10px;
+    background: rgba(12, 18, 42, 0.95);
+    border: 1.5px solid var(--neon-yellow);
+    box-shadow: 0 0 20px rgba(255, 230, 0, 0.28);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 15;
+  }
+  #place-banner.show {
+    display: flex;
+  }
+  .place-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .place-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--neon-yellow);
+  }
+  .place-sub {
+    font-size: 11px;
+    color: var(--text-main);
+  }
+  .skip-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-sub);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* Bottom Controls Bar */
+  #controls {
+    flex: 0 0 auto;
+    height: 60px;
+    display: grid;
+    grid-template-columns: 1fr 96px 1fr;
+    gap: 6px;
+    padding: 6px 10px 8px;
+    background: rgba(9, 12, 26, 0.97);
+    border-top: 1px solid rgba(0, 240, 255, 0.22);
+    z-index: 10;
+  }
+  .ctrl-btn {
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.05s, background 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .ctrl-flip {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1.5px solid rgba(0, 240, 255, 0.45);
+    color: var(--neon-cyan);
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+  }
+  .ctrl-flip.pressed {
+    background: rgba(0, 240, 255, 0.3);
+    border-color: #fff;
+    transform: translateY(1px);
+  }
+  .ctrl-flip.disabled {
+    opacity: 0.3;
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+  }
+  .ctrl-launch {
+    background: rgba(255, 42, 133, 0.14);
+    border: 1.5px solid rgba(255, 42, 133, 0.55);
+    color: var(--neon-pink);
+    text-shadow: 0 0 8px rgba(255, 42, 133, 0.6);
+  }
+  .ctrl-launch.charging {
+    background: rgba(255, 230, 0, 0.25);
+    border-color: var(--neon-yellow);
+    color: var(--neon-yellow);
+  }
+  .ctrl-launch.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .ctrl-sub {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.78;
+    margin-top: 1px;
+  }
+
+  /* Overlays / Modals */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 7, 16, 0.85);
+    backdrop-filter: blur(5px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    z-index: 30;
+  }
+  .overlay.show {
+    display: flex;
+  }
+  .overlay.peek-mode {
+    background: rgba(5, 7, 16, 0.12);
+    backdrop-filter: none;
+  }
+  .overlay.peek-mode .modal-box > *:not(.peek-bar) {
+    display: none !important;
+  }
+  .overlay.peek-mode .modal-box {
+    margin-top: auto;
+    padding: 10px 14px;
+    background: rgba(12, 16, 36, 0.92);
+  }
+  .modal-box {
+    width: 100%;
+    max-width: 410px;
+    background: var(--panel-bg);
+    border: 1.5px solid rgba(0, 240, 255, 0.45);
+    box-shadow: 0 0 32px rgba(0, 240, 255, 0.2);
+    border-radius: 14px;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-height: 94%;
+    overflow-y: auto;
+  }
+  .game-title {
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 12px var(--neon-cyan), 0 0 24px var(--neon-pink);
+    margin-bottom: 3px;
+  }
+  .game-subtitle {
+    font-size: 11px;
+    color: var(--neon-cyan);
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+  }
+  .records-box {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 9px;
+    margin-bottom: 12px;
+  }
+  .rec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .rec-label {
+    font-size: 10.5px;
+    color: var(--text-sub);
+  }
+  .rec-val {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--neon-yellow);
+  }
+  .howto-box {
+    width: 100%;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 11.5px;
+    line-height: 1.52;
+    color: #cfd8f0;
+    margin-bottom: 12px;
+  }
+  .howto-box b {
+    color: var(--neon-cyan);
+  }
+  .howto-box .syn-hl {
+    color: var(--neon-yellow);
+    font-weight: 700;
+  }
+  .primary-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--neon-cyan);
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.28), rgba(184, 69, 255, 0.28));
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .primary-btn:hover {
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.6);
+  }
+  .primary-btn:active {
+    transform: scale(0.97);
+  }
+  .secondary-btn {
+    width: 100%;
+    padding: 9px;
+    margin-top: 7px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* Draft Cards & Actions */
+  .draft-header {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    margin-bottom: 2px;
+  }
+  .draft-sub {
+    font-size: 11.5px;
+    color: var(--text-sub);
+    margin-bottom: 10px;
+  }
+  .peek-bar {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .util-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--neon-cyan);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .util-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .cards-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card-item {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(22, 28, 62, 0.96) 0%, rgba(11, 15, 34, 0.96) 100%);
+    border: 1.5px solid rgba(0, 240, 255, 0.35);
+    border-radius: 11px;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+  }
+  .card-item:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.32);
+    transform: translateY(-1px);
+  }
+  .card-item:active {
+    transform: scale(0.98);
+  }
+  .card-item.instant {
+    border-color: rgba(255, 230, 0, 0.45);
+  }
+  .card-item.instant:hover {
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 16px rgba(255, 230, 0, 0.32);
+  }
+  .card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+    flex-shrink: 0;
+  }
+  .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-name {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .card-type {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--neon-cyan);
+  }
+  .card-item.instant .card-type {
+    background: rgba(255, 230, 0, 0.15);
+    color: var(--neon-yellow);
+  }
+  .card-desc {
+    font-size: 11px;
+    color: #c2cde8;
+    line-height: 1.35;
+  }
+  .card-hint {
+    font-size: 10.5px;
+    color: var(--neon-green);
+    font-weight: 600;
+  }
+  .card-syn-alert {
+    font-size: 10px;
+    color: var(--neon-yellow);
+    font-weight: 700;
+  }
+  .stats-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .stat-cell {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 8px;
+    padding: 6px 9px;
+  }
+  .stat-cell .s-lbl {
+    font-size: 10px;
+    color: var(--text-sub);
+  }
+  .stat-cell .s-val {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-top">
+      <div class="hud-group">
+        <span id="round-badge" class="round-badge">ROUND 1 / 8</span>
+        <div class="balls-box">
+          <span>BALL</span>
+          <div id="balls-dots" style="display:flex; gap:4px;"></div>
+        </div>
+      </div>
+      <div class="icon-btns">
+        <button id="btn-nudge" class="icon-btn nudge-btn" title="台揺らし (Shift / X / タップ)">💥揺らす</button>
+        <button id="btn-mute" class="icon-btn" title="ミュート切替">🔊</button>
+        <button id="btn-pause" class="icon-btn" title="一時停止・ビルド確認">⏸</button>
+      </div>
+    </div>
+    <div class="hud-mid">
+      <div class="score-area">
+        <span id="score-current" class="score-current">0</span>
+        <span id="score-norma" class="score-norma">/ 3,000</span>
+      </div>
+      <div class="combo-area">
+        <span id="synergy-tag" class="synergy-tag" style="display:none;" title="クリックで発動中シナジーを確認">✨SYNERGY 0</span>
+        <span id="boost-tag" class="boost-tag" style="display:none;">+0%</span>
+        <span id="combo-badge" class="combo-badge">0 HIT (×1.00)</span>
+      </div>
+    </div>
+    <div class="norma-bar-bg">
+      <div id="norma-bar" class="norma-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- Stage & Canvas -->
+  <div id="stage-wrap">
+    <div id="place-banner">
+      <div class="place-info">
+        <div id="place-title" class="place-title">パーツ配置フェーズ</div>
+        <div id="place-sub" class="place-sub">盤面のスロットをタップして配置・強化</div>
+      </div>
+      <button id="btn-place-skip" class="skip-btn">スキップ</button>
+    </div>
+    <canvas id="game-canvas" width="420" height="660"></canvas>
+
+    <!-- Title Overlay -->
+    <div id="ov-title" class="overlay show">
+      <div class="modal-box">
+        <div class="game-title">弾む思いつき</div>
+        <div class="game-subtitle">PHYSICAL PINBALL × SYNERGY DECK BUILDER</div>
+        <div class="records-box">
+          <div class="rec-item">
+            <span class="rec-label">HIGH SCORE</span>
+            <span id="title-hiscore" class="rec-val">0</span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-label">CLEAR STATUS</span>
+            <span id="title-cleared" class="rec-val">未クリア</span>
+          </div>
+        </div>
+        <div class="howto-box">
+          ・各ラウンド<b>3ボール以内</b>にノルマ達成でクリア！全8ラウンド（R8ボス）制覇を目指します。<br>
+          ・クリア後に<b>カード3枚から1枚</b>をドラフト（各ラウンド1回リロール可）。<b>10か所のスロット</b>にパーツを配置・強化（最大Lv3）。<br>
+          ・<span class="syn-hl">★構築シナジー</span>：パーツの組み合わせ（バンパー3個、スピナー＋キッカー等）で強力な連鎖ボーナスが発動！<br>
+          ・<span class="syn-hl">★ピンボールギミック</span>：発射直後の<b>SKILL SHOT</b>、上部3レーン点灯、<b>JACKPOT移動ターゲット</b>、ボールセイバー、台揺らし（Shift/X）を搭載！
+        </div>
+        <button id="btn-start" class="primary-btn">GAME START</button>
+        <button id="btn-practice" class="secondary-btn" style="display:none;">フリーエンドレス練習 (R9〜)</button>
+      </div>
+    </div>
+
+    <!-- Draft Overlay -->
+    <div id="ov-draft" class="overlay">
+      <div class="modal-box">
+        <div id="draft-header" class="draft-header">ROUND 1 CLEAR!</div>
+        <div id="draft-bonus-info" class="draft-sub">報酬カードを1枚選んで盤面をビルドしよう</div>
+        <div class="peek-bar">
+          <button id="btn-peek-board" class="util-btn">👁 盤面を確認</button>
+          <button id="btn-reroll" class="util-btn">🎲 リロール (残り1回)</button>
+        </div>
+        <div id="cards-list" class="cards-list"></div>
+      </div>
+    </div>
+
+    <!-- Pause / Build Info Overlay -->
+    <div id="ov-pause" class="overlay">
+      <div class="modal-box">
+        <div class="game-title" style="font-size:21px; margin-bottom:10px;">PAUSED / BUILD INFO</div>
+        <div id="pause-stats" class="howto-box" style="text-align:left; max-height:290px; overflow-y:auto;"></div>
+        <button id="btn-resume" class="primary-btn">ゲームに戻る</button>
+        <button id="btn-retire" class="secondary-btn">タイトルへ戻る</button>
+      </div>
+    </div>
+
+    <!-- Result Overlay (Game Over / Clear) -->
+    <div id="ov-result" class="overlay">
+      <div class="modal-box">
+        <div id="res-title" class="game-title" style="font-size:25px;">GAME CLEAR!</div>
+        <div id="res-sub" class="game-subtitle">全8ラウンド制覇！おめでとう！</div>
+        <div class="records-box" style="flex-direction:column; gap:6px; margin-bottom:10px;">
+          <div class="rec-item">
+            <span class="rec-label">TOTAL SCORE</span>
+            <span id="res-total" class="rec-val" style="font-size:23px; color:#fff;">0</span>
+          </div>
+          <div id="res-newrecord" style="display:none; color:var(--neon-pink); font-size:12px; font-weight:800;">★ NEW HIGH SCORE! ★</div>
+          <div class="rec-item">
+            <span class="rec-label">HIGH SCORE</span>
+            <span id="res-hiscore" class="rec-val">0</span>
+          </div>
+        </div>
+        <div id="res-stats-grid" class="stats-grid"></div>
+        <button id="btn-endless" class="primary-btn" style="display:none; margin-bottom:7px; border-color:var(--neon-yellow);">★ エンドレスモード (R9〜) へ進む</button>
+        <button id="btn-retry" class="primary-btn">もう一度最初からプレイ</button>
+        <button id="btn-to-title" class="secondary-btn">タイトル画面へ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Touch/Mouse Controls -->
+  <div id="controls">
+    <div id="ctrl-left" class="ctrl-btn ctrl-flip">
+      <span>◀ LEFT</span>
+      <span class="ctrl-sub">← / Z</span>
+    </div>
+    <div id="ctrl-launch" class="ctrl-btn ctrl-launch">
+      <span>LAUNCH</span>
+      <span class="ctrl-sub">長押し発射</span>
+    </div>
+    <div id="ctrl-right" class="ctrl-btn ctrl-flip">
+      <span>RIGHT ▶</span>
+      <span class="ctrl-sub">→ / /</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // =========================================================================
+  // 1. 定数・設定・ストレージ（指示書仕様：localStorageはハイスコアとクリア有無のみ）
+  // =========================================================================
+  const STORAGE_KEY_HISCORE = 'hazumu_omoitsuki_hiscore_v1';
+  const STORAGE_KEY_CLEARED = 'hazumu_omoitsuki_cleared_v1';
+
+  const NORMAS = [3000, 6000, 10000, 16000, 24000, 35000, 50000, 75000];
+  const W = 420;
+  const H = 660;
+  const LANE_X = 374;
+  const BALL_R = 9;
+  const GRAVITY = 555;
+
+  // 10か所の配置スロット座標（上部〜中部、位置ごとに当たりやすさが異なる）
+  const SLOT_POSITIONS = [
+    { id: 0, x: 112, y: 132, label: '上左' },
+    { id: 1, x: 262, y: 132, label: '上右' },
+    { id: 2, x: 187, y: 178, label: '上中' },
+    { id: 3, x: 84,  y: 238, label: '中上左' },
+    { id: 4, x: 290, y: 238, label: '中上右' },
+    { id: 5, x: 145, y: 292, label: '中央左' },
+    { id: 6, x: 230, y: 292, label: '中央右' },
+    { id: 7, x: 96,  y: 368, label: '中下左' },
+    { id: 8, x: 278, y: 368, label: '中下右' },
+    { id: 9, x: 187, y: 398, label: '下部中央' }
+  ];
+
+  // 上部3レーンロールオーバーセンサー
+  const TOP_ROLLOVERS = [
+    { id: 0, x: 112, y: 58, label: 'I', lit: false },
+    { id: 1, x: 187, y: 58, label: 'D', lit: false },
+    { id: 2, x: 262, y: 58, label: 'E', lit: false }
+  ];
+
+  // 左右壁のライトターゲット（バンパー外へ飛んだ球でもスコア＆フィーバーが狙える）
+  const WALL_TARGETS = [
+    { id: 0, x: 15, y: 205, y1: 188, y2: 222, lit: false, normalX: 1 },
+    { id: 1, x: 15, y: 330, y1: 313, y2: 347, lit: false, normalX: 1 },
+    { id: 2, x: LANE_X - 3, y: 205, y1: 188, y2: 222, lit: false, normalX: -1 },
+    { id: 3, x: LANE_X - 3, y: 330, y1: 313, y2: 347, lit: false, normalX: -1 }
+  ];
+
+  // カード一覧（v1の10種）
+  const CARD_CATALOG = [
+    {
+      id: 'bumper_circle',
+      name: '丸バンパー',
+      category: 'part',
+      icon: '🟣',
+      color: '#ff2a85',
+      weight: 16,
+      basePt: 100,
+      desc: 'ヒットで 100×Lv 点。全方向に強く跳ね返す王道バンパー。'
+    },
+    {
+      id: 'bumper_tri',
+      name: '三角バンパー',
+      category: 'part',
+      icon: '🔺',
+      color: '#ff9100',
+      weight: 14,
+      basePt: 150,
+      desc: 'ヒットで 150×Lv 点。斜めに強く跳ね返す。'
+    },
+    {
+      id: 'kicker',
+      name: 'キッカー',
+      category: 'part',
+      icon: '⏫',
+      color: '#00ff88',
+      weight: 13,
+      basePt: 150,
+      desc: 'ヒットで 150×Lv 点。ボールを上方向に強く打ち上げる。'
+    },
+    {
+      id: 'spinner',
+      name: 'スピナー',
+      category: 'part',
+      icon: '🌀',
+      color: '#00f0ff',
+      weight: 13,
+      basePt: 30,
+      desc: '通過で 30×Lv 点を連続加算し、ボールを少し加速する。'
+    },
+    {
+      id: 'rebound_wall',
+      name: 'リバウンド壁',
+      category: 'part',
+      icon: '⚡',
+      color: '#ffe600',
+      weight: 12,
+      basePt: 50,
+      desc: '小型の斜め壁。ヒットで 50×Lv 点。ボールの流れを変える。'
+    },
+    {
+      id: 'warp_gate',
+      name: 'ワープゲート',
+      category: 'part',
+      icon: '🪐',
+      color: '#b845ff',
+      weight: 10,
+      basePt: 300,
+      desc: '2スロットを使う連結ペア。片方に入るともう片方から同じ速度で出る。通過で 300×Lv 点。'
+    },
+    {
+      id: 'upgrade_chip',
+      name: '強化チップ',
+      category: 'instant_target',
+      icon: '🔧',
+      color: '#00ffaa',
+      weight: 10,
+      basePt: 0,
+      desc: '既存パーツ1つのレベルを +1（配置フェーズで対象を選ぶ）。'
+    },
+    {
+      id: 'extra_ball',
+      name: '追加ボール',
+      category: 'instant',
+      icon: '⚪',
+      color: '#ffffff',
+      weight: 7,
+      basePt: 0,
+      desc: 'このランの残りボール +1（最大で+2回まで取得可）。'
+    },
+    {
+      id: 'score_booster',
+      name: 'スコアブースター',
+      category: 'instant',
+      icon: '💎',
+      color: '#ffe600',
+      weight: 10,
+      basePt: 0,
+      desc: 'このランの全スコアに +10%（重ね掛け可）。'
+    },
+    {
+      id: 'flipper_up',
+      name: 'フリッパー強化',
+      category: 'instant',
+      icon: '🦾',
+      color: '#00f0ff',
+      weight: 9,
+      basePt: 0,
+      desc: 'フリッパーが長く・強くなる（最大3回まで）。'
+    }
+  ];
+
+  // デッキ構築シナジー定義（パーツの組み合わせで自動発動する構築ボーナス）
+  const SYNERGY_DEFINITIONS = [
+    {
+      id: 'bumper_kingdom',
+      name: 'バンパー王国',
+      condText: '丸バンパー＋三角バンパー合計3個以上',
+      effectText: '全バンパーの基礎スコア +35% ＆ 電撃ショックウェーブ演出',
+      check: (slots) => slots.filter(s => s && (s.type === 'bumper_circle' || s.type === 'bumper_tri')).length >= 3
+    },
+    {
+      id: 'perpetual_engine',
+      name: '永久機関',
+      condText: 'キッカー1個以上 ＋ スピナー1個以上',
+      effectText: 'キッカーとスピナーの基礎スコア +40% ＆ 加速ブースト強化',
+      check: (slots) => slots.some(s => s && s.type === 'kicker') && slots.some(s => s && s.type === 'spinner')
+    },
+    {
+      id: 'dimensional_accel',
+      name: '次元跳躍',
+      condText: 'ワープゲート設置済 ＋ スピナーまたはリバウンド壁',
+      effectText: 'ワープ通過時にコンボ +3 ＆ 3秒間全獲得スコア1.25倍オーラ',
+      check: (slots) => slots.some(s => s && s.type === 'warp_gate') && slots.some(s => s && (s.type === 'spinner' || s.type === 'rebound_wall'))
+    },
+    {
+      id: 'labyrinth_reflect',
+      name: '反射迷宮',
+      condText: 'リバウンド壁 ＋ 三角バンパー合計3個以上',
+      effectText: 'リバウンド壁と三角バンパーのヒット時にコンボが +2 ずつ上昇',
+      check: (slots) => slots.filter(s => s && (s.type === 'rebound_wall' || s.type === 'bumper_tri')).length >= 3
+    },
+    {
+      id: 'master_craft',
+      name: '匠の極致',
+      condText: 'Lv2以上のパーツが盤面に2個以上',
+      effectText: 'Lv2以上のパーツすべての獲得スコア +25%',
+      check: (slots) => slots.filter(s => s && s.level >= 2).length >= 2
+    },
+    {
+      id: 'full_spark',
+      name: '百花繚乱',
+      condText: '盤面に異なる4種類以上のパーツを設置',
+      effectText: '全獲得スコアに +20% 乗算ボーナス',
+      check: (slots) => new Set(slots.filter(Boolean).map(s => s.type)).size >= 4
+    }
+  ];
+
+  // =========================================================================
+  // 2. Web Audio シンセサイザー効果音
+  // =========================================================================
+  class SoundSynth {
+    constructor() {
+      this.ctx = null;
+      this.muted = false;
+    }
+    init() {
+      if (!this.ctx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) this.ctx = new AudioCtx();
+      }
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+    }
+    toggleMute() {
+      this.muted = !this.muted;
+      return this.muted;
+    }
+    playTone(freq, type, duration, vol = 0.14, slideFreq = null) {
+      if (this.muted) return;
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(Math.max(20, freq), now);
+      if (slideFreq) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideFreq), now + duration);
+      }
+      gain.gain.setValueAtTime(vol, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+    bumper(combo = 1) {
+      const base = 310 + Math.min(combo, 35) * 16;
+      this.playTone(base, 'triangle', 0.11, 0.19, base * 1.45);
+    }
+    kicker() {
+      this.playTone(210, 'sawtooth', 0.16, 0.17, 700);
+    }
+    spinner() {
+      this.playTone(720 + Math.random() * 200, 'sine', 0.05, 0.09, 980);
+    }
+    wall() {
+      this.playTone(165, 'sine', 0.05, 0.07, 110);
+    }
+    targetLit() {
+      this.playTone(587.33, 'triangle', 0.1, 0.15, 880);
+    }
+    skillShot() {
+      const notes = [587.33, 880, 1174.66];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.14, 0.18), i * 55));
+    }
+    jackpot() {
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.16, 0.16), i * 50));
+    }
+    ballSave() {
+      this.playTone(280, 'sine', 0.18, 0.18, 720);
+      setTimeout(() => this.playTone(720, 'triangle', 0.18, 0.16, 960), 90);
+    }
+    nudge() {
+      this.playTone(110, 'sawtooth', 0.12, 0.2, 55);
+    }
+    tilt() {
+      this.playTone(150, 'sawtooth', 0.4, 0.22, 65);
+    }
+    warp() {
+      this.playTone(300, 'sine', 0.22, 0.19, 1120);
+      setTimeout(() => this.playTone(620, 'triangle', 0.15, 0.14, 1420), 50);
+    }
+    flipper() {
+      this.playTone(145, 'triangle', 0.065, 0.15, 295);
+    }
+    launch(power) {
+      this.playTone(150, 'sawtooth', 0.22, 0.19, 300 + power * 460);
+    }
+    place() {
+      this.playTone(440, 'sine', 0.1, 0.16, 660);
+      setTimeout(() => this.playTone(660, 'triangle', 0.12, 0.16, 880), 65);
+    }
+    ballLost() {
+      this.playTone(240, 'sawtooth', 0.35, 0.18, 68);
+    }
+    roundClear() {
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.18, 0.18), i * 80));
+    }
+    gameOver() {
+      const notes = [392, 349.23, 329.63, 261.63];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.24, 0.16), i * 125));
+    }
+    gameClear() {
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.22, 0.2), i * 90));
+    }
+  }
+
+  const sfx = new SoundSynth();
+
+  // =========================================================================
+  // 3. 盤面ジオメトリ（壁・ガイド・スリングショット・レーン）
+  // =========================================================================
+  function buildBoardWalls() {
+    const walls = [];
+    const addSeg = (x1, y1, x2, y2, rest = 0.72, color = '#00f0ff', oneWayLeft = false, isSlingshot = false) => {
+      walls.push({ x1, y1, x2, y2, rest, color, oneWayLeft, isSlingshot, pulse: 0 });
+    };
+
+    // 上部アーチ
+    const archPts = [
+      [408, 120],
+      [404, 72],
+      [386, 36],
+      [345, 16],
+      [210, 12],
+      [75,  16],
+      [34,  36],
+      [14,  72],
+      [12,  120]
+    ];
+    for (let i = 0; i < archPts.length - 1; i++) {
+      addSeg(archPts[i][0], archPts[i][1], archPts[i + 1][0], archPts[i + 1][1], 0.76, '#00f0ff');
+    }
+
+    // 左外壁
+    addSeg(12, 120, 12, 480, 0.72, '#00f0ff');
+    addSeg(12, 480, 34, 535, 0.72, '#00f0ff');
+
+    // 右外壁（プランジャーレーン外側）
+    addSeg(408, 120, 408, 632, 0.7, '#00f0ff');
+    addSeg(LANE_X, 632, 408, 632, 0.4, '#ff2a85');
+
+    // 発射レーン内壁
+    addSeg(LANE_X, 115, LANE_X, 632, 0.72, '#00f0ff');
+
+    // 発射レーン出口の逆流防止ワンウェイゲート
+    addSeg(LANE_X, 34, LANE_X, 115, 0.75, '#ff2a85', true);
+
+    // フィールド右側の下部ガイド壁
+    addSeg(LANE_X, 480, 352, 535, 0.72, '#00f0ff');
+
+    // 左スリングショット
+    addSeg(46, 445, 46, 512, 0.75, '#00f0ff');
+    addSeg(46, 512, 92, 542, 0.75, '#00f0ff');
+    addSeg(46, 445, 92, 542, 1.22, '#ff2a85', false, true);
+
+    // 右スリングショット
+    addSeg(340, 445, 340, 512, 0.75, '#00f0ff');
+    addSeg(340, 512, 294, 542, 0.75, '#00f0ff');
+    addSeg(340, 445, 294, 542, 1.22, '#ff2a85', false, true);
+
+    // フリッパーへと続くインレーン斜壁
+    addSeg(34, 535, 108, 582, 0.65, '#00f0ff');
+    addSeg(352, 535, 278, 582, 0.65, '#00f0ff');
+
+    // 上部3レーンディバイダー
+    addSeg(148, 42, 148, 74, 0.8, '#00ff88');
+    addSeg(226, 42, 226, 74, 0.8, '#00ff88');
+
+    return walls;
+  }
+
+  // =========================================================================
+  // 4. ゲーム状態管理
+  // =========================================================================
+  const canvas = document.getElementById('game-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let hiScore = parseInt(localStorage.getItem(STORAGE_KEY_HISCORE) || '0', 10) || 0;
+  let hasClearedEver = localStorage.getItem(STORAGE_KEY_CLEARED) === '1';
+
+  const walls = buildBoardWalls();
+
+  const state = {
+    phase: 'TITLE', // TITLE | PLAY | CLEAR_ANIM | DRAFT | PLACE | PAUSE | RESULT
+    prevPhaseBeforePause: 'PLAY',
+    round: 1,
+    endlessMode: false,
+    roundScore: 0,
+    totalScore: 0,
+    norma: NORMAS[0],
+    maxBallsPerRound: 3,
+    extraBallPurchases: 0,
+    ballsLeft: 3,
+    combo: 0,
+    maxComboThisRun: 0,
+    scoreBoosterCount: 0,
+    flipperLevel: 0,
+    rerollsLeft: 1,
+
+    // 10か所のスロット
+    slots: new Array(10).fill(null),
+    activeSynergies: [],
+
+    // 配置フェーズ用
+    pendingCard: null,
+    warpFirstSlot: null,
+    hoverSlotId: -1,
+    hoverPos: { x: -100, y: -100 },
+
+    // ピンボール特別ギミック状態
+    skillShotTimer: 0,
+    skillShotSlotId: 0,
+    ballSaverTimer: 0,
+    centerPostTimer: 0,
+    warpAuraTimer: 0,
+    feverTimer: 0,
+    nudgeHeat: 0,
+    tiltPenalty: false,
+    stuckTimer: 0,
+
+    // 移動ジャックポット＆R8ボスバンパー
+    jackpotDrone: {
+      active: false,
+      x: 187,
+      y: 95,
+      vx: 75,
+      r: 14,
+      pulse: 1
+    },
+    bossCore: {
+      active: false,
+      x: 187,
+      y: 235,
+      vx: 55,
+      r: 20,
+      hpHits: 0,
+      pulse: 1,
+      cooldown: 0
+    },
+
+    // ボール状態
+    ball: {
+      x: 391,
+      y: 610,
+      vx: 0,
+      vy: 0,
+      inLane: true,
+      waitingLaunch: true,
+      warpCooldown: 0,
+      trail: []
+    },
+
+    // プランジャー
+    plunger: {
+      charging: false,
+      power: 0
+    },
+
+    // フリッパー
+    leftFlipper: {
+      pivotX: 108,
+      pivotY: 582,
+      restAngle: 0.45,
+      activeAngle: -0.52,
+      angle: 0.45,
+      angVel: 0,
+      pressed: false
+    },
+    rightFlipper: {
+      pivotX: 278,
+      pivotY: 582,
+      restAngle: Math.PI - 0.45,
+      activeAngle: Math.PI + 0.52,
+      angle: Math.PI - 0.45,
+      angVel: 0,
+      pressed: false
+    },
+
+    // 演出エフェクト
+    popups: [],
+    particles: [],
+    shockwaves: [],
+    bannerText: null,
+    shakeTimer: 0,
+    shakeIntensity: 0
+  };
+
+  function getFlipperLength() {
+    return 66 + state.flipperLevel * 7;
+  }
+  function getFlipperSpeed() {
+    return 17.5 + state.flipperLevel * 2.2;
+  }
+  function getComboMultiplier() {
+    // 指示書仕様: 倍率 = 1 + min(コンボ, 50) × 0.04（最大 ×3.00）
+    return 1 + Math.min(state.combo, 50) * 0.04;
+  }
+  function getBoosterMultiplier() {
+    let mult = 1 + state.scoreBoosterCount * 0.10;
+    if (hasSynergy('full_spark')) mult *= 1.20;
+    if (state.warpAuraTimer > 0) mult *= 1.25;
+    if (state.feverTimer > 0) mult *= 1.25;
+    return mult;
+  }
+
+  function hasSynergy(synId) {
+    return state.activeSynergies.some(s => s.id === synId);
+  }
+
+  function refreshSynergies() {
+    const prevIds = new Set(state.activeSynergies.map(s => s.id));
+    state.activeSynergies = SYNERGY_DEFINITIONS.filter(def => def.check(state.slots));
+    state.activeSynergies.forEach(s => {
+      if (!prevIds.has(s.id) && state.phase !== 'TITLE') {
+        spawnPopup(W / 2, 220, `✨シナジー発動【${s.name}】!`, '#ffe600', 15);
+      }
+    });
+  }
+
+  function getNormaForRound(r) {
+    if (r <= NORMAS.length) return NORMAS[r - 1];
+    // エンドレスモード (R9以降)
+    return Math.round(75000 * Math.pow(1.42, r - 8));
+  }
+
+  // =========================================================================
+  // 5. 初期化・ラウンド進行・スコア加算
+  // =========================================================================
+  function initNewRun(startEndless = false) {
+    state.round = startEndless ? 9 : 1;
+    state.endlessMode = startEndless;
+    state.roundScore = 0;
+    state.totalScore = 0;
+    state.norma = getNormaForRound(state.round);
+    state.maxBallsPerRound = 3;
+    state.extraBallPurchases = 0;
+    state.ballsLeft = 3;
+    state.combo = 0;
+    state.maxComboThisRun = 0;
+    state.scoreBoosterCount = 0;
+    state.flipperLevel = 0;
+    state.slots = new Array(10).fill(null);
+    state.popups = [];
+    state.particles = [];
+    state.shockwaves = [];
+
+    // 初期盤面：丸バンパー2個を設置済み（スロット0, 1）
+    placePartInSlot(0, 'bumper_circle', 1);
+    placePartInSlot(1, 'bumper_circle', 1);
+
+    if (startEndless) {
+      // フリーエンドレス練習開始時は追加で初期ビルドを付与
+      placePartInSlot(2, 'spinner', 2);
+      placePartInSlot(5, 'kicker', 2);
+      placePartInSlot(6, 'bumper_tri', 2);
+      state.flipperLevel = 2;
+      state.scoreBoosterCount = 3;
+    }
+
+    refreshSynergies();
+    startRound(state.round);
+  }
+
+  function placePartInSlot(slotId, type, level = 1, pairSlotId = null) {
+    state.slots[slotId] = {
+      type,
+      level,
+      pairSlotId,
+      pulse: 1.0,
+      angle: 0,
+      spinVel: 0,
+      cooldown: 0,
+      totalEarned: 0,
+      hits: 0,
+      dir: (slotId % 2 === 0) ? 1 : -1
+    };
+    refreshSynergies();
+  }
+
+  function startRound(roundNum) {
+    state.round = roundNum;
+    state.roundScore = 0;
+    state.norma = getNormaForRound(roundNum);
+    state.ballsLeft = state.maxBallsPerRound;
+    state.combo = 0;
+    state.rerollsLeft = 1;
+    state.phase = 'PLAY';
+
+    // ギミック初期化
+    TOP_ROLLOVERS.forEach(r => { r.lit = false; });
+    WALL_TARGETS.forEach(t => { t.lit = false; });
+    state.jackpotDrone.active = false;
+    state.centerPostTimer = 0;
+    state.feverTimer = 0;
+
+    // R8（ボス）またはエンドレス時はボスオーバーロードコア出現
+    state.bossCore.active = (roundNum >= 8);
+    state.bossCore.x = 187;
+    state.bossCore.y = 212;
+    state.bossCore.hpHits = 0;
+
+    hideAllOverlays();
+    document.getElementById('place-banner').classList.remove('show');
+    resetBallToPlunger();
+
+    const titleText = roundNum === 8 ? 'FINAL ROUND 8 (BOSS)' : (roundNum > 8 ? `ENDLESS ROUND ${roundNum}` : `ROUND ${roundNum}`);
+    showCenterBanner(
+      titleText,
+      `目標ノルマ: ${state.norma.toLocaleString()} PTS`,
+      roundNum >= 8 ? '#ff2a85' : '#00f0ff',
+      1.6
+    );
+    updateHUD();
+  }
+
+  function resetBallToPlunger() {
+    state.ball.x = (LANE_X + 408) / 2;
+    state.ball.y = 610;
+    state.ball.vx = 0;
+    state.ball.vy = 0;
+    state.ball.inLane = true;
+    state.ball.waitingLaunch = true;
+    state.ball.warpCooldown = 0;
+    state.ball.trail = [];
+    state.plunger.charging = false;
+    state.plunger.power = 0;
+    state.combo = 0;
+    state.nudgeHeat = 0;
+    state.tiltPenalty = false;
+    state.ballSaverTimer = 0;
+    state.skillShotTimer = 0;
+    state.stuckTimer = 0;
+
+    // スキルショット対象スロットを既存パーツからランダム選択
+    const filledIndices = state.slots.map((s, idx) => s ? idx : -1).filter(idx => idx !== -1);
+    state.skillShotSlotId = filledIndices.length > 0
+      ? filledIndices[Math.floor(Math.random() * filledIndices.length)]
+      : 0;
+
+    updateHUD();
+  }
+
+  function spawnPopup(x, y, text, color = '#00f0ff', size = 13) {
+    state.popups.push({
+      x: Math.max(45, Math.min(W - 45, x)),
+      y: y - 10,
+      text,
+      color,
+      size,
+      alpha: 1,
+      vy: -40
+    });
+  }
+
+  function spawnShockwave(x, y, color, maxRadius = 42) {
+    state.shockwaves.push({
+      x,
+      y,
+      r: 8,
+      maxR: maxRadius,
+      color,
+      alpha: 0.9
+    });
+  }
+
+  function triggerShake(duration = 0.14, intensity = 3.5) {
+    state.shakeTimer = Math.max(state.shakeTimer, duration);
+    state.shakeIntensity = Math.max(state.shakeIntensity, intensity);
+  }
+
+  function addScore(basePoints, x, y, color = '#00f0ff', comboGain = 1, slotId = -1, labelPrefix = '') {
+    if (state.phase !== 'PLAY') return;
+
+    if (comboGain > 0) {
+      state.combo += comboGain;
+      if (state.combo > state.maxComboThisRun) {
+        state.maxComboThisRun = state.combo;
+      }
+    }
+
+    // パーツ個別シナジー＆レベル補正
+    let modifiedBase = basePoints;
+    if (slotId >= 0 && state.slots[slotId]) {
+      const p = state.slots[slotId];
+      if ((p.type === 'bumper_circle' || p.type === 'bumper_tri') && hasSynergy('bumper_kingdom')) {
+        modifiedBase *= 1.35;
+      }
+      if ((p.type === 'kicker' || p.type === 'spinner') && hasSynergy('perpetual_engine')) {
+        modifiedBase *= 1.40;
+      }
+      if (p.level >= 2 && hasSynergy('master_craft')) {
+        modifiedBase *= 1.25;
+      }
+    }
+
+    // スキルショット命中判定（発射後4秒以内にターゲットスロットに初ヒット）
+    let isSkillShot = false;
+    if (state.skillShotTimer > 0 && slotId === state.skillShotSlotId) {
+      state.skillShotTimer = 0;
+      modifiedBase += 600;
+      state.combo += 3;
+      isSkillShot = true;
+      sfx.skillShot();
+      spawnShockwave(x, y, '#ffe600', 65);
+    }
+
+    const comboMult = getComboMultiplier();
+    const boostMult = getBoosterMultiplier();
+    const gained = Math.round(modifiedBase * comboMult * boostMult);
+
+    state.roundScore += gained;
+    state.totalScore += gained;
+
+    if (slotId >= 0 && state.slots[slotId]) {
+      state.slots[slotId].totalEarned += gained;
+      state.slots[slotId].hits++;
+    }
+
+    const popText = isSkillShot
+      ? `🎯SKILL SHOT! +${gained.toLocaleString()}`
+      : (labelPrefix ? `${labelPrefix} +${gained.toLocaleString()}` : `+${gained.toLocaleString()}`);
+    spawnPopup(x, y, popText, isSkillShot ? '#ffe600' : color, isSkillShot ? 15 : 13);
+
+    updateHUD();
+
+    // ノルマ達成チェック
+    if (state.roundScore >= state.norma && state.phase === 'PLAY') {
+      onNormaAchieved();
+    }
+  }
+
+  function spawnParticles(x, y, color, count = 12, speed = 135) {
+    for (let i = 0; i < count; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const s = (0.3 + Math.random() * 0.7) * speed;
+      state.particles.push({
+        x,
+        y,
+        vx: Math.cos(a) * s,
+        vy: Math.sin(a) * s,
+        color,
+        life: 0.35 + Math.random() * 0.25,
+        maxLife: 0.6
+      });
+    }
+  }
+
+  function showCenterBanner(text, sub, color = '#00f0ff', duration = 1.5) {
+    state.bannerText = { text, sub, color, timer: duration, maxTimer: duration };
+  }
+
+  function onNormaAchieved() {
+    state.phase = 'CLEAR_ANIM';
+    state.leftFlipper.pressed = false;
+    state.rightFlipper.pressed = false;
+    sfx.roundClear();
+    spawnParticles(state.ball.x, state.ball.y, '#00ff88', 30, 230);
+    spawnShockwave(state.ball.x, state.ball.y, '#00ff88', 95);
+
+    // 温存した残りボール数に応じて総スコアへクリアボーナス加算（早解きメリット）
+    const unusedBalls = Math.max(0, state.ballsLeft - 1);
+    const ballBonus = unusedBalls * (400 * state.round);
+    if (ballBonus > 0) {
+      state.totalScore += ballBonus;
+      spawnPopup(W / 2, 260, `BALL SAVE BONUS +${ballBonus.toLocaleString()}`, '#00ff88', 15);
+    }
+
+    if (state.round === 8 && !state.endlessMode) {
+      showCenterBanner('ALL ROUNDS CLEAR!!', '見事！全8ラウンドのノルマを達成！', '#ffe600', 2.2);
+      setTimeout(() => {
+        showResultScreen(true);
+      }, 2100);
+    } else {
+      const subMsg = ballBonus > 0
+        ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS！ドラフトへ`
+        : 'ノルマ達成！カードドラフトへ';
+      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#00ff88', 1.7);
+      setTimeout(() => {
+        openDraftModal(ballBonus);
+      }, 1650);
+    }
+  }
+
+  function onBallLost() {
+    if (state.phase !== 'PLAY') return;
+
+    // 発射直後のボールセイバー有効時は、ボール数・コンボを失わずにオート再射出！
+    if (state.ballSaverTimer > 0) {
+      state.ballSaverTimer = 0;
+      sfx.ballSave();
+      showCenterBanner('BALL SAVED!', 'セーフティガード発動！コンボ継続で再射出', '#00ff88', 1.2);
+      state.ball.x = (LANE_X + 408) / 2;
+      state.ball.y = 590;
+      state.ball.inLane = true;
+      state.ball.waitingLaunch = false;
+      state.ball.vx = 0;
+      state.ball.vy = -880;
+      state.ball.trail = [];
+      return;
+    }
+
+    sfx.ballLost();
+    state.ballsLeft--;
+    state.combo = 0;
+    updateHUD();
+
+    if (state.ballsLeft <= 0) {
+      state.phase = 'CLEAR_ANIM';
+      showCenterBanner('BALL LOST...', 'ノルマ未達成', '#ff2a85', 1.8);
+      setTimeout(() => {
+        showResultScreen(false);
+      }, 1700);
+    } else {
+      showCenterBanner('BALL LOST', `残りボール ${state.ballsLeft}個`, '#ff2a85', 1.1);
+      resetBallToPlunger();
+    }
+  }
+
+  function showResultScreen(isClear) {
+    state.phase = 'RESULT';
+    hideAllOverlays();
+    if (isClear) {
+      sfx.gameClear();
+      hasClearedEver = true;
+      localStorage.setItem(STORAGE_KEY_CLEARED, '1');
+    } else {
+      sfx.gameOver();
+    }
+
+    let isNewRecord = false;
+    if (state.totalScore > hiScore) {
+      hiScore = state.totalScore;
+      localStorage.setItem(STORAGE_KEY_HISCORE, String(hiScore));
+      isNewRecord = true;
+    }
+
+    const resTitle = document.getElementById('res-title');
+    const resSub = document.getElementById('res-sub');
+    if (isClear) {
+      resTitle.textContent = 'GAME CLEAR!';
+      resTitle.style.color = '#00ff88';
+      resSub.textContent = '全8ラウンドのノルマを達成しました！';
+    } else {
+      resTitle.textContent = state.endlessMode ? `ENDLESS R${state.round} FINISH` : 'GAME OVER';
+      resTitle.style.color = state.endlessMode ? '#ffe600' : '#ff2a85';
+      resSub.textContent = `ROUND ${state.round} ノルマ達成率 ${Math.floor((state.roundScore / state.norma) * 100)}%`;
+    }
+    document.getElementById('res-total').textContent = state.totalScore.toLocaleString();
+    document.getElementById('res-hiscore').textContent = hiScore.toLocaleString();
+    document.getElementById('res-newrecord').style.display = isNewRecord ? 'block' : 'none';
+
+    // MVPパーツ算出
+    let mvpText = 'なし';
+    let bestScore = 0;
+    state.slots.forEach((s, idx) => {
+      if (s && s.totalEarned > bestScore) {
+        bestScore = s.totalEarned;
+        const c = CARD_CATALOG.find(item => item.id === s.type);
+        mvpText = `${c ? c.name : s.type} Lv${s.level} (#${idx + 1})`;
+      }
+    });
+
+    const statsGrid = document.getElementById('res-stats-grid');
+    statsGrid.innerHTML = `
+      <div class="stat-cell">
+        <div class="s-lbl">到達ラウンド</div>
+        <div class="s-val">ROUND ${state.round}</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-lbl">最大コンボ</div>
+        <div class="s-val">${state.maxComboThisRun} HIT (×${(1 + Math.min(state.maxComboThisRun, 50) * 0.04).toFixed(2)})</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-lbl">発動シナジー数</div>
+        <div class="s-val">${state.activeSynergies.length} 個</div>
+      </div>
+      <div class="stat-cell">
+        <div class="s-lbl">MVPパーツ</div>
+        <div class="s-val" style="color:var(--neon-cyan); font-size:11.5px;">${mvpText}</div>
+      </div>
+    `;
+
+    // R8クリア時はそのままR9エンドレスへ進めるボタンを表示
+    const endlessBtn = document.getElementById('btn-endless');
+    endlessBtn.style.display = isClear ? 'block' : 'none';
+
+    document.getElementById('ov-result').classList.add('show');
+    updateTitleRecords();
+  }
+
+  // =========================================================================
+  // 6. ドラフト＆配置フェーズ（盤面確認・リロール・シナジー予測つき）
+  // =========================================================================
+  function canCardBeUsed(card) {
+    const emptyCount = state.slots.filter(s => s === null).length;
+    if (card.id === 'warp_gate') {
+      const canUpgrade = state.slots.some(s => s && s.type === 'warp_gate' && s.level < 3);
+      return emptyCount >= 2 || canUpgrade;
+    }
+    if (card.category === 'part') {
+      const canUpgrade = state.slots.some(s => s && s.type === card.id && s.level < 3);
+      return emptyCount >= 1 || canUpgrade;
+    }
+    if (card.id === 'upgrade_chip') {
+      return state.slots.some(s => s && s.level < 3);
+    }
+    if (card.id === 'extra_ball') {
+      return state.extraBallPurchases < 2;
+    }
+    if (card.id === 'flipper_up') {
+      return state.flipperLevel < 3;
+    }
+    return true;
+  }
+
+  function getCardStatusHint(card) {
+    if (card.category === 'part') {
+      const existing = state.slots.filter(s => s && s.type === card.id);
+      const upgradable = existing.filter(s => s.level < 3).length;
+      if (card.id === 'warp_gate') {
+        const pairs = Math.floor(existing.length / 2);
+        return pairs > 0 ? `現在 ${pairs}組設置中（同スロット選択でLvUP）` : '空きスロット2か所に連結設置';
+      }
+      return existing.length > 0
+        ? `現在 ${existing.length}個設置中（${upgradable > 0 ? '重ねてLvUP可' : 'すべて最大Lv'}）`
+        : '空きスロット1か所に新規設置';
+    }
+    if (card.id === 'upgrade_chip') {
+      const count = state.slots.filter(s => s && s.level < 3).length;
+      return `強化可能な既存パーツ: ${count}個`;
+    }
+    if (card.id === 'extra_ball') {
+      return `毎ラウンド球数: ${state.maxBallsPerRound} → ${state.maxBallsPerRound + 1}個（残り枠 ${2 - state.extraBallPurchases}回）`;
+    }
+    if (card.id === 'score_booster') {
+      return `スコアボーナス: +${state.scoreBoosterCount * 10}% → +${(state.scoreBoosterCount + 1) * 10}%`;
+    }
+    if (card.id === 'flipper_up') {
+      return `フリッパー強化: Lv${state.flipperLevel} → Lv${state.flipperLevel + 1} (最大Lv3)`;
+    }
+    return '';
+  }
+
+  // このカードを新規配置または強化した場合に新しく発動するシナジーがあるか予測
+  function predictNewSynergyForCard(card) {
+    if (card.category !== 'part' && card.id !== 'upgrade_chip') return null;
+    const currentIds = new Set(state.activeSynergies.map(s => s.id));
+    const simSlots = state.slots.map(s => s ? { ...s } : null);
+
+    if (card.id === 'upgrade_chip') {
+      const target = simSlots.find(s => s && s.level < 3);
+      if (target) target.level++;
+    } else {
+      const emptyIdx = simSlots.findIndex(s => s === null);
+      if (emptyIdx !== -1) {
+        simSlots[emptyIdx] = { type: card.id, level: 1 };
+      } else {
+        const upg = simSlots.find(s => s && s.type === card.id && s.level < 3);
+        if (upg) upg.level++;
+      }
+    }
+
+    const newlyActive = SYNERGY_DEFINITIONS.filter(def => !currentIds.has(def.id) && def.check(simSlots));
+    if (newlyActive.length > 0) {
+      return `✨選択でシナジー【${newlyActive.map(s => s.name).join('・')}】発動可能！`;
+    }
+    return null;
+  }
+
+  function pickDraftCards() {
+    const pool = CARD_CATALOG.filter(canCardBeUsed);
+    const chosen = [];
+    const available = [...pool];
+
+    while (chosen.length < 3 && available.length > 0) {
+      const totalWeight = available.reduce((acc, c) => acc + c.weight, 0);
+      let r = Math.random() * totalWeight;
+      let idx = 0;
+      for (let i = 0; i < available.length; i++) {
+        r -= available[i].weight;
+        if (r <= 0) {
+          idx = i;
+          break;
+        }
+      }
+      chosen.push(available[idx]);
+      available.splice(idx, 1);
+    }
+    return chosen;
+  }
+
+  function renderDraftCards() {
+    const listEl = document.getElementById('cards-list');
+    listEl.innerHTML = '';
+
+    const cards = pickDraftCards();
+    cards.forEach(card => {
+      const item = document.createElement('div');
+      item.className = `card-item ${card.category !== 'part' ? 'instant' : ''}`;
+      const badgeLabel = card.category === 'part' ? 'パーツ配置' : (card.id === 'upgrade_chip' ? 'パーツ強化' : '即時発動');
+      const synAlert = predictNewSynergyForCard(card);
+
+      item.innerHTML = `
+        <div class="card-icon" style="border-color:${card.color}; box-shadow:0 0 10px ${card.color}33;">${card.icon}</div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-name" style="color:${card.color};">${card.name}</span>
+            <span class="card-type">${badgeLabel}</span>
+          </div>
+          <div class="card-desc">${card.desc}</div>
+          <div class="card-hint">${getCardStatusHint(card)}</div>
+          ${synAlert ? `<div class="card-syn-alert">${synAlert}</div>` : ''}
+        </div>
+      `;
+      item.addEventListener('click', () => onSelectDraftCard(card));
+      listEl.appendChild(item);
+    });
+
+    const rerollBtn = document.getElementById('btn-reroll');
+    rerollBtn.textContent = `🎲 リロール (残り${state.rerollsLeft}回)`;
+    rerollBtn.disabled = state.rerollsLeft <= 0;
+  }
+
+  function openDraftModal(ballBonus = 0) {
+    state.phase = 'DRAFT';
+    hideAllOverlays();
+    const ov = document.getElementById('ov-draft');
+    ov.classList.remove('peek-mode');
+    document.getElementById('btn-peek-board').textContent = '👁 盤面を確認';
+    document.getElementById('draft-header').textContent = `ROUND ${state.round} CLEAR!`;
+    document.getElementById('draft-bonus-info').textContent = ballBonus > 0
+      ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS 獲得！報酬カードを1枚選択`
+      : '報酬カードを1枚選んで盤面をビルドしよう';
+
+    renderDraftCards();
+    ov.classList.add('show');
+  }
+
+  function onSelectDraftCard(card) {
+    sfx.place();
+    document.getElementById('ov-draft').classList.remove('show');
+
+    if (card.id === 'extra_ball') {
+      state.extraBallPurchases++;
+      state.maxBallsPerRound++;
+      startRound(state.round + 1);
+      return;
+    }
+    if (card.id === 'score_booster') {
+      state.scoreBoosterCount++;
+      startRound(state.round + 1);
+      return;
+    }
+    if (card.id === 'flipper_up') {
+      state.flipperLevel = Math.min(3, state.flipperLevel + 1);
+      startRound(state.round + 1);
+      return;
+    }
+
+    state.phase = 'PLACE';
+    state.pendingCard = card;
+    state.warpFirstSlot = null;
+    updatePlaceBanner();
+    document.getElementById('place-banner').classList.add('show');
+  }
+
+  function updatePlaceBanner() {
+    const card = state.pendingCard;
+    if (!card) return;
+    const titleEl = document.getElementById('place-title');
+    const subEl = document.getElementById('place-sub');
+
+    if (card.id === 'upgrade_chip') {
+      titleEl.textContent = `【強化チップ】対象パーツを選択`;
+      subEl.textContent = `黄色枠の既存パーツをタップして Lv+1（最大Lv3）`;
+    } else if (card.id === 'warp_gate') {
+      if (state.warpFirstSlot === null) {
+        titleEl.textContent = `【ワープゲート】1つ目のスロットを選択`;
+        subEl.textContent = `緑枠（空き2か所必要）で新規設置、黄枠で既存ペアLvUP`;
+      } else {
+        titleEl.textContent = `【ワープゲート】2つ目の空きスロットを選択`;
+        subEl.textContent = `連結する出口の空きスロットをタップしてください`;
+      }
+    } else {
+      titleEl.textContent = `【${card.name}】配置スロットを選択`;
+      subEl.textContent = `緑＝新規配置 / 黄＝同種パーツLvUP（別種スロットは上書き不可）`;
+    }
+  }
+
+  function getSlotActionType(slotId) {
+    const card = state.pendingCard;
+    if (!card) return null;
+    const slot = state.slots[slotId];
+
+    if (card.id === 'upgrade_chip') {
+      if (slot && slot.level < 3) return 'upgrade';
+      return null;
+    }
+
+    if (card.id === 'warp_gate') {
+      if (state.warpFirstSlot !== null) {
+        if (slotId !== state.warpFirstSlot && slot === null) return 'new';
+        return null;
+      }
+      if (slot && slot.type === 'warp_gate' && slot.level < 3) return 'upgrade';
+      const emptyCount = state.slots.filter(s => s === null).length;
+      if (slot === null && emptyCount >= 2) return 'new';
+      return null;
+    }
+
+    if (slot === null) return 'new';
+    if (slot.type === card.id && slot.level < 3) return 'upgrade';
+    return null;
+  }
+
+  function handleSlotClick(slotId) {
+    if (state.phase !== 'PLACE' || !state.pendingCard) return;
+    const action = getSlotActionType(slotId);
+    if (!action) {
+      sfx.wall();
+      return;
+    }
+    const card = state.pendingCard;
+    const pos = SLOT_POSITIONS[slotId];
+
+    if (card.id === 'upgrade_chip') {
+      const target = state.slots[slotId];
+      target.level = Math.min(3, target.level + 1);
+      target.pulse = 1.5;
+      if (target.type === 'warp_gate' && target.pairSlotId !== null && state.slots[target.pairSlotId]) {
+        state.slots[target.pairSlotId].level = target.level;
+        state.slots[target.pairSlotId].pulse = 1.5;
+      }
+      refreshSynergies();
+      sfx.place();
+      spawnParticles(pos.x, pos.y, '#00ff88', 18, 150);
+      finishPlacementPhase();
+      return;
+    }
+
+    if (card.id === 'warp_gate') {
+      if (action === 'upgrade') {
+        const target = state.slots[slotId];
+        target.level = Math.min(3, target.level + 1);
+        target.pulse = 1.5;
+        if (target.pairSlotId !== null && state.slots[target.pairSlotId]) {
+          state.slots[target.pairSlotId].level = target.level;
+          state.slots[target.pairSlotId].pulse = 1.5;
+        }
+        refreshSynergies();
+        sfx.place();
+        spawnParticles(pos.x, pos.y, '#b845ff', 18, 150);
+        finishPlacementPhase();
+        return;
+      }
+      if (state.warpFirstSlot === null) {
+        state.warpFirstSlot = slotId;
+        sfx.place();
+        spawnParticles(pos.x, pos.y, '#b845ff', 12, 100);
+        updatePlaceBanner();
+        return;
+      } else {
+        const firstId = state.warpFirstSlot;
+        placePartInSlot(firstId, 'warp_gate', 1, slotId);
+        placePartInSlot(slotId, 'warp_gate', 1, firstId);
+        sfx.warp();
+        spawnParticles(pos.x, pos.y, '#b845ff', 22, 170);
+        finishPlacementPhase();
+        return;
+      }
+    }
+
+    if (action === 'new') {
+      placePartInSlot(slotId, card.id, 1);
+    } else if (action === 'upgrade') {
+      state.slots[slotId].level = Math.min(3, state.slots[slotId].level + 1);
+      state.slots[slotId].pulse = 1.5;
+      refreshSynergies();
+    }
+    sfx.place();
+    spawnParticles(pos.x, pos.y, card.color, 18, 150);
+    finishPlacementPhase();
+  }
+
+  function finishPlacementPhase() {
+    state.pendingCard = null;
+    state.warpFirstSlot = null;
+    document.getElementById('place-banner').classList.remove('show');
+    startRound(state.round + 1);
+  }
+
+  // =========================================================================
+  // 7. 物理演算エンジン（サブステップ分割・ギミック・台揺らし・スタック救済）
+  // =========================================================================
+  function closestPointOnSegment(px, py, x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const lenSq = dx * dx + dy * dy;
+    if (lenSq === 0) return { x: x1, y: y1, t: 0 };
+    let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
+    t = Math.max(0, Math.min(1, t));
+    return { x: x1 + t * dx, y: y1 + t * dy, t };
+  }
+
+  function updateFlipper(flipper, dt) {
+    const active = flipper.pressed && !state.tiltPenalty;
+    const target = active ? flipper.activeAngle : flipper.restAngle;
+    const diff = target - flipper.angle;
+    const maxStep = getFlipperSpeed() * dt;
+    if (Math.abs(diff) <= maxStep) {
+      flipper.angVel = diff / dt;
+      flipper.angle = target;
+    } else {
+      const dir = Math.sign(diff);
+      flipper.angVel = dir * getFlipperSpeed();
+      flipper.angle += dir * maxStep;
+    }
+  }
+
+  function collideFlipper(flipper) {
+    const b = state.ball;
+    const len = getFlipperLength();
+    const x1 = flipper.pivotX;
+    const y1 = flipper.pivotY;
+    const x2 = x1 + Math.cos(flipper.angle) * len;
+    const y2 = y1 + Math.sin(flipper.angle) * len;
+
+    const cp = closestPointOnSegment(b.x, b.y, x1, y1, x2, y2);
+    const dx = b.x - cp.x;
+    const dy = b.y - cp.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = BALL_R + 5.5;
+
+    if (dist < minDist && dist > 0.0001) {
+      const nx = dx / dist;
+      const ny = dy / dist;
+      b.x = cp.x + nx * minDist;
+      b.y = cp.y + ny * minDist;
+
+      const r = cp.t * len;
+      const tx = -Math.sin(flipper.angle);
+      const ty = Math.cos(flipper.angle);
+      const fvx = tx * (flipper.angVel * r);
+      const fvy = ty * (flipper.angVel * r);
+
+      const relVx = b.vx - fvx;
+      const relVy = b.vy - fvy;
+      const relDot = relVx * nx + relVy * ny;
+
+      if (relDot < 0) {
+        const restitution = 0.82 + state.flipperLevel * 0.06;
+        b.vx -= (1 + restitution) * relDot * nx;
+        b.vy -= (1 + restitution) * relDot * ny;
+
+        if (Math.abs(flipper.angVel) > 0.5) {
+          const tipBoost = (0.45 + 0.78 * cp.t) * (1 + state.flipperLevel * 0.14);
+          b.vx += fvx * tipBoost;
+          b.vy += fvy * tipBoost;
+        }
+      }
+    }
+  }
+
+  function collideWalls() {
+    const b = state.ball;
+    for (let i = 0; i < walls.length; i++) {
+      const w = walls[i];
+      if (w.oneWayLeft && b.inLane && b.vx < 0) {
+        continue;
+      }
+
+      const cp = closestPointOnSegment(b.x, b.y, w.x1, w.y1, w.x2, w.y2);
+      const dx = b.x - cp.x;
+      const dy = b.y - cp.y;
+      const dist = Math.hypot(dx, dy);
+
+      if (dist < BALL_R && dist > 0.0001) {
+        const nx = dx / dist;
+        const ny = dy / dist;
+        b.x = cp.x + nx * BALL_R;
+        b.y = cp.y + ny * BALL_R;
+
+        const dot = b.vx * nx + b.vy * ny;
+        if (dot < 0) {
+          b.vx -= (1 + w.rest) * dot * nx;
+          b.vy -= (1 + w.rest) * dot * ny;
+          if (w.isSlingshot && Math.hypot(b.vx, b.vy) > 110) {
+            w.pulse = 1.0;
+            sfx.bumper(state.combo);
+            addScore(35, cp.x, cp.y, '#ff2a85', 1, -1);
+            spawnParticles(cp.x, cp.y, '#ff2a85', 6, 95);
+          }
+        }
+      }
+    }
+
+    // センターセーフティポスト（上部3レーン達成で股下に一定時間出現するガード柱）
+    if (state.centerPostTimer > 0) {
+      const px = 193;
+      const py = 602;
+      const pr = 9;
+      const dx = b.x - px;
+      const dy = b.y - py;
+      const dist = Math.hypot(dx, dy);
+      if (dist < BALL_R + pr && dist > 0.0001) {
+        const nx = dx / dist;
+        const ny = dy / dist;
+        b.x = px + nx * (BALL_R + pr);
+        b.y = py + ny * (BALL_R + pr);
+        const dot = b.vx * nx + b.vy * ny;
+        if (dot < 0) {
+          b.vx -= 1.85 * dot * nx;
+          b.vy -= 1.85 * dot * ny;
+          b.vy -= 110;
+          sfx.bumper(state.combo);
+          spawnParticles(px, py, '#00ff88', 8, 110);
+        }
+      }
+    }
+
+    if (b.inLane && b.x < LANE_X - BALL_R) {
+      b.inLane = false;
+      // フィールド突入時にボールセイバー(4.5秒)とスキルショット受付(4.5秒)を開始
+      state.ballSaverTimer = 4.5;
+      state.skillShotTimer = 4.5;
+    }
+  }
+
+  function checkBoardGimmicks(subDt) {
+    const b = state.ball;
+
+    // 1. 上部3レーンロールオーバー (I-D-E)
+    for (let i = 0; i < TOP_ROLLOVERS.length; i++) {
+      const ro = TOP_ROLLOVERS[i];
+      if (!ro.lit && Math.hypot(b.x - ro.x, b.y - ro.y) < 15) {
+        ro.lit = true;
+        sfx.targetLit();
+        addScore(120, ro.x, ro.y, '#00ff88', 1, -1, `LANE [${ro.label}]`);
+        spawnParticles(ro.x, ro.y, '#00ff88', 8, 100);
+
+        if (TOP_ROLLOVERS.every(r => r.lit)) {
+          // 3レーンコンプリート特典：500点＋センターポスト15秒起動＋ジャックポットドローン出現！
+          setTimeout(() => { TOP_ROLLOVERS.forEach(r => { r.lit = false; }); }, 450);
+          state.centerPostTimer = 15.0;
+          state.jackpotDrone.active = true;
+          sfx.skillShot();
+          addScore(500, 187, 70, '#ffe600', 2, -1, '★ALL LANES! JACKPOT READY');
+          spawnShockwave(187, 70, '#ffe600', 75);
+        }
+      }
+    }
+
+    // 2. 左右壁の4つのネオンターゲット
+    for (let i = 0; i < WALL_TARGETS.length; i++) {
+      const wt = WALL_TARGETS[i];
+      if (Math.abs(b.x - wt.x) < BALL_R + 5 && b.y >= wt.y1 && b.y <= wt.y2) {
+        if (!wt.lit) {
+          wt.lit = true;
+          b.vx += wt.normalX * 135;
+          sfx.targetLit();
+          addScore(140, wt.x + wt.normalX * 16, wt.y, '#00f0ff', 1, -1, 'TARGET');
+          spawnParticles(wt.x, wt.y, '#00f0ff', 9, 110);
+
+          if (WALL_TARGETS.every(t => t.lit)) {
+            setTimeout(() => { WALL_TARGETS.forEach(t => { t.lit = false; }); }, 500);
+            state.feverTimer = 10.0;
+            state.ballSaverTimer = Math.max(state.ballSaverTimer, 8.0);
+            sfx.jackpot();
+            addScore(800, W / 2, 260, '#ff2a85', 3, -1, '🔥FEVER 10s (×1.25)');
+            spawnShockwave(W / 2, 260, '#ff2a85', 90);
+          }
+        }
+      }
+    }
+
+    // 3. 移動ジャックポットドローン
+    if (state.jackpotDrone.active) {
+      const jd = state.jackpotDrone;
+      const dx = b.x - jd.x;
+      const dy = b.y - jd.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < jd.r + BALL_R) {
+        jd.active = false;
+        sfx.jackpot();
+        triggerShake(0.22, 5);
+        addScore(1000, jd.x, jd.y, '#ffe600', 4, -1, '👑JACKPOT!!');
+        spawnParticles(jd.x, jd.y, '#ffe600', 26, 210);
+        spawnShockwave(jd.x, jd.y, '#ffe600', 85);
+      }
+    }
+
+    // 4. R8ボス（オーバーロードコア）
+    if (state.bossCore.active) {
+      const bc = state.bossCore;
+      if (bc.cooldown > 0) bc.cooldown = Math.max(0, bc.cooldown - subDt);
+      const dx = b.x - bc.x;
+      const dy = b.y - bc.y;
+      const dist = Math.hypot(dx, dy);
+      const minDist = bc.r + BALL_R;
+      if (dist < minDist && dist > 0.0001) {
+        const nx = dx / dist;
+        const ny = dy / dist;
+        b.x = bc.x + nx * minDist;
+        b.y = bc.y + ny * minDist;
+        const dot = b.vx * nx + b.vy * ny;
+        if (dot < 0) {
+          b.vx -= 2.0 * dot * nx;
+          b.vy -= 2.0 * dot * ny;
+        }
+        b.vx += nx * 210;
+        b.vy += ny * 210;
+
+        if (bc.cooldown <= 0) {
+          bc.cooldown = 0.08;
+          bc.hpHits++;
+          bc.pulse = 1.5;
+          triggerShake(0.14, 4);
+          if (bc.hpHits % 5 === 0) {
+            sfx.jackpot();
+            addScore(1200, bc.x, bc.y, '#ffe600', 3, -1, '💥BOSS BREAK!');
+            spawnShockwave(bc.x, bc.y, '#ffe600', 85);
+            spawnParticles(bc.x, bc.y, '#ffe600', 24, 200);
+          } else {
+            sfx.bumper(state.combo);
+            addScore(350, bc.x, bc.y, '#ff2a85', 2, -1, 'BOSS HIT');
+            spawnShockwave(bc.x, bc.y, '#ff2a85', 50);
+            spawnParticles(bc.x, bc.y, '#ff2a85', 14, 150);
+          }
+        }
+      }
+    }
+  }
+
+  function getTriangleVertices(cx, cy, r, dir) {
+    const rot = dir > 0 ? -0.15 : 0.15;
+    return [
+      { x: cx + Math.cos(-Math.PI / 2 + rot) * r, y: cy + Math.sin(-Math.PI / 2 + rot) * r },
+      { x: cx + Math.cos(Math.PI / 6 + rot) * r,  y: cy + Math.sin(Math.PI / 6 + rot) * r },
+      { x: cx + Math.cos(5 * Math.PI / 6 + rot) * r, y: cy + Math.sin(5 * Math.PI / 6 + rot) * r }
+    ];
+  }
+
+  function collideParts(subDt) {
+    const b = state.ball;
+    if (b.warpCooldown > 0) {
+      b.warpCooldown = Math.max(0, b.warpCooldown - subDt);
+    }
+
+    const comboGainReflect = hasSynergy('labyrinth_reflect') ? 2 : 1;
+
+    for (let i = 0; i < state.slots.length; i++) {
+      const part = state.slots[i];
+      if (!part) continue;
+      if (part.cooldown > 0) {
+        part.cooldown = Math.max(0, part.cooldown - subDt);
+      }
+
+      const pos = SLOT_POSITIONS[i];
+      const dx = b.x - pos.x;
+      const dy = b.y - pos.y;
+      const dist = Math.hypot(dx, dy);
+
+      // 1. 丸バンパー
+      if (part.type === 'bumper_circle') {
+        const r = 18;
+        const minDist = r + BALL_R;
+        if (dist < minDist && dist > 0.0001) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          b.x = pos.x + nx * minDist;
+          b.y = pos.y + ny * minDist;
+          const dot = b.vx * nx + b.vy * ny;
+          if (dot < 0) {
+            b.vx -= 1.9 * dot * nx;
+            b.vy -= 1.9 * dot * ny;
+          }
+          const impulse = 155 + part.level * 28;
+          b.vx += nx * impulse;
+          b.vy += ny * impulse;
+
+          if (part.cooldown <= 0) {
+            part.cooldown = 0.06;
+            part.pulse = 1.45;
+            sfx.bumper(state.combo);
+            triggerShake(0.08, 2.2);
+            addScore(100 * part.level, pos.x, pos.y, '#ff2a85', 1, i);
+            spawnParticles(pos.x + nx * r, pos.y + ny * r, '#ff2a85', 10, 140);
+            if (hasSynergy('bumper_kingdom')) {
+              spawnShockwave(pos.x, pos.y, '#ff2a85', 44);
+            }
+          }
+        }
+      }
+
+      // 2. 三角バンパー
+      else if (part.type === 'bumper_tri') {
+        const verts = getTriangleVertices(pos.x, pos.y, 21, part.dir);
+        for (let e = 0; e < 3; e++) {
+          const v1 = verts[e];
+          const v2 = verts[(e + 1) % 3];
+          const cp = closestPointOnSegment(b.x, b.y, v1.x, v1.y, v2.x, v2.y);
+          const edx = b.x - cp.x;
+          const edy = b.y - cp.y;
+          const edist = Math.hypot(edx, edy);
+          if (edist < BALL_R + 2 && edist > 0.0001) {
+            const nx = edx / edist;
+            const ny = edy / edist;
+            b.x = cp.x + nx * (BALL_R + 2);
+            b.y = cp.y + ny * (BALL_R + 2);
+            const dot = b.vx * nx + b.vy * ny;
+            if (dot < 0) {
+              b.vx -= 1.95 * dot * nx;
+              b.vy -= 1.95 * dot * ny;
+            }
+            const impulse = 190 + part.level * 30;
+            b.vx += nx * impulse;
+            b.vy += ny * impulse;
+
+            if (part.cooldown <= 0) {
+              part.cooldown = 0.07;
+              part.pulse = 1.45;
+              sfx.bumper(state.combo);
+              triggerShake(0.09, 2.5);
+              addScore(150 * part.level, pos.x, pos.y, '#ff9100', comboGainReflect, i);
+              spawnParticles(cp.x, cp.y, '#ff9100', 11, 155);
+              if (hasSynergy('bumper_kingdom')) {
+                spawnShockwave(pos.x, pos.y, '#ff9100', 46);
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      // 3. キッカー
+      else if (part.type === 'kicker') {
+        const r = 17;
+        const minDist = r + BALL_R;
+        if (dist < minDist && dist > 0.0001) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          b.x = pos.x + nx * minDist;
+          b.y = pos.y + ny * minDist;
+
+          const kickVy = -(525 + part.level * 55 + (hasSynergy('perpetual_engine') ? 45 : 0));
+          b.vy = Math.min(b.vy, kickVy);
+          b.vx = b.vx * 0.6 + nx * 170;
+
+          if (part.cooldown <= 0) {
+            part.cooldown = 0.09;
+            part.pulse = 1.5;
+            sfx.kicker();
+            triggerShake(0.1, 2.8);
+            addScore(150 * part.level, pos.x, pos.y, '#00ff88', 1, i);
+            spawnParticles(pos.x, pos.y - 10, '#00ff88', 14, 180);
+            spawnShockwave(pos.x, pos.y, '#00ff88', 42);
+          }
+        }
+      }
+
+      // 4. スピナー
+      else if (part.type === 'spinner') {
+        const r = 20;
+        if (dist < r + BALL_R && part.cooldown <= 0) {
+          part.cooldown = 0.072;
+          part.spinVel = 30;
+          part.pulse = 1.25;
+          const spd = Math.hypot(b.vx, b.vy);
+          const accelBoost = hasSynergy('perpetual_engine') ? 1.11 : 1.07;
+          if (spd > 15) {
+            const newSpd = Math.min(840, spd * accelBoost + 30);
+            b.vx = (b.vx / spd) * newSpd;
+            b.vy = (b.vy / spd) * newSpd;
+          } else {
+            b.vy -= 95;
+          }
+          sfx.spinner();
+          addScore(30 * part.level, pos.x, pos.y, '#00f0ff', 1, i);
+          spawnParticles(b.x, b.y, '#00f0ff', 5, 85);
+        }
+      }
+
+      // 5. リバウンド壁
+      else if (part.type === 'rebound_wall') {
+        const angle = part.dir > 0 ? 0.52 : -0.52;
+        const halfLen = 23;
+        const x1 = pos.x - Math.cos(angle) * halfLen;
+        const y1 = pos.y - Math.sin(angle) * halfLen;
+        const x2 = pos.x + Math.cos(angle) * halfLen;
+        const y2 = pos.y + Math.sin(angle) * halfLen;
+
+        const cp = closestPointOnSegment(b.x, b.y, x1, y1, x2, y2);
+        const wdx = b.x - cp.x;
+        const wdy = b.y - cp.y;
+        const wdist = Math.hypot(wdx, wdy);
+        const minDist = BALL_R + 4;
+
+        if (wdist < minDist && wdist > 0.0001) {
+          const nx = wdx / wdist;
+          const ny = wdy / wdist;
+          b.x = cp.x + nx * minDist;
+          b.y = cp.y + ny * minDist;
+          const dot = b.vx * nx + b.vy * ny;
+          if (dot < 0) {
+            b.vx -= 1.85 * dot * nx;
+            b.vy -= 1.85 * dot * ny;
+          }
+          b.vx += nx * (95 + part.level * 18);
+          b.vy += ny * (95 + part.level * 18);
+
+          if (part.cooldown <= 0) {
+            part.cooldown = 0.07;
+            part.pulse = 1.4;
+            sfx.bumper(state.combo);
+            addScore(50 * part.level, pos.x, pos.y, '#ffe600', comboGainReflect, i);
+            spawnParticles(cp.x, cp.y, '#ffe600', 8, 120);
+          }
+        }
+      }
+
+      // 6. ワープゲート
+      else if (part.type === 'warp_gate') {
+        const r = 16;
+        if (dist < r && b.warpCooldown <= 0 && part.pairSlotId !== null) {
+          const destPos = SLOT_POSITIONS[part.pairSlotId];
+          const destPart = state.slots[part.pairSlotId];
+          if (destPos && destPart) {
+            b.x = destPos.x;
+            b.y = destPos.y;
+            const spd = Math.hypot(b.vx, b.vy);
+            if (spd < 190) {
+              const a = Math.atan2(b.vy || -1, b.vx || 0.2);
+              b.vx = Math.cos(a) * 250;
+              b.vy = Math.sin(a) * 250;
+            }
+            b.warpCooldown = 0.45;
+            b.trail = [];
+            part.pulse = 1.6;
+            destPart.pulse = 1.6;
+            sfx.warp();
+
+            let warpCombo = 1;
+            if (hasSynergy('dimensional_accel')) {
+              warpCombo = 3;
+              state.warpAuraTimer = 3.0;
+            }
+            addScore(300 * part.level, destPos.x, destPos.y, '#b845ff', warpCombo, i, '🪐WARP');
+            spawnShockwave(pos.x, pos.y, '#b845ff', 48);
+            spawnShockwave(destPos.x, destPos.y, '#00f0ff', 58);
+            spawnParticles(pos.x, pos.y, '#b845ff', 14, 150);
+            spawnParticles(destPos.x, destPos.y, '#00f0ff', 18, 190);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // 台揺らし（ナッジ）機能：スタック回避やギリギリの軌道修正が可能、連続使用しすぎるとTILT警告
+  function triggerNudge(dirX = 0) {
+    if (state.phase !== 'PLAY' || state.ball.waitingLaunch || state.ball.inLane || state.tiltPenalty) return;
+    state.nudgeHeat += 0.42;
+    const vxAdd = (dirX !== 0 ? dirX : (Math.random() < 0.5 ? -1 : 1)) * 125;
+    state.ball.vx += vxAdd;
+    state.ball.vy -= 85;
+    triggerShake(0.15, 4.5);
+    sfx.nudge();
+
+    if (state.nudgeHeat >= 1.0) {
+      state.tiltPenalty = true;
+      state.leftFlipper.pressed = false;
+      state.rightFlipper.pressed = false;
+      sfx.tilt();
+      showCenterBanner('TILT!!', '揺らしすぎ警告！フリッパーが一時ロック', '#ff2a85', 1.4);
+      updateHUD();
+    } else if (state.nudgeHeat >= 0.7) {
+      spawnPopup(state.ball.x, state.ball.y, '⚠ DANGER (TILT注意)', '#ffe600', 12);
+    }
+  }
+
+  function stepPhysics(dt) {
+    // 画面シェイク減衰
+    if (state.shakeTimer > 0) {
+      state.shakeTimer = Math.max(0, state.shakeTimer - dt);
+    }
+
+    // 各種タイマー更新
+    if (state.skillShotTimer > 0) state.skillShotTimer = Math.max(0, state.skillShotTimer - dt);
+    if (state.ballSaverTimer > 0) state.ballSaverTimer = Math.max(0, state.ballSaverTimer - dt);
+    if (state.centerPostTimer > 0) state.centerPostTimer = Math.max(0, state.centerPostTimer - dt);
+    if (state.warpAuraTimer > 0) state.warpAuraTimer = Math.max(0, state.warpAuraTimer - dt);
+    if (state.feverTimer > 0) {
+      state.feverTimer = Math.max(0, state.feverTimer - dt);
+      if (state.feverTimer === 0) updateHUD();
+    }
+    if (state.nudgeHeat > 0 && !state.tiltPenalty) {
+      state.nudgeHeat = Math.max(0, state.nudgeHeat - dt * 0.25);
+    }
+
+    // 移動ジャックポットドローン更新
+    if (state.jackpotDrone.active) {
+      const jd = state.jackpotDrone;
+      jd.x += jd.vx * dt;
+      if (jd.x < 75) { jd.x = 75; jd.vx = Math.abs(jd.vx); }
+      if (jd.x > 298) { jd.x = 298; jd.vx = -Math.abs(jd.vx); }
+    }
+
+    // R8ボスコア移動更新
+    if (state.bossCore.active) {
+      const bc = state.bossCore;
+      bc.x += bc.vx * dt;
+      if (bc.x < 125) { bc.x = 125; bc.vx = Math.abs(bc.vx); }
+      if (bc.x > 248) { bc.x = 248; bc.vx = -Math.abs(bc.vx); }
+      if (bc.pulse > 1) bc.pulse = Math.max(1, bc.pulse - dt * 2.5);
+    }
+
+    // プランジャーチャージ更新
+    if (state.phase === 'PLAY' && state.ball.waitingLaunch) {
+      if (state.plunger.charging) {
+        state.plunger.power = Math.min(1, state.plunger.power + dt * 1.15);
+        state.ball.y = 610 + state.plunger.power * 14;
+      }
+    }
+
+    // パーツ・壁アニメーション減衰
+    for (let i = 0; i < state.slots.length; i++) {
+      const p = state.slots[i];
+      if (!p) continue;
+      if (p.pulse > 1) p.pulse = Math.max(1, p.pulse - dt * 2.5);
+      if (p.spinVel > 0) {
+        p.angle += p.spinVel * dt;
+        p.spinVel = Math.max(0, p.spinVel - dt * 18);
+      } else if (p.type === 'warp_gate') {
+        p.angle += dt * 2.4;
+      }
+    }
+    for (let i = 0; i < walls.length; i++) {
+      if (walls[i].pulse > 0) walls[i].pulse = Math.max(0, walls[i].pulse - dt * 4);
+    }
+
+    // パーティクル・ショックウェーブ・ポップアップ更新
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+      const pt = state.particles[i];
+      pt.x += pt.vx * dt;
+      pt.y += pt.vy * dt;
+      pt.life -= dt;
+      if (pt.life <= 0) state.particles.splice(i, 1);
+    }
+    for (let i = state.shockwaves.length - 1; i >= 0; i--) {
+      const sw = state.shockwaves[i];
+      sw.r += (sw.maxR - sw.r) * dt * 9;
+      sw.alpha -= dt * 2.2;
+      if (sw.alpha <= 0) state.shockwaves.splice(i, 1);
+    }
+    for (let i = state.popups.length - 1; i >= 0; i--) {
+      const pp = state.popups[i];
+      pp.y += pp.vy * dt;
+      pp.alpha -= dt * 1.12;
+      if (pp.alpha <= 0) state.popups.splice(i, 1);
+    }
+    if (state.bannerText) {
+      state.bannerText.timer -= dt;
+      if (state.bannerText.timer <= 0) state.bannerText = null;
+    }
+
+    if (state.phase !== 'PLAY') return;
+
+    if (state.ball.waitingLaunch) {
+      updateFlipper(state.leftFlipper, dt);
+      updateFlipper(state.rightFlipper, dt);
+      return;
+    }
+
+    // 万が一のボールスタック自動救済センサー（フィールド内で3秒以上ほぼ静止していたら自動インパルス）
+    const b = state.ball;
+    const speed = Math.hypot(b.vx, b.vy);
+    if (!b.inLane && speed < 18) {
+      state.stuckTimer += dt;
+      if (state.stuckTimer > 2.5) {
+        state.stuckTimer = 0;
+        b.vx = (Math.random() < 0.5 ? -1 : 1) * 180;
+        b.vy = -220;
+        spawnPopup(b.x, b.y, 'AUTO RELEASE', '#00f0ff', 11);
+      }
+    } else {
+      state.stuckTimer = 0;
+    }
+
+    // サブステップ分割判定（高速移動時のすり抜け防止）
+    const subSteps = Math.max(6, Math.min(20, Math.ceil((speed * dt) / (BALL_R * 0.35))));
+    const subDt = dt / subSteps;
+
+    for (let s = 0; s < subSteps; s++) {
+      updateFlipper(state.leftFlipper, subDt);
+      updateFlipper(state.rightFlipper, subDt);
+
+      b.vy += GRAVITY * subDt;
+
+      const curSpd = Math.hypot(b.vx, b.vy);
+      const maxSpd = 980;
+      if (curSpd > maxSpd) {
+        b.vx = (b.vx / curSpd) * maxSpd;
+        b.vy = (b.vy / curSpd) * maxSpd;
+      }
+
+      b.x += b.vx * subDt;
+      b.y += b.vy * subDt;
+
+      collideFlipper(state.leftFlipper);
+      collideFlipper(state.rightFlipper);
+      collideWalls();
+      checkBoardGimmicks(subDt);
+      collideParts(subDt);
+
+      // 発射レーンの底に戻った場合
+      if (b.inLane && b.y > 612 && b.vy >= 0) {
+        b.y = 610;
+        b.vx = 0;
+        b.vy = 0;
+        b.waitingLaunch = true;
+        updateHUD();
+        break;
+      }
+    }
+
+    b.trail.push({ x: b.x, y: b.y });
+    if (b.trail.length > 11) b.trail.shift();
+
+    if (!b.inLane && b.y > H + BALL_R * 2) {
+      onBallLost();
+    }
+  }
+
+  // =========================================================================
+  // 8. Canvas 描画処理
+  // =========================================================================
+  function drawBoard() {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.save();
+    // ヒット時のマイクロ画面シェイク
+    if (state.shakeTimer > 0) {
+      const mag = state.shakeIntensity * (state.shakeTimer / 0.16);
+      ctx.translate((Math.random() - 0.5) * mag * 2, (Math.random() - 0.5) * mag * 2);
+    }
+
+    // 背景グリッド装飾（フィーバー時はネオンピンクが脈動）
+    ctx.save();
+    ctx.strokeStyle = state.feverTimer > 0 ? 'rgba(255, 42, 133, 0.08)' : 'rgba(0, 240, 255, 0.04)';
+    ctx.lineWidth = 1;
+    for (let x = 30; x < W; x += 30) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.stroke();
+    }
+    for (let y = 30; y < H; y += 30) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 盤面中央のウォーターマーク情報（コンボ倍率やオーラ状態）
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = state.feverTimer > 0 ? 'rgba(255, 42, 133, 0.14)' : 'rgba(0, 240, 255, 0.06)';
+    ctx.font = '900 32px sans-serif';
+    ctx.fillText(`×${getComboMultiplier().toFixed(2)}`, 192, 470);
+    if (state.feverTimer > 0) {
+      ctx.font = '800 13px sans-serif';
+      ctx.fillStyle = 'rgba(255, 230, 0, 0.45)';
+      ctx.fillText(`FEVER TIME ${state.feverTimer.toFixed(1)}s`, 192, 492);
+    } else if (state.warpAuraTimer > 0) {
+      ctx.font = '800 12px sans-serif';
+      ctx.fillStyle = 'rgba(184, 69, 255, 0.5)';
+      ctx.fillText(`WARP AURA ×1.25 (${state.warpAuraTimer.toFixed(1)}s)`, 192, 492);
+    }
+    ctx.restore();
+
+    // 上部3レーンロールオーバー＆壁ターゲット＆ボールセイバー描画
+    drawPinballGimmicks();
+
+    // ワープゲートのペア連結ライン
+    ctx.save();
+    for (let i = 0; i < state.slots.length; i++) {
+      const p = state.slots[i];
+      if (p && p.type === 'warp_gate' && p.pairSlotId !== null && i < p.pairSlotId) {
+        const p1 = SLOT_POSITIONS[i];
+        const p2 = SLOT_POSITIONS[p.pairSlotId];
+        ctx.strokeStyle = 'rgba(184, 69, 255, 0.38)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // 10か所のスロットとパーツ描画
+    drawSlotsAndParts();
+
+    // ショックウェーブリング描画
+    ctx.save();
+    for (let i = 0; i < state.shockwaves.length; i++) {
+      const sw = state.shockwaves[i];
+      ctx.strokeStyle = sw.color;
+      ctx.globalAlpha = Math.max(0, sw.alpha);
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = sw.color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // 壁の描画
+    ctx.save();
+    ctx.lineCap = 'round';
+    for (let i = 0; i < walls.length; i++) {
+      const w = walls[i];
+      ctx.strokeStyle = w.pulse > 0 ? '#ffffff' : w.color;
+      ctx.lineWidth = w.oneWayLeft ? 2 : (3 + w.pulse * 2.5);
+      ctx.shadowColor = w.color;
+      ctx.shadowBlur = 8 + w.pulse * 10;
+      if (w.oneWayLeft) {
+        ctx.setLineDash([4, 4]);
+      } else {
+        ctx.setLineDash([]);
+      }
+      ctx.beginPath();
+      ctx.moveTo(w.x1, w.y1);
+      ctx.lineTo(w.x2, w.y2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // プランジャーバネ描画
+    drawPlunger();
+
+    // 左右フリッパー描画
+    drawFlipper(state.leftFlipper);
+    drawFlipper(state.rightFlipper);
+
+    // ボール描画
+    drawBall();
+
+    // パーティクル描画
+    ctx.save();
+    for (let i = 0; i < state.particles.length; i++) {
+      const pt = state.particles[i];
+      const alpha = Math.max(0, pt.life / pt.maxLife);
+      ctx.fillStyle = pt.color;
+      ctx.globalAlpha = alpha;
+      ctx.shadowColor = pt.color;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // スコアポップ描画
+    ctx.save();
+    ctx.textAlign = 'center';
+    for (let i = 0; i < state.popups.length; i++) {
+      const pp = state.popups[i];
+      ctx.font = `800 ${pp.size || 13}px sans-serif`;
+      ctx.globalAlpha = Math.max(0, pp.alpha);
+      ctx.fillStyle = pp.color;
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 4;
+      ctx.fillText(pp.text, pp.x, pp.y);
+    }
+    ctx.restore();
+
+    // ホバー中のパーツツールチップ描画（プレイ中または配置中にスロット上にポインタがあるとき）
+    drawSlotTooltip();
+
+    // センター演出バナー
+    if (state.bannerText) {
+      const bt = state.bannerText;
+      const alpha = Math.min(1, bt.timer * 3);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = 'rgba(7, 9, 22, 0.88)';
+      ctx.strokeStyle = bt.color;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = bt.color;
+      ctx.shadowBlur = 16;
+      ctx.fillRect(26, 275, W - 52, 82);
+      ctx.strokeRect(26, 275, W - 52, 82);
+
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = bt.color;
+      ctx.font = '900 21px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(bt.text, W / 2, 311);
+
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#eef4ff';
+      ctx.font = '700 12.5px sans-serif';
+      ctx.fillText(bt.sub, W / 2, 338);
+      ctx.restore();
+    }
+
+    ctx.restore(); // end shake
+  }
+
+  function drawPinballGimmicks() {
+    ctx.save();
+
+    // 1. 上部3レーンロールオーバー (I-D-E)
+    TOP_ROLLOVERS.forEach(ro => {
+      ctx.strokeStyle = ro.lit ? '#00ff88' : 'rgba(0, 255, 136, 0.28)';
+      ctx.fillStyle = ro.lit ? 'rgba(0, 255, 136, 0.25)' : 'rgba(0, 0, 0, 0.3)';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#00ff88';
+      ctx.shadowBlur = ro.lit ? 10 : 0;
+      ctx.beginPath();
+      ctx.arc(ro.x, ro.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = ro.lit ? '#ffffff' : 'rgba(0, 255, 136, 0.5)';
+      ctx.font = '800 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ro.label, ro.x, ro.y);
+    });
+
+    // 2. 左右壁のネオンターゲット
+    WALL_TARGETS.forEach(wt => {
+      ctx.strokeStyle = wt.lit ? '#ffe600' : 'rgba(0, 240, 255, 0.35)';
+      ctx.lineWidth = wt.lit ? 5 : 3;
+      ctx.shadowColor = wt.lit ? '#ffe600' : '#00f0ff';
+      ctx.shadowBlur = wt.lit ? 12 : 4;
+      ctx.beginPath();
+      ctx.moveTo(wt.x, wt.y1);
+      ctx.lineTo(wt.x, wt.y2);
+      ctx.stroke();
+    });
+
+    // 3. 移動ジャックポットドローン
+    if (state.jackpotDrone.active) {
+      const jd = state.jackpotDrone;
+      ctx.save();
+      ctx.translate(jd.x, jd.y);
+      ctx.strokeStyle = '#ffe600';
+      ctx.fillStyle = 'rgba(255, 230, 0, 0.22)';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#ffe600';
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.arc(0, 0, jd.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('JACKPOT', 0, 0);
+      ctx.restore();
+    }
+
+    // 4. R8ボス（オーバーロードコア）
+    if (state.bossCore.active) {
+      const bc = state.bossCore;
+      ctx.save();
+      ctx.translate(bc.x, bc.y);
+      ctx.scale(bc.pulse, bc.pulse);
+      ctx.strokeStyle = '#ff2a85';
+      ctx.fillStyle = 'rgba(255, 42, 133, 0.28)';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#ff2a85';
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.arc(0, 0, bc.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`BOSS ${5 - (bc.hpHits % 5)}`, 0, 0);
+      ctx.restore();
+    }
+
+    // 5. ボールセイバーレーザー（発射直後の股下セーフティバリア表示）
+    if (state.ballSaverTimer > 0) {
+      const blink = state.ballSaverTimer < 1.5 ? (Math.sin(performance.now() * 0.025) > 0) : true;
+      if (blink) {
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.7)';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00ff88';
+        ctx.shadowBlur = 10;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(118, 622);
+        ctx.lineTo(268, 622);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#00ff88';
+        ctx.font = '800 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`BALL SAVE ${state.ballSaverTimer.toFixed(1)}s`, 193, 636);
+      }
+    }
+
+    // 6. センターセーフティポスト（上部3レーン達成で股下に出現する柱）
+    if (state.centerPostTimer > 0) {
+      ctx.fillStyle = 'rgba(0, 255, 136, 0.35)';
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#00ff88';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(193, 602, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function drawSlotsAndParts() {
+    const isPlacePhase = state.phase === 'PLACE';
+    const showSkillTarget = state.phase === 'PLAY' && (state.ball.waitingLaunch || state.skillShotTimer > 0);
+
+    for (let i = 0; i < SLOT_POSITIONS.length; i++) {
+      const pos = SLOT_POSITIONS[i];
+      const part = state.slots[i];
+      const action = isPlacePhase ? getSlotActionType(i) : null;
+
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+
+      // スキルショットターゲットリング
+      if (showSkillTarget && i === state.skillShotSlotId && part) {
+        const pulseR = 26 + Math.sin(performance.now() * 0.012) * 3;
+        ctx.strokeStyle = '#ffe600';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 3]);
+        ctx.shadowColor = '#ffe600';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(0, 0, pulseR, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#ffe600';
+        ctx.font = '800 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎯SKILL', 0, -28);
+      }
+
+      // 配置フェーズ時のハイライトリング
+      if (isPlacePhase) {
+        if (state.warpFirstSlot === i) {
+          ctx.strokeStyle = '#b845ff';
+          ctx.lineWidth = 3;
+          ctx.shadowColor = '#b845ff';
+          ctx.shadowBlur = 14;
+          ctx.beginPath();
+          ctx.arc(0, 0, 28, 0, Math.PI * 2);
+          ctx.stroke();
+        } else if (action === 'new') {
+          ctx.strokeStyle = '#00ff88';
+          ctx.fillStyle = 'rgba(0, 255, 136, 0.14)';
+          ctx.lineWidth = 2.5;
+          ctx.shadowColor = '#00ff88';
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.arc(0, 0, 25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else if (action === 'upgrade') {
+          ctx.strokeStyle = '#ffe600';
+          ctx.lineWidth = 3;
+          ctx.shadowColor = '#ffe600';
+          ctx.shadowBlur = 15;
+          ctx.beginPath();
+          ctx.arc(0, 0, 28, 0, Math.PI * 2);
+          ctx.stroke();
+        } else if (part) {
+          ctx.globalAlpha = 0.45;
+        }
+      }
+
+      // 空きスロットの描画
+      if (!part) {
+        ctx.strokeStyle = isPlacePhase && action === 'new' ? '#00ff88' : 'rgba(138, 155, 194, 0.24)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.arc(0, 0, 17, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = isPlacePhase && action === 'new' ? '#00ff88' : 'rgba(138, 155, 194, 0.35)';
+        ctx.font = '700 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isPlacePhase && action === 'new' ? '＋配置' : `${i + 1}`, 0, 0);
+        ctx.restore();
+        continue;
+      }
+
+      // パーツ本体の描画
+      const scale = part.pulse || 1;
+      ctx.scale(scale, scale);
+
+      if (part.type === 'bumper_circle') {
+        ctx.fillStyle = 'rgba(255, 42, 133, 0.22)';
+        ctx.strokeStyle = '#ff2a85';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#ff2a85';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 11, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      else if (part.type === 'bumper_tri') {
+        const verts = getTriangleVertices(0, 0, 21, part.dir);
+        ctx.fillStyle = 'rgba(255, 145, 0, 0.22)';
+        ctx.strokeStyle = '#ff9100';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#ff9100';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.moveTo(verts[0].x, verts[0].y);
+        ctx.lineTo(verts[1].x, verts[1].y);
+        ctx.lineTo(verts[2].x, verts[2].y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      else if (part.type === 'kicker') {
+        ctx.fillStyle = 'rgba(0, 255, 136, 0.2)';
+        ctx.strokeStyle = '#00ff88';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00ff88';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(0, 0, 17, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-8, 3);
+        ctx.lineTo(0, -6);
+        ctx.lineTo(8, 3);
+        ctx.moveTo(-6, 9);
+        ctx.lineTo(0, 2);
+        ctx.lineTo(6, 9);
+        ctx.stroke();
+      }
+      else if (part.type === 'spinner') {
+        ctx.save();
+        ctx.rotate(part.angle);
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.moveTo(-17, 0);
+        ctx.lineTo(17, 0);
+        ctx.moveTo(0, -17);
+        ctx.lineTo(0, 17);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#070812';
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+      else if (part.type === 'rebound_wall') {
+        const angle = part.dir > 0 ? 0.52 : -0.52;
+        const halfLen = 23;
+        ctx.strokeStyle = '#ffe600';
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = '#ffe600';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.moveTo(-Math.cos(angle) * halfLen, -Math.sin(angle) * halfLen);
+        ctx.lineTo(Math.cos(angle) * halfLen, Math.sin(angle) * halfLen);
+        ctx.stroke();
+      }
+      else if (part.type === 'warp_gate') {
+        ctx.save();
+        ctx.rotate(part.angle);
+        ctx.strokeStyle = '#b845ff';
+        ctx.fillStyle = 'rgba(184, 69, 255, 0.25)';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#b845ff';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(0, 0, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.beginPath();
+        ctx.arc(0, 0, 9, 0, Math.PI * 1.3);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // レベル表記バッジ
+      ctx.scale(1 / scale, 1 / scale);
+      ctx.shadowBlur = 4;
+      ctx.shadowColor = '#000';
+      ctx.fillStyle = part.level === 3 ? '#ffe600' : '#ffffff';
+      ctx.font = '900 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`Lv${part.level}`, 0, 24);
+
+      if (isPlacePhase && action === 'upgrade') {
+        ctx.fillStyle = '#ffe600';
+        ctx.font = '800 10px sans-serif';
+        ctx.fillText('▲LvUP!', 0, -25);
+      }
+
+      ctx.restore();
+    }
+  }
+
+  function drawSlotTooltip() {
+    if (state.hoverSlotId < 0) return;
+    const part = state.slots[state.hoverSlotId];
+    if (!part) return;
+    const card = CARD_CATALOG.find(c => c.id === part.type);
+    if (!card) return;
+    const pos = SLOT_POSITIONS[state.hoverSlotId];
+
+    const tx = Math.max(85, Math.min(W - 85, pos.x));
+    const ty = pos.y > 110 ? pos.y - 44 : pos.y + 42;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(8, 12, 28, 0.92)';
+    ctx.strokeStyle = card.color;
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(tx - 80, ty - 18, 160, 34);
+    ctx.strokeRect(tx - 80, ty - 18, 160, 34);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = '800 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${card.name} Lv${part.level} (${card.basePt * part.level}pt)`, tx, ty - 4);
+    ctx.fillStyle = '#8a9bc2';
+    ctx.font = '600 9.5px sans-serif';
+    ctx.fillText(`累計獲得: ${part.totalEarned.toLocaleString()} PTS (${part.hits}回)`, tx, ty + 10);
+    ctx.restore();
+  }
+
+  function drawPlunger() {
+    const cx = (LANE_X + 408) / 2;
+    const topY = 619 + state.plunger.power * 14;
+    const botY = 632;
+
+    ctx.save();
+    ctx.strokeStyle = state.plunger.charging ? '#ffe600' : '#ff2a85';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = ctx.strokeStyle;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(LANE_X + 4, topY);
+    ctx.lineTo(404, topY);
+    ctx.stroke();
+
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, topY);
+    ctx.lineTo(cx, botY);
+    ctx.stroke();
+
+    if (state.ball.waitingLaunch && state.plunger.power > 0.01) {
+      const h = 75 * state.plunger.power;
+      ctx.fillStyle = 'rgba(255, 230, 0, 0.35)';
+      ctx.fillRect(LANE_X + 3, 610 - h, 408 - LANE_X - 6, h);
+    }
+    ctx.restore();
+  }
+
+  function drawFlipper(flipper) {
+    const len = getFlipperLength();
+    const x1 = flipper.pivotX;
+    const y1 = flipper.pivotY;
+    const x2 = x1 + Math.cos(flipper.angle) * len;
+    const y2 = y1 + Math.sin(flipper.angle) * len;
+
+    const color = state.tiltPenalty ? '#ff2a85' : (state.flipperLevel > 0 ? '#00ff88' : '#00f0ff');
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 11;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(x1, y1, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawBall() {
+    const b = state.ball;
+    ctx.save();
+
+    const trailColor = state.feverTimer > 0 ? '255, 42, 133' : (state.warpAuraTimer > 0 ? '184, 69, 255' : '0, 240, 255');
+    for (let i = 0; i < b.trail.length; i++) {
+      const t = b.trail[i];
+      const ratio = (i + 1) / b.trail.length;
+      ctx.fillStyle = `rgba(${trailColor}, ${ratio * 0.28})`;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, BALL_R * ratio * 0.88, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = state.feverTimer > 0 ? '#ff2a85' : '#00f0ff';
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // =========================================================================
+  // 9. UI & HUD 更新・イベントハンドラ
+  // =========================================================================
+  function updateHUD() {
+    const rBadge = document.getElementById('round-badge');
+    if (state.round === 8 && !state.endlessMode) {
+      rBadge.textContent = 'ROUND 8 (BOSS)';
+    } else if (state.round > 8 || state.endlessMode) {
+      rBadge.textContent = `ENDLESS R${state.round}`;
+    } else {
+      rBadge.textContent = `ROUND ${state.round} / 8`;
+    }
+    rBadge.classList.toggle('boss', state.round >= 8);
+
+    const dotsWrap = document.getElementById('balls-dots');
+    dotsWrap.innerHTML = '';
+    for (let i = 0; i < state.maxBallsPerRound; i++) {
+      const d = document.createElement('div');
+      d.className = `ball-dot ${i < state.ballsLeft ? 'active' : ''}`;
+      dotsWrap.appendChild(d);
+    }
+
+    document.getElementById('score-current').textContent = state.roundScore.toLocaleString();
+    document.getElementById('score-norma').textContent = `/ ${state.norma.toLocaleString()}`;
+
+    const mult = getComboMultiplier();
+    const cBadge = document.getElementById('combo-badge');
+    cBadge.textContent = `${state.combo} HIT (×${mult.toFixed(2)})`;
+    cBadge.classList.toggle('fever', state.feverTimer > 0);
+
+    // シナジーバッジ
+    const synTag = document.getElementById('synergy-tag');
+    if (state.activeSynergies.length > 0) {
+      synTag.style.display = 'inline-block';
+      synTag.textContent = `✨シナジー×${state.activeSynergies.length}`;
+    } else {
+      synTag.style.display = 'none';
+    }
+
+    const boostTag = document.getElementById('boost-tag');
+    if (state.scoreBoosterCount > 0) {
+      boostTag.style.display = 'inline-block';
+      boostTag.textContent = `+${state.scoreBoosterCount * 10}%`;
+    } else {
+      boostTag.style.display = 'none';
+    }
+
+    const pct = Math.min(100, (state.roundScore / state.norma) * 100);
+    const nBar = document.getElementById('norma-bar');
+    nBar.style.width = `${pct}%`;
+    nBar.classList.toggle('fever', state.feverTimer > 0);
+
+    const launchBtn = document.getElementById('ctrl-launch');
+    launchBtn.classList.toggle('disabled', !state.ball.waitingLaunch || state.phase !== 'PLAY');
+
+    const nudgeBtn = document.getElementById('btn-nudge');
+    nudgeBtn.classList.toggle('tilted', state.tiltPenalty);
+
+    document.getElementById('ctrl-left').classList.toggle('disabled', state.tiltPenalty);
+    document.getElementById('ctrl-right').classList.toggle('disabled', state.tiltPenalty);
+  }
+
+  function updateTitleRecords() {
+    document.getElementById('title-hiscore').textContent = hiScore.toLocaleString();
+    const clEl = document.getElementById('title-cleared');
+    clEl.textContent = hasClearedEver ? '★ ALL CLEAR済' : '未クリア';
+    clEl.style.color = hasClearedEver ? '#00ff88' : '#8a9bc2';
+    document.getElementById('btn-practice').style.display = hasClearedEver ? 'block' : 'none';
+  }
+
+  function hideAllOverlays() {
+    document.querySelectorAll('.overlay').forEach(el => el.classList.remove('show'));
+  }
+
+  function setLeftFlipper(pressed) {
+    if (state.phase !== 'PLAY' || state.tiltPenalty) return;
+    if (pressed && !state.leftFlipper.pressed) sfx.flipper();
+    state.leftFlipper.pressed = pressed;
+    document.getElementById('ctrl-left').classList.toggle('pressed', pressed);
+  }
+
+  function setRightFlipper(pressed) {
+    if (state.phase !== 'PLAY' || state.tiltPenalty) return;
+    if (pressed && !state.rightFlipper.pressed) sfx.flipper();
+    state.rightFlipper.pressed = pressed;
+    document.getElementById('ctrl-right').classList.toggle('pressed', pressed);
+  }
+
+  function startPlungerCharge() {
+    if (state.phase !== 'PLAY' || !state.ball.waitingLaunch) return;
+    state.plunger.charging = true;
+    document.getElementById('ctrl-launch').classList.add('charging');
+  }
+
+  function releasePlunger() {
+    if (!state.plunger.charging) return;
+    state.plunger.charging = false;
+    document.getElementById('ctrl-launch').classList.remove('charging');
+    if (state.phase !== 'PLAY' || !state.ball.waitingLaunch) return;
+
+    const p = Math.max(0.18, state.plunger.power);
+    state.plunger.power = 0;
+    state.ball.waitingLaunch = false;
+    state.ball.y = 606;
+    state.ball.vy = -(560 + p * 435 + (Math.random() * 22 - 11));
+    state.ball.vx = 0;
+    sfx.launch(p);
+    updateHUD();
+  }
+
+  // キーボードイベント
+  window.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    if (e.code === 'ArrowLeft' || e.code === 'KeyZ' || e.code === 'KeyA') {
+      e.preventDefault();
+      setLeftFlipper(true);
+    } else if (e.code === 'ArrowRight' || e.code === 'Slash' || e.code === 'KeyD') {
+      e.preventDefault();
+      setRightFlipper(true);
+    } else if (e.code === 'Space' || e.code === 'ArrowDown') {
+      e.preventDefault();
+      startPlungerCharge();
+    } else if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyX' || e.code === 'ArrowUp') {
+      e.preventDefault();
+      triggerNudge(e.code === 'ShiftLeft' ? 1 : (e.code === 'ShiftRight' ? -1 : 0));
+    } else if (e.code === 'KeyP' || e.code === 'Escape') {
+      togglePause();
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (e.code === 'ArrowLeft' || e.code === 'KeyZ' || e.code === 'KeyA') {
+      setLeftFlipper(false);
+    } else if (e.code === 'ArrowRight' || e.code === 'Slash' || e.code === 'KeyD') {
+      setRightFlipper(false);
+    } else if (e.code === 'Space' || e.code === 'ArrowDown') {
+      releasePlunger();
+    }
+  });
+
+  function bindHoldButton(el, onDown, onUp) {
+    el.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+      onDown();
+    });
+    el.addEventListener('pointerup', (e) => {
+      e.preventDefault();
+      onUp();
+    });
+    el.addEventListener('pointercancel', (e) => {
+      e.preventDefault();
+      onUp();
+    });
+  }
+
+  bindHoldButton(document.getElementById('ctrl-left'), () => setLeftFlipper(true), () => setLeftFlipper(false));
+  bindHoldButton(document.getElementById('ctrl-right'), () => setRightFlipper(true), () => setRightFlipper(false));
+  bindHoldButton(document.getElementById('ctrl-launch'), () => startPlungerCharge(), () => releasePlunger());
+
+  document.getElementById('btn-nudge').addEventListener('click', () => triggerNudge(0));
+
+  const activeCanvasTouches = new Map();
+
+  function getCanvasCoords(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((clientX - rect.left) / rect.width) * W,
+      y: ((clientY - rect.top) / rect.height) * H
+    };
+  }
+
+  canvas.addEventListener('pointermove', (e) => {
+    const pt = getCanvasCoords(e.clientX, e.clientY);
+    let bestId = -1;
+    let bestDist = 26;
+    for (let i = 0; i < SLOT_POSITIONS.length; i++) {
+      const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
+      if (d < bestDist) {
+        bestDist = d;
+        bestId = i;
+      }
+    }
+    state.hoverSlotId = bestId;
+  });
+
+  canvas.addEventListener('pointerleave', () => {
+    state.hoverSlotId = -1;
+  });
+
+  canvas.addEventListener('pointerdown', (e) => {
+    const pt = getCanvasCoords(e.clientX, e.clientY);
+
+    if (state.phase === 'PLACE') {
+      let bestId = -1;
+      let bestDist = 36;
+      for (let i = 0; i < SLOT_POSITIONS.length; i++) {
+        const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
+        if (d < bestDist) {
+          bestDist = d;
+          bestId = i;
+        }
+      }
+      if (bestId !== -1) {
+        handleSlotClick(bestId);
+      }
+      return;
+    }
+
+    if (state.phase === 'PLAY') {
+      if (state.ball.waitingLaunch && pt.x > LANE_X - 20 && pt.y > 480) {
+        activeCanvasTouches.set(e.pointerId, 'launch');
+        startPlungerCharge();
+      } else if (pt.x < W / 2) {
+        activeCanvasTouches.set(e.pointerId, 'left');
+        setLeftFlipper(true);
+      } else {
+        activeCanvasTouches.set(e.pointerId, 'right');
+        setRightFlipper(true);
+      }
+    }
+  });
+
+  function endCanvasPointer(e) {
+    const role = activeCanvasTouches.get(e.pointerId);
+    if (!role) return;
+    activeCanvasTouches.delete(e.pointerId);
+    if (role === 'launch') releasePlunger();
+    if (role === 'left') setLeftFlipper(false);
+    if (role === 'right') setRightFlipper(false);
+  }
+  canvas.addEventListener('pointerup', endCanvasPointer);
+  canvas.addEventListener('pointercancel', endCanvasPointer);
+
+  // ドラフト時の盤面確認＆リロール
+  document.getElementById('btn-peek-board').addEventListener('click', () => {
+    const ov = document.getElementById('ov-draft');
+    const isPeek = ov.classList.toggle('peek-mode');
+    document.getElementById('btn-peek-board').textContent = isPeek ? '🃏 カード選択に戻る' : '👁 盤面を確認';
+  });
+
+  document.getElementById('btn-reroll').addEventListener('click', () => {
+    if (state.rerollsLeft <= 0) return;
+    state.rerollsLeft--;
+    sfx.place();
+    renderDraftCards();
+  });
+
+  document.getElementById('btn-mute').addEventListener('click', () => {
+    const muted = sfx.toggleMute();
+    const btn = document.getElementById('btn-mute');
+    btn.textContent = muted ? '🔇' : '🔊';
+    btn.classList.toggle('muted', muted);
+  });
+
+  function togglePause() {
+    if (state.phase === 'PLAY' || state.phase === 'PLACE') {
+      state.prevPhaseBeforePause = state.phase;
+      state.phase = 'PAUSE';
+
+      const synHtml = state.activeSynergies.length > 0
+        ? state.activeSynergies.map(s => `・<span class="syn-hl">【${s.name}】</span>: ${s.effectText}`).join('<br>')
+        : '・現在発動中のシナジーはありません（パーツを追加して組み合わせよう）';
+
+      const partsHtml = state.slots
+        .map((s, idx) => {
+          if (!s) return null;
+          const c = CARD_CATALOG.find(item => item.id === s.type);
+          return `#${idx + 1}: <b>${c ? c.name : s.type} Lv${s.level}</b> (累計 ${s.totalEarned.toLocaleString()}pt)`;
+        })
+        .filter(Boolean)
+        .join(' / ');
+
+      document.getElementById('pause-stats').innerHTML = `
+        <b>現在ラウンド</b>: ROUND ${state.round} / <b>総スコア</b>: ${state.totalScore.toLocaleString()} PTS<br>
+        <b>スコアブースター</b>: +${state.scoreBoosterCount * 10}% / <b>フリッパー強化</b>: Lv${state.flipperLevel}<br><br>
+        <b>【発動中シナジー (${state.activeSynergies.length}個)】</b><br>
+        ${synHtml}<br><br>
+        <b>【設置パーツ一覧】</b><br>
+        ${partsHtml || 'なし'}
+      `;
+      document.getElementById('ov-pause').classList.add('show');
+    } else if (state.phase === 'PAUSE') {
+      state.phase = state.prevPhaseBeforePause;
+      document.getElementById('ov-pause').classList.remove('show');
+    }
+  }
+
+  document.getElementById('btn-pause').addEventListener('click', togglePause);
+  document.getElementById('synergy-tag').addEventListener('click', () => {
+    if (state.phase === 'PLAY' || state.phase === 'PLACE') togglePause();
+  });
+  document.getElementById('btn-resume').addEventListener('click', togglePause);
+  document.getElementById('btn-retire').addEventListener('click', () => {
+    state.phase = 'TITLE';
+    hideAllOverlays();
+    document.getElementById('place-banner').classList.remove('show');
+    updateTitleRecords();
+    document.getElementById('ov-title').classList.add('show');
+  });
+
+  document.getElementById('btn-place-skip').addEventListener('click', () => {
+    if (state.phase === 'PLACE') {
+      finishPlacementPhase();
+    }
+  });
+
+  document.getElementById('btn-start').addEventListener('click', () => {
+    sfx.init();
+    sfx.place();
+    initNewRun(false);
+  });
+
+  document.getElementById('btn-practice').addEventListener('click', () => {
+    sfx.init();
+    sfx.place();
+    initNewRun(true);
+  });
+
+  document.getElementById('btn-endless').addEventListener('click', () => {
+    sfx.place();
+    state.endlessMode = true;
+    hideAllOverlays();
+    openDraftModal(0);
+  });
+
+  document.getElementById('btn-retry').addEventListener('click', () => {
+    sfx.place();
+    initNewRun(false);
+  });
+
+  document.getElementById('btn-to-title').addEventListener('click', () => {
+    state.phase = 'TITLE';
+    hideAllOverlays();
+    updateTitleRecords();
+    document.getElementById('ov-title').classList.add('show');
+  });
+
+  // =========================================================================
+  // 10. メインループ (60fps)
+  // =========================================================================
+  updateTitleRecords();
+  placePartInSlot(0, 'bumper_circle', 1);
+  placePartInSlot(1, 'bumper_circle', 1);
+  updateHUD();
+
+  let lastTime = performance.now();
+  function loop(now) {
+    const dt = Math.min(0.033, Math.max(0.001, (now - lastTime) / 1000));
+    lastTime = now;
+
+    stepPhysics(dt);
+    drawBoard();
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
