@@ -133,6 +133,10 @@
     color: var(--neon-pink);
     border-color: rgba(255, 42, 133, 0.5);
   }
+  .icon-btn.bgm-off {
+    color: var(--text-sub);
+    opacity: 0.6;
+  }
   .icon-btn.nudge-btn {
     color: var(--neon-yellow);
     border-color: rgba(255, 230, 0, 0.4);
@@ -141,6 +145,32 @@
     color: var(--neon-pink);
     border-color: var(--neon-pink);
     opacity: 0.5;
+  }
+
+  /* Arcade Round Progress Stepper */
+  .round-stepper {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 5px;
+  }
+  .r-step {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.25s;
+  }
+  .r-step.done {
+    background: var(--neon-green);
+    box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+  }
+  .r-step.current {
+    background: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan);
+  }
+  .r-step.boss.current {
+    background: var(--neon-pink);
+    box-shadow: 0 0 8px var(--neon-pink);
   }
 
   .hud-mid {
@@ -649,10 +679,12 @@
       </div>
       <div class="icon-btns">
         <button id="btn-nudge" class="icon-btn nudge-btn" title="台揺らし (Shift / X / タップ)">💥揺らす</button>
-        <button id="btn-mute" class="icon-btn" title="ミュート切替">🔊</button>
+        <button id="btn-bgm" class="icon-btn" title="シンセBGM On/Off">🎵</button>
+        <button id="btn-mute" class="icon-btn" title="全サウンド ミュート切替">🔊</button>
         <button id="btn-pause" class="icon-btn" title="一時停止・ビルド確認">⏸</button>
       </div>
     </div>
+    <div id="round-stepper" class="round-stepper"></div>
     <div class="hud-mid">
       <div class="score-area">
         <span id="score-current" class="score-current">0</span>
@@ -967,12 +999,15 @@
   ];
 
   // =========================================================================
-  // 2. Web Audio シンセサイザー効果音
+  // 2. Web Audio シンセサイザー効果音 ＆ プロシージャルBGMシーケンサー
   // =========================================================================
   class SoundSynth {
     constructor() {
       this.ctx = null;
       this.muted = false;
+      this.bgmEnabled = true;
+      this.bgmStep = 0;
+      this.bgmTimer = null;
     }
     init() {
       if (!this.ctx) {
@@ -982,10 +1017,39 @@
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume();
       }
+      this.startBgmLoop();
     }
     toggleMute() {
       this.muted = !this.muted;
       return this.muted;
+    }
+    toggleBgm() {
+      this.bgmEnabled = !this.bgmEnabled;
+      return this.bgmEnabled;
+    }
+    startBgmLoop() {
+      if (this.bgmTimer) return;
+      // 16分音符相当のアルペジオベースシーケンサー (135ms刻み)
+      const bassPatternNorm = [110, 110, 130.81, 110, 146.83, 130.81, 164.81, 146.83];
+      const bassPatternFever = [146.83, 174.61, 220, 174.61, 261.63, 220, 293.66, 261.63];
+      const bassPatternBoss = [98, 98, 116.54, 130.81, 92.5, 98, 146.83, 116.54];
+
+      this.bgmTimer = setInterval(() => {
+        if (this.muted || !this.bgmEnabled || !this.ctx) return;
+        if (typeof state === 'undefined' || state.phase !== 'PLAY') return;
+
+        const isFever = state.feverTimer > 0;
+        const isBoss = state.round >= 8;
+        const pat = isFever ? bassPatternFever : (isBoss ? bassPatternBoss : bassPatternNorm);
+        const freq = pat[this.bgmStep % pat.length];
+        this.bgmStep++;
+
+        // 控えめで心地よいシンセベース音
+        this.playTone(freq, isBoss ? 'sawtooth' : 'triangle', 0.11, isBoss ? 0.032 : 0.038, freq * 0.98);
+        if (isFever && this.bgmStep % 2 === 0) {
+          this.playTone(freq * 2, 'sine', 0.07, 0.025, freq * 2.02);
+        }
+      }, 145);
     }
     playTone(freq, type, duration, vol = 0.14, slideFreq = null) {
       if (this.muted) return;
@@ -1181,6 +1245,8 @@
     centerPostTimer: 0,
     warpAuraTimer: 0,
     feverTimer: 0,
+    leftKickbackReady: true,
+    rightKickbackReady: true,
     nudgeHeat: 0,
     tiltPenalty: false,
     stuckTimer: 0,
@@ -1248,6 +1314,8 @@
     popups: [],
     particles: [],
     shockwaves: [],
+    floatingLights: [],
+    hitStopTimer: 0,
     bannerText: null,
     shakeTimer: 0,
     shakeIntensity: 0
@@ -1400,6 +1468,8 @@
     state.ballSaverTimer = 0;
     state.skillShotTimer = 0;
     state.stuckTimer = 0;
+    state.leftKickbackReady = true;
+    state.rightKickbackReady = true;
 
     // スキルショット対象スロットを既存パーツからランダム選択
     const filledIndices = state.slots.map((s, idx) => s ? idx : -1).filter(idx => idx !== -1);
@@ -1442,9 +1512,15 @@
     if (state.phase !== 'PLAY') return;
 
     if (comboGain > 0) {
+      const prevBucket = Math.floor(state.combo / 10);
       state.combo += comboGain;
       if (state.combo > state.maxComboThisRun) {
         state.maxComboThisRun = state.combo;
+      }
+      const newBucket = Math.floor(state.combo / 10);
+      if (newBucket > prevBucket && state.combo <= 60) {
+        spawnShockwave(x, y, '#00f0ff', 72);
+        spawnPopup(W / 2, 165, `🔥 ${newBucket * 10} COMBO!! (×${getComboMultiplier().toFixed(2)})`, '#00f0ff', 15);
       }
     }
 
@@ -1465,11 +1541,12 @@
 
     // スキルショット命中判定（発射後4秒以内にターゲットスロットに初ヒット）
     let isSkillShot = false;
-    if (state.skillShotTimer > 0 && slotId === state.skillShotSlotId) {
+      if (state.skillShotTimer > 0 && slotId === state.skillShotSlotId) {
       state.skillShotTimer = 0;
       modifiedBase += 600;
       state.combo += 3;
       isSkillShot = true;
+      state.hitStopTimer = 0.045;
       sfx.skillShot();
       spawnShockwave(x, y, '#ffe600', 65);
     }
@@ -2178,6 +2255,7 @@
       const dist = Math.hypot(dx, dy);
       if (dist < jd.r + BALL_R) {
         jd.active = false;
+        state.hitStopTimer = 0.055;
         sfx.jackpot();
         triggerShake(0.22, 5);
         addScore(1000, jd.x, jd.y, '#ffe600', 4, -1, '👑JACKPOT!!');
@@ -2213,6 +2291,7 @@
           bc.pulse = 1.5;
           triggerShake(0.14, 4);
           if (bc.hpHits % 5 === 0) {
+            state.hitStopTimer = 0.06;
             sfx.jackpot();
             addScore(1200, bc.x, bc.y, '#ffe600', 3, -1, '💥BOSS BREAK!');
             spawnShockwave(bc.x, bc.y, '#ffe600', 85);
@@ -2225,6 +2304,28 @@
           }
         }
       }
+    }
+
+    // 5. 左右サイドレーン・キックバック判定（スリングショット外側の通路に落ちた球を毎ボール1回ずつ強烈に上へ撃ち戻す）
+    if (state.leftKickbackReady && b.x > 12 && b.x < 45 && b.y > 505 && b.y < 535 && b.vy > 0) {
+      state.leftKickbackReady = false;
+      b.vy = -660;
+      b.vx = 95;
+      sfx.kicker();
+      triggerShake(0.12, 3);
+      addScore(200, 29, 510, '#00f0ff', 1, -1, '⚡KICKBACK!');
+      spawnShockwave(29, 515, '#00f0ff', 42);
+      spawnParticles(29, 515, '#00f0ff', 14, 160);
+    }
+    if (state.rightKickbackReady && b.x > 341 && b.x < 373 && b.y > 505 && b.y < 535 && b.vy > 0) {
+      state.rightKickbackReady = false;
+      b.vy = -660;
+      b.vx = -95;
+      sfx.kicker();
+      triggerShake(0.12, 3);
+      addScore(200, 357, 510, '#00f0ff', 1, -1, '⚡KICKBACK!');
+      spawnShockwave(357, 515, '#00f0ff', 42);
+      spawnParticles(357, 515, '#00f0ff', 14, 160);
     }
   }
 
@@ -2478,6 +2579,12 @@
   }
 
   function stepPhysics(dt) {
+    // ヒットストップ（大技命中時の瞬間的な手応え演出）
+    if (state.hitStopTimer > 0) {
+      state.hitStopTimer = Math.max(0, state.hitStopTimer - dt);
+      return;
+    }
+
     // 画面シェイク減衰
     if (state.shakeTimer > 0) {
       state.shakeTimer = Math.max(0, state.shakeTimer - dt);
@@ -2645,7 +2752,7 @@
 
     // 背景グリッド装飾（フィーバー時はネオンピンクが脈動）
     ctx.save();
-    ctx.strokeStyle = state.feverTimer > 0 ? 'rgba(255, 42, 133, 0.08)' : 'rgba(0, 240, 255, 0.04)';
+    ctx.strokeStyle = state.feverTimer > 0 ? 'rgba(255, 42, 133, 0.09)' : 'rgba(0, 240, 255, 0.045)';
     ctx.lineWidth = 1;
     for (let x = 30; x < W; x += 30) {
       ctx.beginPath();
@@ -2659,6 +2766,18 @@
       ctx.lineTo(W, y);
       ctx.stroke();
     }
+
+    // 盤面アンビエント・ラジアルライト（盤面中央をほんのり照らすアーケード照明）
+    const grad = ctx.createRadialGradient(192, 290, 20, 192, 290, 240);
+    if (state.feverTimer > 0) {
+      grad.addColorStop(0, 'rgba(255, 42, 133, 0.11)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    } else {
+      grad.addColorStop(0, 'rgba(0, 240, 255, 0.06)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
     ctx.restore();
 
     // 盤面中央のウォーターマーク情報（コンボ倍率やオーラ状態）
@@ -2741,8 +2860,9 @@
     }
     ctx.restore();
 
-    // プランジャーバネ描画
+    // プランジャーバネ＆発射軌道予測ガイド描画
     drawPlunger();
+    drawLaunchPreview();
 
     // 左右フリッパー描画
     drawFlipper(state.leftFlipper);
@@ -2927,6 +3047,50 @@
       ctx.arc(193, 602, 9, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
+    }
+
+    // 7. アウトレーン/インレーン（サイドバンパー）のネオンバンパー表示
+    ctx.strokeStyle = 'rgba(255, 42, 133, 0.55)';
+    ctx.fillStyle = 'rgba(255, 42, 133, 0.12)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(46, 445);
+    ctx.lineTo(46, 512);
+    ctx.lineTo(92, 542);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(340, 445);
+    ctx.lineTo(340, 512);
+    ctx.lineTo(294, 542);
+    ctx.closePath();
+    ctx.fill();
+
+    // 8. サイドアウトレーン・キックバック（毎ボール1回ずつ、左右の端へ落ちたボールを自動で撃ち戻す救済レーザー）
+    if (state.leftKickbackReady) {
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(14, 515);
+      ctx.lineTo(44, 515);
+      ctx.stroke();
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = '800 8px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('KICK', 29, 509);
+    }
+    if (state.rightKickbackReady) {
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(342, 515);
+      ctx.lineTo(372, 515);
+      ctx.stroke();
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = '800 8px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('KICK', 357, 509);
     }
 
     ctx.restore();
@@ -3122,15 +3286,22 @@
         ctx.restore();
       }
 
-      // レベル表記バッジ
+      // レベル表記バッジとレベルオーラ
       ctx.scale(1 / scale, 1 / scale);
+      if (part.level >= 2) {
+        ctx.strokeStyle = part.level === 3 ? 'rgba(255, 230, 0, 0.55)' : 'rgba(0, 240, 255, 0.35)';
+        ctx.lineWidth = part.level === 3 ? 2 : 1.2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.shadowBlur = 4;
       ctx.shadowColor = '#000';
-      ctx.fillStyle = part.level === 3 ? '#ffe600' : '#ffffff';
+      ctx.fillStyle = part.level === 3 ? '#ffe600' : (part.level === 2 ? '#00f0ff' : '#ffffff');
       ctx.font = '900 10px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`Lv${part.level}`, 0, 24);
+      ctx.fillText(part.level === 3 ? '★MAX' : `Lv${part.level}`, 0, 25);
 
       if (isPlacePhase && action === 'upgrade') {
         ctx.fillStyle = '#ffe600';
@@ -3167,6 +3338,51 @@
     ctx.fillStyle = '#8a9bc2';
     ctx.font = '600 9.5px sans-serif';
     ctx.fillText(`累計獲得: ${part.totalEarned.toLocaleString()} PTS (${part.hits}回)`, tx, ty + 10);
+    ctx.restore();
+  }
+
+  function drawLaunchPreview() {
+    if (state.phase !== 'PLAY' || !state.ball.waitingLaunch) return;
+
+    const p = Math.max(0.18, state.plunger.power);
+    // チャージ強さに応じて上部アーチをどの位置まで回り込むか予測軌道を点線描画
+    ctx.save();
+    ctx.strokeStyle = state.plunger.charging ? 'rgba(255, 230, 0, 0.55)' : 'rgba(0, 240, 255, 0.22)';
+    ctx.lineWidth = state.plunger.charging ? 2.5 : 1.5;
+    ctx.setLineDash([5, 5]);
+    ctx.shadowColor = state.plunger.charging ? '#ffe600' : '#00f0ff';
+    ctx.shadowBlur = 8;
+
+    ctx.beginPath();
+    ctx.moveTo(391, 600);
+    ctx.lineTo(391, 115);
+
+    // パワー(0.18..1.0)に応じて上部アーチを左へ進む距離を変化
+    const archSteps = Math.floor(2 + p * 6);
+    const previewPts = [
+      [391, 75],
+      [370, 38],
+      [325, 22],
+      [262, 19],
+      [187, 19],
+      [112, 22],
+      [55,  38],
+      [30,  85]
+    ];
+    for (let i = 0; i < Math.min(archSteps, previewPts.length); i++) {
+      ctx.lineTo(previewPts[i][0], previewPts[i][1]);
+    }
+    ctx.stroke();
+
+    // 予測着地ポイントマーカー
+    const lastPt = previewPts[Math.min(archSteps, previewPts.length) - 1];
+    if (lastPt && state.plunger.charging) {
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#ffe600';
+      ctx.beginPath();
+      ctx.arc(lastPt[0], lastPt[1], 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.restore();
   }
 
@@ -3261,6 +3477,19 @@
       rBadge.textContent = `ROUND ${state.round} / 8`;
     }
     rBadge.classList.toggle('boss', state.round >= 8);
+
+    // 8ラウンド進行ステッパーバー更新
+    const stepperEl = document.getElementById('round-stepper');
+    if (stepperEl) {
+      stepperEl.innerHTML = '';
+      for (let r = 1; r <= 8; r++) {
+        const st = document.createElement('div');
+        const isDone = r < state.round;
+        const isCur = r === state.round || (r === 8 && state.round > 8);
+        st.className = `r-step ${isDone ? 'done' : ''} ${isCur ? 'current' : ''} ${r === 8 ? 'boss' : ''}`;
+        stepperEl.appendChild(st);
+      }
+    }
 
     const dotsWrap = document.getElementById('balls-dots');
     dotsWrap.innerHTML = '';
@@ -3505,6 +3734,12 @@
     state.rerollsLeft--;
     sfx.place();
     renderDraftCards();
+  });
+
+  document.getElementById('btn-bgm').addEventListener('click', () => {
+    const bgmOn = sfx.toggleBgm();
+    const btn = document.getElementById('btn-bgm');
+    btn.classList.toggle('bgm-off', !bgmOn);
   });
 
   document.getElementById('btn-mute').addEventListener('click', () => {
