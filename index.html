@@ -369,6 +369,10 @@
   .overlay.peek-mode {
     background: rgba(5, 7, 16, 0.12);
     backdrop-filter: none;
+    pointer-events: none;
+  }
+  .overlay.peek-mode .modal-box {
+    pointer-events: auto;
   }
   .overlay.peek-mode .modal-box > *:not(.peek-bar) {
     display: none !important;
@@ -1239,7 +1243,8 @@
       pressed: false
     },
 
-    // 演出エフェクト
+    // 演出エフェクト・進行トークン（非同期タイマー競合防止用）
+    runToken: 0,
     popups: [],
     particles: [],
     shockwaves: [],
@@ -1341,12 +1346,14 @@
   }
 
   function startRound(roundNum) {
+    state.runToken++;
     state.round = roundNum;
     state.roundScore = 0;
     state.norma = getNormaForRound(roundNum);
     state.ballsLeft = state.maxBallsPerRound;
     state.combo = 0;
     state.rerollsLeft = 1;
+    state.hoverSlotId = -1;
     state.phase = 'PLAY';
 
     // ギミック初期化
@@ -1528,10 +1535,13 @@
       spawnPopup(W / 2, 260, `BALL SAVE BONUS +${ballBonus.toLocaleString()}`, '#00ff88', 15);
     }
 
+    const token = state.runToken;
     if (state.round === 8 && !state.endlessMode) {
       showCenterBanner('ALL ROUNDS CLEAR!!', '見事！全8ラウンドのノルマを達成！', '#ffe600', 2.2);
       setTimeout(() => {
-        showResultScreen(true);
+        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
+          showResultScreen(true);
+        }
       }, 2100);
     } else {
       const subMsg = ballBonus > 0
@@ -1539,7 +1549,9 @@
         : 'ノルマ達成！カードドラフトへ';
       showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#00ff88', 1.7);
       setTimeout(() => {
-        openDraftModal(ballBonus);
+        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
+          openDraftModal(ballBonus);
+        }
       }, 1650);
     }
   }
@@ -1569,9 +1581,12 @@
 
     if (state.ballsLeft <= 0) {
       state.phase = 'CLEAR_ANIM';
+      const token = state.runToken;
       showCenterBanner('BALL LOST...', 'ノルマ未達成', '#ff2a85', 1.8);
       setTimeout(() => {
-        showResultScreen(false);
+        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
+          showResultScreen(false);
+        }
       }, 1700);
     } else {
       showCenterBanner('BALL LOST', `残りボール ${state.ballsLeft}個`, '#ff2a85', 1.1);
@@ -1842,7 +1857,7 @@
         subEl.textContent = `緑枠（空き2か所必要）で新規設置、黄枠で既存ペアLvUP`;
       } else {
         titleEl.textContent = `【ワープゲート】2つ目の空きスロットを選択`;
-        subEl.textContent = `連結する出口の空きスロットをタップしてください`;
+        subEl.textContent = `出口の空きスロットをタップ（1つ目を再タップで解除、黄枠で既存LvUP）`;
       }
     } else {
       titleEl.textContent = `【${card.name}】配置スロットを選択`;
@@ -1862,7 +1877,9 @@
 
     if (card.id === 'warp_gate') {
       if (state.warpFirstSlot !== null) {
-        if (slotId !== state.warpFirstSlot && slot === null) return 'new';
+        if (slotId === state.warpFirstSlot) return 'cancel_first';
+        if (slot && slot.type === 'warp_gate' && slot.level < 3) return 'upgrade';
+        if (slot === null) return 'new';
         return null;
       }
       if (slot && slot.type === 'warp_gate' && slot.level < 3) return 'upgrade';
@@ -1902,7 +1919,14 @@
     }
 
     if (card.id === 'warp_gate') {
+      if (action === 'cancel_first') {
+        state.warpFirstSlot = null;
+        sfx.wall();
+        updatePlaceBanner();
+        return;
+      }
       if (action === 'upgrade') {
+        state.warpFirstSlot = null;
         const target = state.slots[slotId];
         target.level = Math.min(3, target.level + 1);
         target.pulse = 1.5;
@@ -2103,7 +2127,12 @@
 
         if (TOP_ROLLOVERS.every(r => r.lit)) {
           // 3レーンコンプリート特典：500点＋センターポスト15秒起動＋ジャックポットドローン出現！
-          setTimeout(() => { TOP_ROLLOVERS.forEach(r => { r.lit = false; }); }, 450);
+          const token = state.runToken;
+          setTimeout(() => {
+            if (state.runToken === token) {
+              TOP_ROLLOVERS.forEach(r => { r.lit = false; });
+            }
+          }, 450);
           state.centerPostTimer = 15.0;
           state.jackpotDrone.active = true;
           sfx.skillShot();
@@ -2125,7 +2154,12 @@
           spawnParticles(wt.x, wt.y, '#00f0ff', 9, 110);
 
           if (WALL_TARGETS.every(t => t.lit)) {
-            setTimeout(() => { WALL_TARGETS.forEach(t => { t.lit = false; }); }, 500);
+            const token = state.runToken;
+            setTimeout(() => {
+              if (state.runToken === token) {
+                WALL_TARGETS.forEach(t => { t.lit = false; });
+              }
+            }, 500);
             state.feverTimer = 10.0;
             state.ballSaverTimer = Math.max(state.ballSaverTimer, 8.0);
             sfx.jackpot();
@@ -2368,8 +2402,10 @@
             b.vx -= 1.85 * dot * nx;
             b.vy -= 1.85 * dot * ny;
           }
-          b.vx += nx * (95 + part.level * 18);
-          b.vy += ny * (95 + part.level * 18);
+          const pushPower = 95 + part.level * 18;
+          b.vx += nx * pushPower;
+          // 下側から当たった際にも下方向（アウトホール側）へ過剰加速させず、横〜上方向へ弾く
+          b.vy += (ny < 0 ? ny * pushPower : ny * pushPower * 0.2 - 35);
 
           if (part.cooldown <= 0) {
             part.cooldown = 0.07;
@@ -2645,15 +2681,18 @@
     // 上部3レーンロールオーバー＆壁ターゲット＆ボールセイバー描画
     drawPinballGimmicks();
 
-    // ワープゲートのペア連結ライン
+    // ワープゲートのペア連結ライン（複数組設置時はペアごとに色分け表示）
     ctx.save();
+    let warpPairIndex = 0;
+    const warpPairColors = ['rgba(184, 69, 255, 0.45)', 'rgba(0, 240, 255, 0.45)', 'rgba(255, 230, 0, 0.45)'];
     for (let i = 0; i < state.slots.length; i++) {
       const p = state.slots[i];
       if (p && p.type === 'warp_gate' && p.pairSlotId !== null && i < p.pairSlotId) {
         const p1 = SLOT_POSITIONS[i];
         const p2 = SLOT_POSITIONS[p.pairSlotId];
-        ctx.strokeStyle = 'rgba(184, 69, 255, 0.38)';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = warpPairColors[warpPairIndex % warpPairColors.length];
+        warpPairIndex++;
+        ctx.lineWidth = 2.2;
         ctx.setLineDash([5, 5]);
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
@@ -3402,23 +3441,34 @@
   canvas.addEventListener('pointerdown', (e) => {
     const pt = getCanvasCoords(e.clientX, e.clientY);
 
-    if (state.phase === 'PLACE') {
-      let bestId = -1;
-      let bestDist = 36;
-      for (let i = 0; i < SLOT_POSITIONS.length; i++) {
-        const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
-        if (d < bestDist) {
-          bestDist = d;
-          bestId = i;
-        }
+    // 最寄りスロットの特定（タッチでのツールチップ表示や配置選択に利用）
+    let nearestSlotId = -1;
+    let nearestDist = 36;
+    for (let i = 0; i < SLOT_POSITIONS.length; i++) {
+      const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearestSlotId = i;
       }
-      if (bestId !== -1) {
-        handleSlotClick(bestId);
+    }
+
+    if (state.phase === 'PLACE') {
+      if (nearestSlotId !== -1) {
+        state.hoverSlotId = nearestSlotId;
+        handleSlotClick(nearestSlotId);
       }
       return;
     }
 
+    if (state.phase === 'DRAFT') {
+      state.hoverSlotId = nearestSlotId;
+      return;
+    }
+
     if (state.phase === 'PLAY') {
+      if (nearestSlotId !== -1 && state.slots[nearestSlotId]) {
+        state.hoverSlotId = nearestSlotId;
+      }
       if (state.ball.waitingLaunch && pt.x > LANE_X - 20 && pt.y > 480) {
         activeCanvasTouches.set(e.pointerId, 'launch');
         startPlungerCharge();
@@ -3503,6 +3553,7 @@
   });
   document.getElementById('btn-resume').addEventListener('click', togglePause);
   document.getElementById('btn-retire').addEventListener('click', () => {
+    state.runToken++;
     state.phase = 'TITLE';
     hideAllOverlays();
     document.getElementById('place-banner').classList.remove('show');
@@ -3541,6 +3592,7 @@
   });
 
   document.getElementById('btn-to-title').addEventListener('click', () => {
+    state.runToken++;
     state.phase = 'TITLE';
     hideAllOverlays();
     updateTitleRecords();
