@@ -3,22 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>弾む思いつき - 古城の魔導ピンボール×デッキ構築</title>
+<title>弾む思いつき - 深海ピンボール×デッキ構築</title>
 <style>
   :root {
-    --bg-dark: #0e0a08;
-    --panel-bg: rgba(24, 18, 14, 0.95);
-    --gold-main: #d4af37;
-    --gold-bright: #ffd86b;
-    --crimson: #c92a2a;
-    --blood-bright: #ff4d4d;
-    --emerald: #37b24d;
-    --soul-green: #51cf66;
-    --arcane-purple: #9c36b5;
-    --arcane-bright: #cc5de8;
-    --text-main: #f3ead8;
-    --text-sub: #a89984;
-    --border-brass: #7c6238;
+    --bg-dark: #030916;
+    --panel-bg: rgba(7, 19, 38, 0.95);
+    --aqua-main: #00e5ff;
+    --aqua-bright: #70f5ff;
+    --pearl-gold: #ffd97d;
+    --coral-pink: #ff5c8a;
+    --vent-green: #20e3b2;
+    --abyss-purple: #a855f7;
+    --text-main: #e6f6ff;
+    --text-sub: #7fa6c4;
+    --border-sea: #1a4971;
   }
   * {
     box-sizing: border-box;
@@ -32,9 +30,9 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: radial-gradient(circle at 50% 25%, #231812 0%, #090605 100%);
+    background: radial-gradient(circle at 50% 15%, #0c2547 0%, #02060f 100%);
     color: var(--text-main);
-    font-family: "Georgia", "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", -apple-system, BlinkMacSystemFont, serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
     touch-action: none;
   }
   #app {
@@ -46,18 +44,18 @@
     display: flex;
     flex-direction: column;
     background: var(--bg-dark);
-    box-shadow: 0 0 50px rgba(212, 175, 55, 0.16);
-    border-left: 1px solid rgba(124, 98, 56, 0.35);
-    border-right: 1px solid rgba(124, 98, 56, 0.35);
+    box-shadow: 0 0 50px rgba(0, 229, 255, 0.16);
+    border-left: 1px solid rgba(0, 229, 255, 0.2);
+    border-right: 1px solid rgba(0, 229, 255, 0.2);
     overflow: hidden;
   }
 
   /* HUD Header */
   #hud {
     flex: 0 0 auto;
-    padding: 7px 11px 6px;
-    background: linear-gradient(180deg, rgba(32, 23, 17, 0.98) 0%, rgba(18, 13, 10, 0.95) 100%);
-    border-bottom: 2px solid var(--border-brass);
+    padding: 6px 10px 5px;
+    background: linear-gradient(180deg, rgba(8, 26, 52, 0.98) 0%, rgba(4, 14, 29, 0.95) 100%);
+    border-bottom: 1.5px solid var(--border-sea);
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
     z-index: 10;
   }
@@ -65,70 +63,68 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
   .hud-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
   }
   .round-badge {
-    background: rgba(212, 175, 55, 0.15);
-    border: 1px solid var(--gold-main);
-    color: var(--gold-bright);
+    background: rgba(0, 229, 255, 0.14);
+    border: 1px solid var(--aqua-main);
+    color: var(--aqua-bright);
     font-weight: 800;
-    font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+    font-size: 11.5px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
   }
   .round-badge.boss {
-    background: rgba(201, 42, 42, 0.28);
-    border-color: var(--blood-bright);
-    color: #ff8787;
-    text-shadow: 0 0 8px rgba(255, 77, 77, 0.8);
+    background: rgba(255, 92, 138, 0.25);
+    border-color: var(--coral-pink);
+    color: #ff9ebb;
+    text-shadow: 0 0 8px rgba(255, 92, 138, 0.8);
     animation: pulseBoss 1.2s infinite alternate;
   }
   @keyframes pulseBoss {
-    from { box-shadow: 0 0 4px rgba(201, 42, 42, 0.4); }
-    to   { box-shadow: 0 0 14px rgba(255, 77, 77, 0.9); }
+    from { box-shadow: 0 0 4px rgba(255, 92, 138, 0.4); }
+    to   { box-shadow: 0 0 14px rgba(255, 92, 138, 0.9); }
   }
   .balls-box {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-sub);
-    font-family: sans-serif;
     font-weight: 700;
   }
   .ball-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #221a15;
-    border: 1px solid #5c4938;
+    background: #10243d;
+    border: 1px solid #29527a;
     transition: all 0.2s;
   }
   .ball-dot.active {
-    background: radial-gradient(circle at 35% 35%, #fff, #d4af37);
+    background: radial-gradient(circle at 35% 35%, #fff, #70f5ff);
     border-color: #fff;
-    box-shadow: 0 0 7px var(--gold-main);
+    box-shadow: 0 0 8px var(--aqua-main);
   }
   .icon-btns {
     display: flex;
-    gap: 5px;
-    font-family: sans-serif;
+    gap: 4px;
   }
   .icon-btn {
-    background: rgba(255, 240, 200, 0.06);
-    border: 1px solid var(--border-brass);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-sea);
     color: var(--text-main);
-    min-width: 28px;
-    height: 25px;
-    padding: 0 6px;
-    border-radius: 4px;
-    font-size: 11.5px;
+    min-width: 27px;
+    height: 24px;
+    padding: 0 5px;
+    border-radius: 5px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -139,20 +135,20 @@
     transform: scale(0.93);
   }
   .icon-btn.muted {
-    color: var(--blood-bright);
-    border-color: rgba(255, 77, 77, 0.5);
+    color: var(--coral-pink);
+    border-color: rgba(255, 92, 138, 0.5);
   }
   .icon-btn.bgm-off {
     color: var(--text-sub);
     opacity: 0.6;
   }
   .icon-btn.nudge-btn {
-    color: var(--gold-bright);
-    border-color: rgba(212, 175, 55, 0.5);
+    color: var(--pearl-gold);
+    border-color: rgba(255, 217, 125, 0.45);
   }
   .icon-btn.nudge-btn.tilted {
-    color: var(--blood-bright);
-    border-color: var(--blood-bright);
+    color: var(--coral-pink);
+    border-color: var(--coral-pink);
     opacity: 0.5;
   }
 
@@ -160,34 +156,33 @@
   .round-stepper {
     display: flex;
     gap: 3px;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
   .r-step {
     flex: 1;
-    height: 4px;
+    height: 3.5px;
     border-radius: 2px;
-    background: rgba(255, 235, 190, 0.12);
+    background: rgba(255, 255, 255, 0.1);
     transition: all 0.25s;
   }
   .r-step.done {
-    background: var(--emerald);
-    box-shadow: 0 0 6px rgba(81, 207, 102, 0.45);
+    background: var(--vent-green);
+    box-shadow: 0 0 6px rgba(32, 227, 178, 0.45);
   }
   .r-step.current {
-    background: var(--gold-bright);
-    box-shadow: 0 0 8px var(--gold-main);
+    background: var(--aqua-bright);
+    box-shadow: 0 0 8px var(--aqua-main);
   }
   .r-step.boss.current {
-    background: var(--blood-bright);
-    box-shadow: 0 0 8px var(--blood-bright);
+    background: var(--coral-pink);
+    box-shadow: 0 0 8px var(--coral-pink);
   }
 
   .hud-mid {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 4px;
-    font-family: sans-serif;
+    margin-bottom: 3px;
   }
   .score-area {
     display: flex;
@@ -195,14 +190,14 @@
     gap: 5px;
   }
   .score-current {
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 900;
-    color: #fff6e0;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.55);
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.55);
     font-variant-numeric: tabular-nums;
   }
   .score-norma {
-    font-size: 11.5px;
+    font-size: 11px;
     color: var(--text-sub);
     font-variant-numeric: tabular-nums;
   }
@@ -216,52 +211,66 @@
   .synergy-tag {
     font-size: 10px;
     color: #fff;
-    background: linear-gradient(135deg, rgba(156, 54, 181, 0.45), rgba(212, 175, 55, 0.35));
-    border: 1px solid var(--arcane-bright);
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.45), rgba(0, 229, 255, 0.35));
+    border: 1px solid var(--aqua-main);
     padding: 1px 5px;
     border-radius: 4px;
     font-weight: 700;
     cursor: pointer;
   }
+  .fish-buff-bar {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .fish-buff-pill {
+    font-size: 9.5px;
+    color: var(--pearl-gold);
+    background: rgba(255, 217, 125, 0.14);
+    border: 1px solid rgba(255, 217, 125, 0.45);
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
   .boost-tag {
     font-size: 10px;
-    color: var(--soul-green);
-    background: rgba(55, 178, 77, 0.16);
-    border: 1px solid rgba(81, 207, 102, 0.45);
+    color: var(--vent-green);
+    background: rgba(32, 227, 178, 0.14);
+    border: 1px solid rgba(32, 227, 178, 0.45);
     padding: 1px 5px;
     border-radius: 4px;
     font-weight: 700;
   }
   .combo-badge {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 800;
-    color: var(--gold-bright);
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+    color: var(--pearl-gold);
+    text-shadow: 0 0 8px rgba(255, 217, 125, 0.5);
     font-variant-numeric: tabular-nums;
   }
   .combo-badge.fever {
-    color: var(--blood-bright);
-    text-shadow: 0 0 10px var(--blood-bright);
+    color: var(--coral-pink);
+    text-shadow: 0 0 10px var(--coral-pink);
   }
 
   .norma-bar-bg {
     width: 100%;
-    height: 7px;
-    background: #1a130e;
+    height: 6px;
+    background: #08182e;
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    border: 1px solid rgba(0, 229, 255, 0.25);
     position: relative;
   }
   .norma-bar-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #b8860b, var(--gold-bright), var(--soul-green));
-    box-shadow: 0 0 10px var(--gold-main);
+    background: linear-gradient(90deg, #0077b6, var(--aqua-main), var(--vent-green));
+    box-shadow: 0 0 10px var(--aqua-main);
     transition: width 0.12s ease-out;
   }
   .norma-bar-fill.fever {
-    background: linear-gradient(90deg, var(--crimson), var(--gold-bright), var(--arcane-bright));
+    background: linear-gradient(90deg, var(--coral-pink), var(--pearl-gold), var(--aqua-main));
   }
 
   /* Canvas Stage */
@@ -273,7 +282,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: radial-gradient(ellipse at center, #1e1610 0%, #0b0806 100%);
+    background: radial-gradient(ellipse at 50% 10%, #0d2b52 0%, #030916 100%);
   }
   canvas {
     display: block;
@@ -282,14 +291,14 @@
     box-shadow: 0 0 28px rgba(0, 0, 0, 0.85);
   }
 
-  /* Placement Top Banner & Camera Scroll Buttons */
+  /* Placement Top Banner */
   #place-banner {
     position: absolute;
     top: 8px;
     left: 8px;
     right: 8px;
-    background: rgba(28, 20, 14, 0.96);
-    border: 1.5px solid var(--gold-main);
+    background: rgba(6, 22, 46, 0.96);
+    border: 1.5px solid var(--aqua-main);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.75);
     border-radius: 8px;
     padding: 7px 10px;
@@ -298,7 +307,6 @@
     align-items: center;
     gap: 6px;
     z-index: 15;
-    font-family: sans-serif;
   }
   #place-banner.show {
     display: flex;
@@ -312,26 +320,11 @@
   .place-title {
     font-size: 12.5px;
     font-weight: 800;
-    color: var(--gold-bright);
+    color: var(--aqua-bright);
   }
   .place-sub {
     font-size: 10.5px;
     color: var(--text-main);
-  }
-  .place-btns {
-    display: flex;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-  .cam-btn {
-    background: rgba(212, 175, 55, 0.16);
-    border: 1px solid var(--gold-main);
-    color: var(--gold-bright);
-    padding: 5px 7px;
-    border-radius: 5px;
-    font-size: 11px;
-    font-weight: 800;
-    cursor: pointer;
   }
   .skip-btn {
     background: rgba(255, 255, 255, 0.08);
@@ -352,10 +345,9 @@
     grid-template-columns: 1fr 96px 1fr;
     gap: 6px;
     padding: 6px 10px 8px;
-    background: linear-gradient(180deg, #16100c 0%, #0d0907 100%);
-    border-top: 2px solid var(--border-brass);
+    background: linear-gradient(180deg, #06152d 0%, #030a18 100%);
+    border-top: 1.5px solid var(--border-sea);
     z-index: 10;
-    font-family: sans-serif;
   }
   .ctrl-btn {
     border-radius: 8px;
@@ -371,31 +363,31 @@
     overflow: hidden;
   }
   .ctrl-flip {
-    background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, rgba(124, 98, 56, 0.12) 100%);
-    border: 1.5px solid var(--border-brass);
-    color: var(--gold-bright);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(180deg, rgba(0, 229, 255, 0.14) 0%, rgba(0, 119, 182, 0.12) 100%);
+    border: 1.5px solid rgba(0, 229, 255, 0.45);
+    color: var(--aqua-bright);
+    text-shadow: 0 1px 6px rgba(0, 229, 255, 0.5);
   }
   .ctrl-flip.pressed {
-    background: rgba(212, 175, 55, 0.35);
-    border-color: var(--gold-bright);
+    background: rgba(0, 229, 255, 0.32);
+    border-color: #fff;
     transform: translateY(1px);
   }
   .ctrl-flip.disabled {
     opacity: 0.3;
-    border-color: var(--crimson);
-    color: var(--blood-bright);
+    border-color: var(--coral-pink);
+    color: var(--coral-pink);
   }
   .ctrl-launch {
-    background: linear-gradient(180deg, rgba(201, 42, 42, 0.26) 0%, rgba(120, 20, 20, 0.2) 100%);
-    border: 1.5px solid #a63232;
-    color: #ff9999;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(180deg, rgba(255, 92, 138, 0.22) 0%, rgba(180, 40, 90, 0.18) 100%);
+    border: 1.5px solid var(--coral-pink);
+    color: #ffb3c9;
+    text-shadow: 0 1px 6px rgba(255, 92, 138, 0.5);
   }
   .ctrl-launch.charging {
-    background: rgba(212, 175, 55, 0.32);
-    border-color: var(--gold-bright);
-    color: var(--gold-bright);
+    background: rgba(255, 217, 125, 0.28);
+    border-color: var(--pearl-gold);
+    color: var(--pearl-gold);
   }
   .ctrl-launch.disabled {
     opacity: 0.35;
@@ -412,8 +404,8 @@
   .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(10, 7, 5, 0.86);
-    backdrop-filter: blur(4px);
+    background: rgba(2, 8, 18, 0.86);
+    backdrop-filter: blur(5px);
     display: none;
     flex-direction: column;
     align-items: center;
@@ -425,7 +417,7 @@
     display: flex;
   }
   .overlay.peek-mode {
-    background: rgba(10, 7, 5, 0.12);
+    background: rgba(2, 8, 18, 0.12);
     backdrop-filter: none;
     pointer-events: none;
   }
@@ -433,19 +425,19 @@
     pointer-events: auto;
     margin-top: auto;
     padding: 10px 14px;
-    background: rgba(24, 18, 14, 0.95);
+    background: rgba(7, 19, 38, 0.95);
   }
   .overlay.peek-mode .modal-box > *:not(.peek-bar) {
     display: none !important;
   }
   .modal-box {
     width: 100%;
-    max-width: 410px;
+    max-width: 415px;
     background: var(--panel-bg);
-    border: 2px solid var(--gold-main);
-    box-shadow: 0 0 36px rgba(0, 0, 0, 0.9), inset 0 0 18px rgba(212, 175, 55, 0.12);
-    border-radius: 10px;
-    padding: 18px 16px;
+    border: 1.5px solid var(--aqua-main);
+    box-shadow: 0 0 36px rgba(0, 229, 255, 0.2), inset 0 0 18px rgba(0, 229, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -457,28 +449,26 @@
     font-size: 27px;
     font-weight: 900;
     letter-spacing: 2px;
-    color: var(--gold-bright);
-    text-shadow: 0 2px 12px rgba(212, 175, 55, 0.6), 0 0 24px rgba(201, 42, 42, 0.5);
-    margin-bottom: 3px;
+    color: #fff;
+    text-shadow: 0 0 14px var(--aqua-main), 0 0 28px rgba(32, 227, 178, 0.6);
+    margin-bottom: 2px;
   }
   .game-subtitle {
     font-size: 11px;
-    color: var(--text-sub);
-    letter-spacing: 1.5px;
-    margin-bottom: 12px;
-    font-family: sans-serif;
+    color: var(--aqua-bright);
+    letter-spacing: 1.4px;
+    margin-bottom: 10px;
     font-weight: 700;
   }
   .records-box {
     width: 100%;
     display: flex;
     justify-content: space-around;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid var(--border-brass);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-sea);
     border-radius: 8px;
-    padding: 9px;
-    margin-bottom: 12px;
-    font-family: sans-serif;
+    padding: 8px;
+    margin-bottom: 10px;
   }
   .rec-item {
     display: flex;
@@ -486,51 +476,49 @@
     gap: 2px;
   }
   .rec-label {
-    font-size: 10.5px;
+    font-size: 10px;
     color: var(--text-sub);
   }
   .rec-val {
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 800;
-    color: var(--gold-bright);
+    color: var(--pearl-gold);
   }
   .howto-box {
     width: 100%;
     text-align: left;
-    background: rgba(0, 0, 0, 0.32);
-    border: 1px solid rgba(124, 98, 56, 0.45);
+    background: rgba(0, 20, 44, 0.45);
+    border: 1px solid rgba(0, 229, 255, 0.2);
     border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 11.5px;
-    line-height: 1.55;
-    color: #e2d5c1;
-    margin-bottom: 12px;
-    font-family: sans-serif;
+    padding: 9px 11px;
+    font-size: 11.2px;
+    line-height: 1.5;
+    color: #cce7ff;
+    margin-bottom: 11px;
   }
   .howto-box b {
-    color: var(--gold-bright);
+    color: var(--aqua-bright);
   }
   .howto-box .syn-hl {
-    color: #ffa94d;
+    color: var(--pearl-gold);
     font-weight: 700;
   }
   .primary-btn {
     width: 100%;
-    padding: 12px;
+    padding: 11px;
     border-radius: 8px;
-    border: 1.5px solid var(--gold-bright);
-    background: linear-gradient(180deg, #5e3b18 0%, #36200b 100%);
-    color: #fff6e0;
+    border: 1.5px solid var(--aqua-bright);
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.28), rgba(32, 227, 178, 0.25));
+    color: #ffffff;
     font-size: 15px;
     font-weight: 800;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 229, 255, 0.25);
     transition: transform 0.1s, box-shadow 0.1s;
-    font-family: sans-serif;
   }
   .primary-btn:hover {
-    background: linear-gradient(180deg, #754a1f 0%, #462a0f 100%);
+    box-shadow: 0 0 22px rgba(0, 229, 255, 0.5);
   }
   .primary-btn:active {
     transform: scale(0.97);
@@ -538,45 +526,42 @@
   .secondary-btn {
     width: 100%;
     padding: 9px;
-    margin-top: 7px;
+    margin-top: 6px;
     border-radius: 8px;
-    border: 1px solid var(--border-brass);
-    background: rgba(255, 235, 200, 0.06);
+    border: 1px solid rgba(0, 229, 255, 0.35);
+    background: rgba(0, 229, 255, 0.08);
     color: var(--text-main);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    font-family: sans-serif;
   }
 
   /* Draft Cards & Actions */
   .draft-header {
     font-size: 18px;
     font-weight: 900;
-    color: var(--gold-bright);
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    color: var(--vent-green);
+    text-shadow: 0 0 10px rgba(32, 227, 178, 0.5);
     margin-bottom: 2px;
   }
   .draft-sub {
-    font-size: 11.5px;
+    font-size: 11px;
     color: var(--text-sub);
-    margin-bottom: 10px;
-    font-family: sans-serif;
+    margin-bottom: 8px;
   }
   .peek-bar {
     width: 100%;
     display: flex;
     gap: 8px;
-    margin-bottom: 10px;
-    font-family: sans-serif;
+    margin-bottom: 8px;
   }
   .util-btn {
     flex: 1;
     padding: 6px 8px;
     border-radius: 6px;
-    border: 1px solid var(--gold-main);
-    background: rgba(212, 175, 55, 0.12);
-    color: var(--gold-bright);
+    border: 1px solid var(--aqua-main);
+    background: rgba(0, 229, 255, 0.12);
+    color: var(--aqua-bright);
     font-size: 11.5px;
     font-weight: 700;
     cursor: pointer;
@@ -589,47 +574,46 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-family: sans-serif;
+    gap: 7px;
   }
   .card-item {
     width: 100%;
-    background: linear-gradient(135deg, rgba(38, 28, 20, 0.96) 0%, rgba(22, 16, 12, 0.96) 100%);
-    border: 1.5px solid var(--border-brass);
-    border-radius: 8px;
-    padding: 10px 12px;
+    background: linear-gradient(135deg, rgba(12, 34, 68, 0.96) 0%, rgba(6, 18, 38, 0.96) 100%);
+    border: 1.5px solid rgba(0, 229, 255, 0.35);
+    border-radius: 9px;
+    padding: 9px 11px;
     text-align: left;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 11px;
+    gap: 10px;
     transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
   }
   .card-item:hover {
-    border-color: var(--gold-bright);
-    box-shadow: 0 0 14px rgba(212, 175, 55, 0.28);
+    border-color: var(--aqua-bright);
+    box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
     transform: translateY(-1px);
   }
   .card-item:active {
     transform: scale(0.98);
   }
   .card-item.instant {
-    border-color: rgba(156, 54, 181, 0.65);
+    border-color: rgba(255, 217, 125, 0.45);
   }
   .card-item.instant:hover {
-    border-color: var(--arcane-bright);
-    box-shadow: 0 0 14px rgba(204, 93, 232, 0.3);
+    border-color: var(--pearl-gold);
+    box-shadow: 0 0 14px rgba(255, 217, 125, 0.3);
   }
   .card-icon {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 8px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-brass);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 21px;
+    font-size: 20px;
     flex-shrink: 0;
   }
   .card-body {
@@ -646,33 +630,33 @@
   .card-name {
     font-size: 13.5px;
     font-weight: 800;
-    color: #fff6e0;
+    color: #fff;
   }
   .card-type {
     font-size: 10px;
     font-weight: 700;
     padding: 1px 6px;
     border-radius: 4px;
-    background: rgba(212, 175, 55, 0.18);
-    color: var(--gold-bright);
+    background: rgba(0, 229, 255, 0.16);
+    color: var(--aqua-bright);
   }
   .card-item.instant .card-type {
-    background: rgba(156, 54, 181, 0.22);
-    color: #e599f7;
+    background: rgba(255, 217, 125, 0.18);
+    color: var(--pearl-gold);
   }
   .card-desc {
     font-size: 11px;
-    color: #d6c7b2;
+    color: #bdd8f0;
     line-height: 1.35;
   }
   .card-hint {
-    font-size: 10.5px;
-    color: var(--soul-green);
+    font-size: 10px;
+    color: var(--vent-green);
     font-weight: 600;
   }
   .card-syn-alert {
     font-size: 10px;
-    color: var(--gold-bright);
+    color: var(--pearl-gold);
     font-weight: 700;
   }
   .stats-grid {
@@ -680,13 +664,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-align: left;
-    font-family: sans-serif;
   }
   .stat-cell {
     background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(124, 98, 56, 0.4);
+    border: 1px solid rgba(0, 229, 255, 0.2);
     border-radius: 6px;
     padding: 6px 9px;
   }
@@ -695,9 +678,82 @@
     color: var(--text-sub);
   }
   .stat-cell .s-val {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 800;
-    color: #fff6e0;
+    color: #fff;
+  }
+
+  /* Deep Sea Fish Encyclopedia (図鑑) */
+  .zukan-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 12px;
+    max-height: 370px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  .zukan-card {
+    background: rgba(4, 15, 32, 0.85);
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 8px;
+    padding: 7px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
+  }
+  .zukan-card.unlocked.rare {
+    border-color: rgba(0, 229, 255, 0.65);
+  }
+  .zukan-card.unlocked.ssr {
+    border-color: var(--pearl-gold);
+    box-shadow: 0 0 10px rgba(255, 217, 125, 0.2);
+  }
+  .zukan-card.locked {
+    opacity: 0.65;
+    border-style: dashed;
+  }
+  .zk-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .zk-canvas {
+    width: 44px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+  .zk-title-wrap {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .zk-rarity {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--text-sub);
+  }
+  .zk-name {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .zk-desc {
+    font-size: 9.8px;
+    color: #a9cbe8;
+    line-height: 1.3;
+  }
+  .zk-buff {
+    font-size: 9px;
+    color: var(--vent-green);
+    font-weight: 700;
   }
 </style>
 </head>
@@ -709,15 +765,15 @@
       <div class="hud-group">
         <span id="round-badge" class="round-badge">ROUND 1 / 8</span>
         <div class="balls-box">
-          <span>ORB</span>
+          <span>PEARL</span>
           <div id="balls-dots" style="display:flex; gap:4px;"></div>
         </div>
       </div>
       <div class="icon-btns">
-        <button id="btn-nudge" class="icon-btn nudge-btn" title="台揺らし (Shift / X / タップ)">💥揺らす</button>
-        <button id="btn-bgm" class="icon-btn" title="ダークファンタジーBGM On/Off">🎵</button>
+        <button id="btn-nudge" class="icon-btn nudge-btn" title="海流揺らし (Shift / X / タップ)">🌊揺らす</button>
+        <button id="btn-bgm" class="icon-btn" title="深海BGM On/Off">🎵</button>
         <button id="btn-mute" class="icon-btn" title="全サウンド ミュート切替">🔊</button>
-        <button id="btn-pause" class="icon-btn" title="一時停止・ビルド確認">⏸</button>
+        <button id="btn-pause" class="icon-btn" title="一時停止・ビルド＆魚効果確認">⏸</button>
       </div>
     </div>
     <div id="round-stepper" class="round-stepper"></div>
@@ -727,6 +783,7 @@
         <span id="score-norma" class="score-norma">/ 3,000</span>
       </div>
       <div class="combo-area">
+        <div id="fish-buff-bar" class="fish-buff-bar"></div>
         <span id="synergy-tag" class="synergy-tag" style="display:none;" title="クリックで発動中シナジーを確認">✨SYNERGY 0</span>
         <span id="boost-tag" class="boost-tag" style="display:none;">+0%</span>
         <span id="combo-badge" class="combo-badge">0 HIT (×1.00)</span>
@@ -741,14 +798,10 @@
   <div id="stage-wrap">
     <div id="place-banner">
       <div class="place-info">
-        <div id="place-title" class="place-title">魔導パーツ配置フェーズ</div>
-        <div id="place-sub" class="place-sub">上下ドラッグまたはボタンで視点移動・スロット選択</div>
+        <div id="place-title" class="place-title">深海パーツ配置フェーズ</div>
+        <div id="place-sub" class="place-sub">盤面のスロットをタップして配置・強化</div>
       </div>
-      <div class="place-btns">
-        <button id="btn-cam-up" class="cam-btn" title="上部フロアを見る">▲上層</button>
-        <button id="btn-cam-down" class="cam-btn" title="下部フロアを見る">▼下層</button>
-        <button id="btn-place-skip" class="skip-btn">スキップ</button>
-      </div>
+      <button id="btn-place-skip" class="skip-btn">スキップ</button>
     </div>
     <canvas id="game-canvas" width="420" height="660"></canvas>
 
@@ -756,7 +809,7 @@
     <div id="ov-title" class="overlay show">
       <div class="modal-box">
         <div class="game-title">弾む思いつき</div>
-        <div class="game-subtitle">DARK FANTASY PINBALL × DECK BUILDER</div>
+        <div class="game-subtitle">DEEP SEA PINBALL × DECK BUILDER</div>
         <div class="records-box">
           <div class="rec-item">
             <span class="rec-label">HIGH SCORE</span>
@@ -766,15 +819,29 @@
             <span class="rec-label">CLEAR STATUS</span>
             <span id="title-cleared" class="rec-val">未クリア</span>
           </div>
+          <div class="rec-item">
+            <span class="rec-label">深海魚図鑑</span>
+            <span id="title-zukan-count" class="rec-val" style="color:var(--aqua-bright);">0 / 12</span>
+          </div>
         </div>
         <div class="howto-box">
-          ・<b>広大な縦長2フロア（全高1,240px）</b>の古城魔導盤面！銀球が上層へ昇ると<b>カメラが自動追従</b>します。<br>
-          ・各ラウンド<b>3ボール以内</b>にノルマ達成でクリア！全8ラウンド制覇を目指します。<br>
-          ・クリア後に<b>カード3枚から1枚</b>をドラフトし、上層〜下層の<b>10か所の魔法陣スロット</b>にパーツを設置・強化（最大Lv3）。<br>
-          ・<span class="syn-hl">★構築シナジー＆ギミック</span>：キッカーやワープゲートでボールを最上層の<b>天上聖堂エリア</b>へ送り込み、連続バウンスとコンボ倍率（最大×3.00）を稼ごう！
+          ・発光する<b>真珠ボール</b>を打ち出し、各ラウンド<b>3球以内</b>にノルマ達成でクリア！全8ラウンド（R8深海の主）制覇を目指します。<br>
+          ・クリア後に<b>カード3枚から1枚</b>をドラフトし、<b>10か所のスロット</b>に深海パーツ（真珠貝・珊瑚・熱水噴出孔・渦潮など）を設置・強化！<br>
+          ・<span class="syn-hl">★泳ぐ深海魚コレクション</span>：盤面を横切る<b>全12種の深海魚</b>にボールを当てると跳ね返りながら<b>回収（図鑑登録＆高得点）</b>！集めた魚の種類に応じてそのランの間だけ<b>5系統のパッシブ効果</b>が発動します。
         </div>
-        <button id="btn-start" class="primary-btn">古の盤面へ挑む (GAME START)</button>
-        <button id="btn-practice" class="secondary-btn" style="display:none;">深淵エンドレス練習 (R9〜)</button>
+        <button id="btn-start" class="primary-btn">深海へ潜る (GAME START)</button>
+        <button id="btn-open-zukan-title" class="secondary-btn">🐟 深海魚図鑑を見る</button>
+        <button id="btn-practice" class="secondary-btn" style="display:none;">海溝エンドレス練習 (R9〜)</button>
+      </div>
+    </div>
+
+    <!-- Fish Encyclopedia (図鑑) Overlay -->
+    <div id="ov-zukan" class="overlay">
+      <div class="modal-box">
+        <div class="game-title" style="font-size:21px;">深海魚図鑑</div>
+        <div id="zukan-subtitle" class="game-subtitle" style="margin-bottom:8px;">回収した深海生物の記録 (0 / 12)</div>
+        <div id="zukan-grid" class="zukan-grid"></div>
+        <button id="btn-close-zukan" class="primary-btn">閉じる</button>
       </div>
     </div>
 
@@ -782,9 +849,10 @@
     <div id="ov-draft" class="overlay">
       <div class="modal-box">
         <div id="draft-header" class="draft-header">ROUND 1 CLEAR!</div>
-        <div id="draft-bonus-info" class="draft-sub">遺物カードを1枚選んで盤面を構築しよう</div>
+        <div id="draft-bonus-info" class="draft-sub">深海カードを1枚選んで盤面をビルドしよう</div>
+        <div id="draft-fish-buffs" style="width:100%; font-size:10.5px; color:var(--pearl-gold); margin-bottom:6px;"></div>
         <div class="peek-bar">
-          <button id="btn-peek-board" class="util-btn">👁 盤面を確認(上下ドラッグ)</button>
+          <button id="btn-peek-board" class="util-btn">👁 盤面を確認</button>
           <button id="btn-reroll" class="util-btn">🎲 リロール (残り1回)</button>
         </div>
         <div id="cards-list" class="cards-list"></div>
@@ -794,9 +862,9 @@
     <!-- Pause / Build Info Overlay -->
     <div id="ov-pause" class="overlay">
       <div class="modal-box">
-        <div class="game-title" style="font-size:21px; margin-bottom:10px;">PAUSED / GRIMOIRE</div>
-        <div id="pause-stats" class="howto-box" style="text-align:left; max-height:290px; overflow-y:auto;"></div>
-        <button id="btn-resume" class="primary-btn">戦場へ戻る</button>
+        <div class="game-title" style="font-size:21px; margin-bottom:10px;">PAUSED / DEEP SEA LOG</div>
+        <div id="pause-stats" class="howto-box" style="text-align:left; max-height:310px; overflow-y:auto;"></div>
+        <button id="btn-resume" class="primary-btn">深海へ戻る</button>
         <button id="btn-retire" class="secondary-btn">タイトルへ戻る</button>
       </div>
     </div>
@@ -805,21 +873,22 @@
     <div id="ov-result" class="overlay">
       <div class="modal-box">
         <div id="res-title" class="game-title" style="font-size:25px;">GAME CLEAR!</div>
-        <div id="res-sub" class="game-subtitle">全8ラウンド制覇！古城の試練を突破した！</div>
-        <div class="records-box" style="flex-direction:column; gap:6px; margin-bottom:10px;">
+        <div id="res-sub" class="game-subtitle">全8ラウンド制覇！深海の主を退けた！</div>
+        <div class="records-box" style="flex-direction:column; gap:5px; margin-bottom:9px;">
           <div class="rec-item">
             <span class="rec-label">TOTAL SCORE</span>
-            <span id="res-total" class="rec-val" style="font-size:23px; color:#fff6e0;">0</span>
+            <span id="res-total" class="rec-val" style="font-size:23px; color:#ffffff;">0</span>
           </div>
-          <div id="res-newrecord" style="display:none; color:var(--blood-bright); font-size:12px; font-weight:800;">★ NEW HIGH SCORE! ★</div>
+          <div id="res-newrecord" style="display:none; color:var(--coral-pink); font-size:12px; font-weight:800;">★ NEW HIGH SCORE! ★</div>
           <div class="rec-item">
             <span class="rec-label">HIGH SCORE</span>
             <span id="res-hiscore" class="rec-val">0</span>
           </div>
         </div>
         <div id="res-stats-grid" class="stats-grid"></div>
-        <button id="btn-endless" class="primary-btn" style="display:none; margin-bottom:7px; border-color:var(--gold-bright);">★ 深淵エンドレスモード (R9〜) へ進む</button>
-        <button id="btn-retry" class="primary-btn">もう一度最初から挑む</button>
+        <button id="btn-endless" class="primary-btn" style="display:none; margin-bottom:6px; border-color:var(--pearl-gold);">★ 海溝エンドレスモード (R9〜) へ進む</button>
+        <button id="btn-retry" class="primary-btn">もう一度最初から潜る</button>
+        <button id="btn-open-zukan-result" class="secondary-btn">🐟 深海魚図鑑を見る</button>
         <button id="btn-to-title" class="secondary-btn">タイトル画面へ</button>
       </div>
     </div>
@@ -847,200 +916,463 @@
   'use strict';
 
   // =========================================================================
-  // 1. 定数・ワールド座標・カメラ設定
+  // 1. 定数・セーブキー・1画面固定ワールド座標 (VIEW_W=420, VIEW_H=660, WORLD_H=660)
   // =========================================================================
   const STORAGE_KEY_HISCORE = 'hazumu_omoitsuki_hiscore_v1';
   const STORAGE_KEY_CLEARED = 'hazumu_omoitsuki_cleared_v1';
+  const STORAGE_KEY_FISH_ZUKAN = 'hazumu_omoitsuki_fish_zukan_v1'; // 新規図鑑セーブキー（既存セーブを壊さない）
 
   const NORMAS = [3000, 6000, 10000, 16000, 24000, 35000, 50000, 75000];
   const VIEW_W = 420;
   const VIEW_H = 660;
-  const WORLD_H = 1240; // 画面の約2倍の広大な縦長ステージ！
-  const MAX_CAM_Y = WORLD_H - VIEW_H; // 580
+  const WORLD_H = 660;
   const LANE_X = 374;
   const BALL_R = 9;
   const GRAVITY = 520;
 
-  // 10か所の配置スロット座標（上層の天上聖堂エリア〜中層の回廊〜下層の祭壇まで広く配置）
+  // 10か所の配置スロット座標（指示書_1画面化.md 準拠）
   const SLOT_POSITIONS = [
-    { id: 0, x: 112, y: 165, label: '天上・左' },
-    { id: 1, x: 262, y: 165, label: '天上・右' },
-    { id: 2, x: 187, y: 270, label: '天上・中央' },
-    { id: 3, x: 102, y: 405, label: '上層・左' },
-    { id: 4, x: 272, y: 405, label: '上層・右' },
-    { id: 5, x: 187, y: 540, label: '中層・中央' },
-    { id: 6, x: 115, y: 690, label: '中下・左' },
-    { id: 7, x: 260, y: 690, label: '中下・右' },
-    { id: 8, x: 102, y: 860, label: '下層・左' },
-    { id: 9, x: 272, y: 860, label: '下層・右' }
+    { id: 0, x: 112, y: 140, label: '浅層・左' },
+    { id: 1, x: 262, y: 140, label: '浅層・右' },
+    { id: 2, x: 187, y: 215, label: '中上・中央' },
+    { id: 3, x: 102, y: 295, label: '中層・左' },
+    { id: 4, x: 272, y: 295, label: '中層・右' },
+    { id: 5, x: 187, y: 370, label: '深層・中央' },
+    { id: 6, x: 115, y: 445, label: '深層・左' },
+    { id: 7, x: 260, y: 445, label: '深層・右' },
+    { id: 8, x: 102, y: 515, label: '海溝・左' },
+    { id: 9, x: 272, y: 515, label: '海溝・右' }
   ];
 
-  // 最上層の3つのルーン祭壇（旧ロールオーバー）
+  // 最上部の発光プランクトンの溜まり場3か所（ロールオーバー: y=64, x=112/187/262）
   const TOP_ROLLOVERS = [
-    { id: 0, x: 112, y: 74, label: '太陽', rune: '❂', lit: false },
-    { id: 1, x: 187, y: 74, label: '月',   rune: '☽', lit: false },
-    { id: 2, x: 262, y: 74, label: '星',   rune: '✦', lit: false }
+    { id: 0, x: 112, y: 64, label: 'プランクトンA', lit: false },
+    { id: 1, x: 187, y: 64, label: 'プランクトンB', lit: false },
+    { id: 2, x: 262, y: 64, label: 'プランクトンC', lit: false }
   ];
 
-  // 壁面の4つの魔導燭台ターゲット（上層左右2・下層左右2）
+  // 左右壁の4つのイソギンチャク（旧燭台ターゲット: y=250 と y=470）
   const WALL_TARGETS = [
-    { id: 0, x: 16, y: 295, y1: 276, y2: 314, lit: false, normalX: 1 },
-    { id: 1, x: LANE_X - 4, y: 295, y1: 276, y2: 314, lit: false, normalX: -1 },
-    { id: 2, x: 16, y: 775, y1: 756, y2: 794, lit: false, normalX: 1 },
-    { id: 3, x: LANE_X - 4, y: 775, y1: 756, y2: 794, lit: false, normalX: -1 }
+    { id: 0, x: 16, y: 250, y1: 233, y2: 267, lit: false, normalX: 1 },
+    { id: 1, x: LANE_X - 4, y: 250, y1: 233, y2: 267, lit: false, normalX: -1 },
+    { id: 2, x: 16, y: 470, y1: 453, y2: 487, lit: false, normalX: 1 },
+    { id: 3, x: LANE_X - 4, y: 470, y1: 453, y2: 487, lit: false, normalX: -1 }
   ];
 
-  // 壁面の松明（トーチ）装飾座標
-  const TORCH_POSITIONS = [
-    { x: 26, y: 180 }, { x: 358, y: 180 },
-    { x: 26, y: 520 }, { x: 358, y: 520 },
-    { x: 26, y: 880 }, { x: 358, y: 880 }
+  // 壁際の発光クラゲ装飾（旧松明: y=150/330/510）
+  const JELLYFISH_POSITIONS = [
+    { x: 28, y: 150, phase: 0.2, color: '#70f5ff' },
+    { x: 356, y: 150, phase: 1.8, color: '#70f5ff' },
+    { x: 28, y: 330, phase: 3.1, color: '#20e3b2' },
+    { x: 356, y: 330, phase: 4.5, color: '#20e3b2' },
+    { x: 28, y: 510, phase: 5.4, color: '#df88ff' },
+    { x: 356, y: 510, phase: 2.6, color: '#df88ff' }
   ];
 
-  // カード一覧（v1の10種：ルール・名称・効果は指示書通り、フレーバーとデザインをダークファンタジー仕様に）
+  // 魚パッシブ効果グループ（5系統・ラン中のみ有効・同系統は重複しない）
+  const FISH_GROUPS = {
+    luminescent: {
+      id: 'luminescent',
+      name: '発光',
+      icon: '💡',
+      shortText: '発光(+10%)',
+      effectDesc: '全パーツの基礎スコア +10%'
+    },
+    school: {
+      id: 'school',
+      name: '群れ',
+      icon: '🐟',
+      shortText: '群れ(渦+25%)',
+      effectDesc: '海流の渦（スピナー）の加点 +25%'
+    },
+    guard: {
+      id: 'guard',
+      name: '守り',
+      icon: '🛡️',
+      shortText: '守り(ｾｰﾊﾞｰ+1)',
+      effectDesc: 'ボールセーバーの発動回数 +1（ラン中）'
+    },
+    giant: {
+      id: 'giant',
+      name: '大物',
+      icon: '👑',
+      shortText: '大物(上限+0.5)',
+      effectDesc: 'コンボ倍率の上限が +0.5倍（最大×3.50）'
+    },
+    agile: {
+      id: 'agile',
+      name: '俊敏',
+      icon: '⚡',
+      shortText: '俊敏(反発UP)',
+      effectDesc: 'フリッパーの反発が少し強くなる'
+    }
+  };
+
+  // 全12種の深海魚カタログ（通常5種・レア4種・激レア3種）
+  const FISH_CATALOG = [
+    // 通常 (100pt)
+    {
+      id: 'kinmedai',
+      name: 'キンメダイ',
+      rarity: 'normal',
+      rarityLabel: '通常',
+      points: 100,
+      weight: 22,
+      r: 15,
+      speed: 52,
+      bandY: [155, 240],
+      bandHint: '上層〜中上層（水深200m付近）を泳ぐ',
+      color: '#ff4d6d',
+      subColor: '#ffd166',
+      group: 'school',
+      shape: 'round_fish',
+      desc: '金色に輝く大きな目を持つ深海の赤い宝石。'
+    },
+    {
+      id: 'hakofugu',
+      name: 'ハコフグ',
+      rarity: 'normal',
+      rarityLabel: '通常',
+      points: 100,
+      weight: 20,
+      r: 15,
+      speed: 44,
+      bandY: [120, 210],
+      bandHint: '光が届く上層エリアをのんびり泳ぐ',
+      color: '#ffd166',
+      subColor: '#fff3b0',
+      group: 'guard',
+      shape: 'box_fish',
+      desc: '硬い甲羅のような皮膚で身を守る四角い働き者。'
+    },
+    {
+      id: 'manbou',
+      name: 'マンボウ',
+      rarity: 'normal',
+      rarityLabel: '通常',
+      points: 100,
+      weight: 18,
+      r: 18,
+      speed: 36,
+      bandY: [175, 290],
+      bandHint: '上層〜中層をゆったりと漂う',
+      color: '#90e0ef',
+      subColor: '#caf0f8',
+      group: 'guard',
+      shape: 'sunfish',
+      desc: '巨大な体で海流に身を任せる温厚な深海散歩者。'
+    },
+    {
+      id: 'iwashi_school',
+      name: 'イワシの群れ',
+      rarity: 'normal',
+      rarityLabel: '通常',
+      points: 100,
+      weight: 22,
+      r: 16,
+      speed: 60,
+      bandY: [105, 195],
+      bandHint: '最上層〜上層を群れで素早く横切る',
+      color: '#48cae4',
+      subColor: '#ade8f4',
+      group: 'school',
+      shape: 'school',
+      desc: '一糸乱れぬ動きで一つの巨大な生き物のように泳ぐ群れ。'
+    },
+    {
+      id: 'hadakaiwashi',
+      name: 'ハダカイワシ',
+      rarity: 'normal',
+      rarityLabel: '通常',
+      points: 100,
+      weight: 20,
+      r: 13,
+      speed: 64,
+      bandY: [220, 340],
+      bandHint: '中層の薄暗い水域を群れずに泳ぐ',
+      color: '#56cfe1',
+      subColor: '#72efdd',
+      group: 'luminescent',
+      shape: 'slim_fish',
+      desc: 'お腹の発光器で星空のように明滅する深海の常連。'
+    },
+    // レア (300pt)
+    {
+      id: 'chochin_ankou',
+      name: 'チョウチンアンコウ',
+      rarity: 'rare',
+      rarityLabel: '★レア',
+      points: 300,
+      weight: 10,
+      r: 13,
+      speed: 74,
+      bandY: [320, 440],
+      bandHint: '中層〜深層（水深400m付近）の暗闇を泳ぐ',
+      color: '#9d4edd',
+      subColor: '#70f5ff',
+      group: 'luminescent',
+      shape: 'angler',
+      desc: '頭上の発光ルアーで獲物を誘い込む深海の狩人。'
+    },
+    {
+      id: 'demenigisu',
+      name: 'デメニギス',
+      rarity: 'rare',
+      rarityLabel: '★レア',
+      points: 300,
+      weight: 9,
+      r: 12,
+      speed: 78,
+      bandY: [280, 400],
+      bandHint: '中層の静かな水域を水平に滑るように泳ぐ',
+      color: '#38b000',
+      subColor: '#70e000',
+      group: 'luminescent',
+      shape: 'barreleye',
+      desc: '透明なドーム状の頭部の中に緑色の管状眼を持つ神秘の魚。'
+    },
+    {
+      id: 'fukurounagi',
+      name: 'フクロウナギ',
+      rarity: 'rare',
+      rarityLabel: '★レア',
+      points: 300,
+      weight: 9,
+      r: 12,
+      speed: 86,
+      bandY: [370, 485],
+      bandHint: '深層エリアをくねりながら高速で横切る',
+      color: '#f72585',
+      subColor: '#b5179e',
+      group: 'agile',
+      shape: 'eel',
+      desc: '自分の体よりも大きな獲物を丸呑みする巨大な口を持つ深海ウナギ。'
+    },
+    {
+      id: 'mitsukurizame',
+      name: 'ミツクリザメ',
+      rarity: 'rare',
+      rarityLabel: '★レア',
+      points: 300,
+      weight: 8,
+      r: 13,
+      speed: 92,
+      bandY: [350, 470],
+      bandHint: '深層エリアを鋭く一直線に突っ切る',
+      color: '#ff758f',
+      subColor: '#ffb3c1',
+      group: 'agile',
+      shape: 'shark',
+      desc: '長く突き出た吻と飛び出す顎を持つ「生きた化石」ゴブリンシャーク。'
+    },
+    // 激レア (1000pt)
+    {
+      id: 'ryugu_no_tsukai',
+      name: 'リュウグウノツカイ',
+      rarity: 'ssr',
+      rarityLabel: '★★激レア',
+      points: 1000,
+      weight: 3.5,
+      r: 11,
+      speed: 112,
+      bandY: [180, 360],
+      bandHint: '中上層〜中層を銀色の閃光のように高速通過する',
+      color: '#e0fbfc',
+      subColor: '#ff2a85',
+      group: 'giant',
+      shape: 'oarfish',
+      desc: '赤い背びれの冠と白銀の長い体を持つ、竜宮城からの神秘の使者。'
+    },
+    {
+      id: 'coelacanth',
+      name: 'シーラカンス',
+      rarity: 'ssr',
+      rarityLabel: '★★激レア',
+      points: 1000,
+      weight: 3.2,
+      r: 11,
+      speed: 105,
+      bandY: [410, 505],
+      bandHint: '深層〜海溝の底近くを力強く泳ぐ',
+      color: '#3a86ff',
+      subColor: '#a2d2ff',
+      group: 'giant',
+      shape: 'coelacanth',
+      desc: '古生代から姿を変えずに深海を生き抜いてきた伝説の古代魚。'
+    },
+    {
+      id: 'daiouika',
+      name: 'ダイオウイカ',
+      rarity: 'ssr',
+      rarityLabel: '★★激レア',
+      points: 1000,
+      weight: 3.0,
+      r: 11,
+      speed: 118,
+      bandY: [290, 460],
+      bandHint: '中層〜深層をジェット推進で超高速移動する',
+      color: '#ff4d4d',
+      subColor: '#ffd166',
+      group: 'giant',
+      shape: 'squid',
+      desc: '深海の闇を統べる巨大頭足類。驚異的な推進力で海溝を駆ける。'
+    }
+  ];
+
+  // カード一覧（v1の10種：効果と数値は一切変更せず、深海の世界観へリスキン）
   const CARD_CATALOG = [
     {
       id: 'bumper_circle',
-      name: '丸バンパー',
+      name: '真珠貝（丸バンパー）',
+      shortName: '真珠貝',
       category: 'part',
-      icon: '🛡️',
-      color: '#e03131',
+      icon: '🦪',
+      color: '#ff5c8a',
       weight: 16,
       basePt: 100,
-      desc: 'ヒットで 100×Lv 点。全方向に強く跳ね返す紅蓮の刻印盾。'
+      desc: 'ヒットで 100×Lv 点。開閉する二枚貝が真珠光を放ち全方向に強く跳ね返す。'
     },
     {
       id: 'bumper_tri',
-      name: '三角バンパー',
+      name: '枝珊瑚（三角バンパー）',
+      shortName: '枝珊瑚',
       category: 'part',
-      icon: '⚜️',
-      color: '#f08c00',
+      icon: '🪸',
+      color: '#ff9e00',
       weight: 14,
       basePt: 150,
-      desc: 'ヒットで 150×Lv 点。斜め方向へ鋭く弾き飛ばす黄金の稜角。'
+      desc: 'ヒットで 150×Lv 点。硬い枝サンゴの稜角がボールを斜めに強く跳ね返す。'
     },
     {
       id: 'kicker',
-      name: 'キッカー',
+      name: '熱水噴出孔（キッカー）',
+      shortName: '熱水噴出孔',
       category: 'part',
-      icon: '🦅',
-      color: '#2f9e44',
+      icon: '🌋',
+      color: '#20e3b2',
       weight: 14,
       basePt: 150,
-      desc: 'ヒットで 150×Lv 点。ボールを上層フロアへ強烈に打ち上げる疾風の祭壇！'
+      desc: 'ヒットで 150×Lv 点。海底から噴き上がる熱水ジェットでボールを上層へ強く打ち上げる！'
     },
     {
       id: 'spinner',
-      name: 'スピナー',
+      name: '海流の渦（スピナー）',
+      shortName: '海流の渦',
       category: 'part',
-      icon: '⚙️',
-      color: '#d4af37',
+      icon: '🌀',
+      color: '#00e5ff',
       weight: 13,
       basePt: 30,
-      desc: '通過で 30×Lv 点を連続加算し、回転しながらボールを加速させる古代歯車。'
+      desc: '通過で 30×Lv 点を連続加算し、渦巻き水流でボールを少し加速する。'
     },
     {
       id: 'rebound_wall',
-      name: 'リバウンド壁',
+      name: '岩礁（リバウンド壁）',
+      shortName: '岩礁',
       category: 'part',
-      icon: '🗡️',
-      color: '#ffd86b',
+      icon: '🪨',
+      color: '#ffd97d',
       weight: 12,
       basePt: 50,
-      desc: '小型の斜め魔導障壁。ヒットで 50×Lv 点。ボールの流れを変える。'
+      desc: '小型の斜め海底岩礁。ヒットで 50×Lv 点。海流とボールの軌道を変える。'
     },
     {
       id: 'warp_gate',
-      name: 'ワープゲート',
+      name: '渦潮（ワープゲート）',
+      shortName: '渦潮',
       category: 'part',
-      icon: '🔮',
-      color: '#ae3ec9',
+      icon: '🌊',
+      color: '#a855f7',
       weight: 11,
       basePt: 300,
-      desc: '2スロットを使う深淵の転送門。片方に入るともう片方から同速度で出現し 300×Lv 点！'
+      desc: '2スロットを使う連結渦潮。片方に入るともう片方から同じ速度で出現し 300×Lv 点！'
     },
     {
       id: 'upgrade_chip',
-      name: '強化チップ',
+      name: '深海結晶（強化チップ）',
+      shortName: '深海結晶',
       category: 'instant_target',
-      icon: '📜',
-      color: '#51cf66',
+      icon: '💠',
+      color: '#20e3b2',
       weight: 10,
       basePt: 0,
-      desc: '既存パーツ1つのレベルを +1 する古の強化刻印（最大Lv3）。'
+      desc: '既存パーツ1つのレベルを +1 する（配置フェーズで対象を選ぶ・最大Lv3）。'
     },
     {
       id: 'extra_ball',
-      name: '追加ボール',
+      name: '追加真珠（追加ボール）',
+      shortName: '追加真珠',
       category: 'instant',
-      icon: '🌕',
-      color: '#fff3bf',
+      icon: '⚪',
+      color: '#ffffff',
       weight: 7,
       basePt: 0,
       desc: 'このランの毎ラウンド残りボール +1（最大で+2回まで取得可）。'
     },
     {
       id: 'score_booster',
-      name: 'スコアブースター',
+      name: '海神の祝福（スコアブースター）',
+      shortName: '海神の祝福',
       category: 'instant',
-      icon: '👑',
-      color: '#ffd86b',
+      icon: '🔱',
+      color: '#ffd97d',
       weight: 10,
       basePt: 0,
-      desc: 'このランの全獲得スコアに +10% の王家の祝福（重ね掛け可）。'
+      desc: 'このランの全獲得スコアに +10%（重ね掛け可）。'
     },
     {
       id: 'flipper_up',
-      name: 'フリッパー強化',
+      name: '海流フィン強化（フリッパー強化）',
+      shortName: '海流フィン強化',
       category: 'instant',
-      icon: '⚔️',
-      color: '#d4af37',
+      icon: '🐬',
+      color: '#00e5ff',
       weight: 9,
       basePt: 0,
-      desc: '大剣フリッパーが長く・反発が強くなる（最大3回まで）。'
+      desc: 'フリッパーが長く・強くなる（最大3回まで）。'
     }
   ];
 
-  // デッキ構築シナジー定義
+  // デッキ構築シナジー定義（効果・数値はそのまま、名称を深海テーマに）
   const SYNERGY_DEFINITIONS = [
     {
       id: 'bumper_kingdom',
-      name: '鉄벽の聖堂',
-      condText: '丸バンパー＋三角バンパー合計3個以上',
-      effectText: '全バンパーの基礎スコア +35% ＆ 衝撃波発生',
+      name: '珊瑚礁の楽園',
+      condText: '真珠貝＋枝珊瑚 合計3個以上',
+      effectText: '全バンパー（真珠貝・枝珊瑚）の基礎スコア +35% ＆ 水圧リング演出',
       check: (slots) => slots.filter(s => s && (s.type === 'bumper_circle' || s.type === 'bumper_tri')).length >= 3
     },
     {
       id: 'perpetual_engine',
-      name: '天翔ける魔導機関',
-      condText: 'キッカー1個以上 ＋ スピナー1個以上',
-      effectText: 'キッカーとスピナーの基礎スコア +40% ＆ 上層への打ち上げ力強化',
+      name: '湧昇流サイクル',
+      condText: '熱水噴出孔1個以上 ＋ 海流の渦1個以上',
+      effectText: '熱水噴出孔と海流の渦の基礎スコア +40% ＆ 加速ブースト強化',
       check: (slots) => slots.some(s => s && s.type === 'kicker') && slots.some(s => s && s.type === 'spinner')
     },
     {
       id: 'dimensional_accel',
-      name: '深淵の転移門',
-      condText: 'ワープゲート設置済 ＋ スピナーまたはリバウンド壁',
-      effectText: 'ワープ通過時にコンボ +3 ＆ 3秒間全スコア1.25倍オーラ',
+      name: '深海大循環',
+      condText: '渦潮設置済 ＋ 海流の渦または岩礁',
+      effectText: '渦潮通過時にコンボ +3 ＆ 3秒間全スコア1.25倍オーラ',
       check: (slots) => slots.some(s => s && s.type === 'warp_gate') && slots.some(s => s && (s.type === 'spinner' || s.type === 'rebound_wall'))
     },
     {
       id: 'labyrinth_reflect',
-      name: '古城の鏡迷宮',
-      condText: 'リバウンド壁 ＋ 三角バンパー合計3個以上',
-      effectText: 'リバウンド壁と三角バンパーのヒット時にコンボが +2 ずつ上昇',
+      name: '海底の迷宮礁',
+      condText: '岩礁 ＋ 枝珊瑚 合計3個以上',
+      effectText: '岩礁と枝珊瑚のヒット時にコンボが +2 ずつ上昇',
       check: (slots) => slots.filter(s => s && (s.type === 'rebound_wall' || s.type === 'bumper_tri')).length >= 3
     },
     {
       id: 'master_craft',
-      name: '名匠の秘儀',
+      name: '深淵の熟成',
       condText: 'Lv2以上のパーツが盤面に2個以上',
       effectText: 'Lv2以上のパーツすべての獲得スコア +25%',
       check: (slots) => slots.filter(s => s && s.level >= 2).length >= 2
     },
     {
       id: 'full_spark',
-      name: '万象の魔導陣',
+      name: '豊かなる生態系',
       condText: '盤面に異なる4種類以上のパーツを設置',
       effectText: '全獲得スコアに +20% 乗算ボーナス',
       check: (slots) => new Set(slots.filter(Boolean).map(s => s.type)).size >= 4
@@ -1048,7 +1380,7 @@
   ];
 
   // =========================================================================
-  // 2. Web Audio シンセサイザー効果音 ＆ ダークファンタジーBGM
+  // 2. Web Audio シンセサイザー効果音 ＆ 深海アンビエントBGM
   // =========================================================================
   class SoundSynth {
     constructor() {
@@ -1078,27 +1410,25 @@
     }
     startBgmLoop() {
       if (this.bgmTimer) return;
-      // ダークファンタジー風のゴシック・マイナーアルペジオ（Dハーモニックマイナー）
-      const patternNormal = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 138.59, 164.81];
-      const patternUpper  = [220.00, 261.63, 329.63, 349.23, 440.00, 349.23, 329.63, 261.63];
-      const patternBoss   = [110.00, 116.54, 146.83, 116.54, 103.83, 110.00, 164.81, 138.59];
+      // 深海の神秘的な水琴・マリンバ風アルペジオ
+      const patternNormal = [196.00, 246.94, 293.66, 369.99, 392.00, 369.99, 293.66, 246.94];
+      const patternFever  = [261.63, 329.63, 392.00, 493.88, 523.25, 493.88, 392.00, 329.63];
+      const patternBoss   = [130.81, 146.83, 155.56, 196.00, 185.00, 155.56, 146.83, 123.47];
 
       this.bgmTimer = setInterval(() => {
         if (this.muted || !this.bgmEnabled || !this.ctx) return;
         if (typeof state === 'undefined' || state.phase !== 'PLAY') return;
 
-        const inUpperSanctum = state.ball.y < 520 && !state.ball.inLane;
         const isBoss = state.round >= 8;
-        const pat = isBoss ? patternBoss : (inUpperSanctum || state.feverTimer > 0 ? patternUpper : patternNormal);
+        const pat = isBoss ? patternBoss : (state.feverTimer > 0 ? patternFever : patternNormal);
         const freq = pat[this.bgmStep % pat.length];
         this.bgmStep++;
 
-        // パイプオルガン／リュート風の温かみのある倍音トーン
-        this.playTone(freq, 'triangle', 0.16, 0.036, freq * 0.995);
+        this.playTone(freq, 'sine', 0.22, 0.036, freq * 1.003);
         if (this.bgmStep % 4 === 1) {
-          this.playTone(freq * 0.5, 'sine', 0.28, 0.04, freq * 0.5);
+          this.playTone(freq * 0.5, 'triangle', 0.32, 0.032, freq * 0.5);
         }
-      }, 175);
+      }, 190);
     }
     playTone(freq, type, duration, vol = 0.14, slideFreq = null) {
       if (this.muted) return;
@@ -1120,20 +1450,31 @@
       osc.stop(now + duration);
     }
     bumper(combo = 1) {
-      const base = 260 + Math.min(combo, 35) * 15;
-      this.playTone(base, 'triangle', 0.12, 0.2, base * 1.4);
+      const base = 300 + Math.min(combo, 35) * 16;
+      this.playTone(base, 'sine', 0.12, 0.19, base * 1.45);
     }
     kicker() {
-      this.playTone(190, 'sawtooth', 0.18, 0.18, 680);
+      this.playTone(180, 'triangle', 0.19, 0.18, 690);
     }
     spinner() {
-      this.playTone(620 + Math.random() * 180, 'sine', 0.06, 0.09, 880);
+      this.playTone(680 + Math.random() * 200, 'sine', 0.06, 0.09, 960);
+    }
+    fishCatch(rarity) {
+      if (rarity === 'ssr') {
+        const notes = [587.33, 783.99, 987.77, 1174.66, 1567.98];
+        notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.18, 0.19), i * 45));
+      } else if (rarity === 'rare') {
+        const notes = [523.25, 659.25, 987.77];
+        notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.14, 0.17), i * 45));
+      } else {
+        this.playTone(480, 'sine', 0.12, 0.16, 860);
+      }
     }
     wall() {
-      this.playTone(145, 'sine', 0.05, 0.08, 95);
+      this.playTone(155, 'sine', 0.05, 0.07, 105);
     }
     targetLit() {
-      this.playTone(523.25, 'triangle', 0.12, 0.16, 783.99);
+      this.playTone(587.33, 'sine', 0.12, 0.15, 880);
     }
     skillShot() {
       const notes = [523.25, 659.25, 783.99, 1046.5];
@@ -1141,65 +1482,63 @@
     }
     jackpot() {
       const notes = [440, 554.37, 659.25, 880, 1108.73];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.17, 0.16), i * 55));
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.17, 0.17), i * 55));
     }
     ballSave() {
-      this.playTone(260, 'sine', 0.2, 0.18, 660);
-      setTimeout(() => this.playTone(660, 'triangle', 0.2, 0.16, 880), 90);
+      this.playTone(280, 'sine', 0.2, 0.18, 720);
+      setTimeout(() => this.playTone(720, 'triangle', 0.2, 0.16, 960), 90);
     }
     nudge() {
-      this.playTone(95, 'sawtooth', 0.13, 0.22, 48);
+      this.playTone(105, 'sawtooth', 0.12, 0.2, 52);
     }
     tilt() {
-      this.playTone(135, 'sawtooth', 0.42, 0.22, 58);
+      this.playTone(140, 'sawtooth', 0.4, 0.22, 60);
     }
     warp() {
-      this.playTone(280, 'sine', 0.24, 0.19, 980);
-      setTimeout(() => this.playTone(560, 'triangle', 0.16, 0.14, 1280), 55);
+      this.playTone(300, 'sine', 0.24, 0.19, 1080);
+      setTimeout(() => this.playTone(600, 'triangle', 0.16, 0.14, 1360), 55);
     }
     flipper() {
-      this.playTone(135, 'triangle', 0.07, 0.16, 270);
+      this.playTone(145, 'triangle', 0.07, 0.15, 290);
     }
     launch(power) {
-      this.playTone(130, 'sawtooth', 0.24, 0.2, 280 + power * 460);
+      this.playTone(140, 'triangle', 0.24, 0.19, 300 + power * 460);
     }
     place() {
-      this.playTone(392, 'sine', 0.11, 0.16, 587.33);
-      setTimeout(() => this.playTone(587.33, 'triangle', 0.13, 0.16, 783.99), 65);
+      this.playTone(440, 'sine', 0.11, 0.16, 660);
+      setTimeout(() => this.playTone(660, 'triangle', 0.13, 0.16, 880), 65);
     }
     ballLost() {
-      this.playTone(220, 'sawtooth', 0.38, 0.18, 62);
+      this.playTone(230, 'sawtooth', 0.36, 0.17, 65);
     }
     roundClear() {
-      const notes = [440, 554.37, 659.25, 880];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.2, 0.18), i * 85));
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.2, 0.18), i * 80));
     }
     gameOver() {
       const notes = [349.23, 329.63, 293.66, 220];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.26, 0.16), i * 130));
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.25, 0.16), i * 125));
     }
     gameClear() {
-      const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.5];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.24, 0.2), i * 95));
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.24, 0.2), i * 90));
     }
   }
 
   const sfx = new SoundSynth();
 
   // =========================================================================
-  // 3. 広大な2フロア盤面ジオメトリ (全高 WORLD_H = 1240px)
-  //    ・上層 (y: 0〜580)   : 天上聖堂エリア（サブフリッパー＆ルーン祭壇＆スロット0〜5）
-  //    ・下層 (y: 580〜1240): 深淵祭壇エリア（メインフリッパー＆スリングショット＆スロット6〜9）
+  // 3. 1画面固定の深海盤面ジオメトリ (VIEW_W=420, VIEW_H=660)
   // =========================================================================
   function buildBoardWalls() {
     const walls = [];
-    const addSeg = (x1, y1, x2, y2, rest = 0.74, color = '#8c7355', oneWayLeft = false, isSlingshot = false) => {
+    const addSeg = (x1, y1, x2, y2, rest = 0.74, color = '#1e6091', oneWayLeft = false, isSlingshot = false) => {
       walls.push({ x1, y1, x2, y2, rest, color, oneWayLeft, isSlingshot, pulse: 0 });
     };
 
-    // 上部ゴシックアーチ (y=120 -> y=14 -> y=120)
+    // 上部アーチ
     const archPts = [
-      [408, 125],
+      [408, 120],
       [404, 72],
       [386, 36],
       [345, 16],
@@ -1207,58 +1546,52 @@
       [75,  16],
       [34,  36],
       [14,  72],
-      [12,  125]
+      [12,  120]
     ];
     for (let i = 0; i < archPts.length - 1; i++) {
-      addSeg(archPts[i][0], archPts[i][1], archPts[i + 1][0], archPts[i + 1][1], 0.78, '#b89758');
+      addSeg(archPts[i][0], archPts[i][1], archPts[i + 1][0], archPts[i + 1][1], 0.78, '#00b4d8');
     }
 
-    // 左外壁（上層〜中層くびれ〜下層まで連続）
-    addSeg(12, 125, 12, 470, 0.74, '#8c7355');
-    addSeg(12, 470, 56, 535, 0.78, '#b89758'); // 上層左サブフリッパーへの誘導斜壁
-    addSeg(56, 535, 12, 600, 0.74, '#8c7355'); // 下層へ広がる壁
-    addSeg(12, 600, 12, 1060, 0.74, '#8c7355');
-    addSeg(12, 1060, 34, 1115, 0.74, '#8c7355');
+    // 左外壁
+    addSeg(12, 120, 12, 480, 0.74, '#1e6091');
+    addSeg(12, 480, 34, 535, 0.74, '#1e6091');
 
-    // 右外壁（プランジャー発射レーン外側: y=125〜1212）
-    addSeg(408, 125, 408, 1212, 0.72, '#8c7355');
-    addSeg(LANE_X, 1212, 408, 1212, 0.4, '#c92a2a');
+    // 右外壁（プランジャーレーン外側）
+    addSeg(408, 120, 408, 632, 0.72, '#1e6091');
+    addSeg(LANE_X, 632, 408, 632, 0.4, '#ff5c8a');
 
-    // 発射レーン内壁（y=120〜1212）
-    addSeg(LANE_X, 120, LANE_X, 470, 0.74, '#8c7355');
-    addSeg(LANE_X, 470, 330, 535, 0.78, '#b89758'); // 上層右サブフリッパーへの誘導斜壁
-    addSeg(330, 535, LANE_X, 600, 0.74, '#8c7355');
-    addSeg(LANE_X, 470, LANE_X, 1212, 0.74, '#8c7355'); // 発射レーン側の直通内壁
+    // 発射レーン内壁
+    addSeg(LANE_X, 115, LANE_X, 632, 0.74, '#1e6091');
 
     // 発射レーン最上部の逆流防止ワンウェイゲート
-    addSeg(LANE_X, 34, LANE_X, 120, 0.76, '#d4af37', true);
+    addSeg(LANE_X, 34, LANE_X, 115, 0.76, '#00e5ff', true);
 
     // フィールド右側の下部ガイド壁
-    addSeg(LANE_X, 1060, 352, 1115, 0.74, '#8c7355');
+    addSeg(LANE_X, 480, 352, 535, 0.74, '#1e6091');
 
-    // 下層・左スリングショット（紅蓮の魔導石）
-    addSeg(46, 1025, 46, 1092, 0.75, '#8c7355');
-    addSeg(46, 1092, 92, 1122, 0.75, '#8c7355');
-    addSeg(46, 1025, 92, 1122, 1.24, '#e03131', false, true);
+    // 左スリングショット（最下段スロット y=515 を圧迫しない位置）
+    addSeg(46, 462, 46, 518, 0.75, '#1e6091');
+    addSeg(46, 518, 88, 546, 0.75, '#1e6091');
+    addSeg(46, 462, 88, 546, 1.22, '#ff5c8a', false, true);
 
-    // 下層・右スリングショット
-    addSeg(340, 1025, 340, 1092, 0.75, '#8c7355');
-    addSeg(340, 1092, 294, 1122, 0.75, '#8c7355');
-    addSeg(340, 1025, 294, 1122, 1.24, '#e03131', false, true);
+    // 右スリングショット
+    addSeg(340, 462, 340, 518, 0.75, '#1e6091');
+    addSeg(340, 518, 298, 546, 0.75, '#1e6091');
+    addSeg(340, 462, 298, 546, 1.22, '#ff5c8a', false, true);
 
-    // 下層メインフリッパーへと続くインレーン斜壁
-    addSeg(34, 1115, 108, 1162, 0.68, '#b89758');
-    addSeg(352, 1115, 278, 1162, 0.68, '#b89758');
+    // フリッパー（y=588）へと続くインレーン斜壁
+    addSeg(34, 535, 108, 588, 0.68, '#00b4d8');
+    addSeg(352, 535, 278, 588, 0.68, '#00b4d8');
 
-    // 最上層3レーンディバイダー（聖堂の柱）
-    addSeg(148, 46, 148, 86, 0.8, '#d4af37');
-    addSeg(226, 46, 226, 86, 0.8, '#d4af37');
+    // 最上部3レーンディバイダー
+    addSeg(148, 42, 148, 78, 0.8, '#20e3b2');
+    addSeg(226, 42, 226, 78, 0.8, '#20e3b2');
 
     return walls;
   }
 
   // =========================================================================
-  // 4. ゲーム状態・カメラ追従管理
+  // 4. ゲーム状態・深海魚図鑑・環境パーティクル管理
   // =========================================================================
   const canvas = document.getElementById('game-canvas');
   const ctx = canvas.getContext('2d');
@@ -1266,11 +1599,45 @@
   let hiScore = parseInt(localStorage.getItem(STORAGE_KEY_HISCORE) || '0', 10) || 0;
   let hasClearedEver = localStorage.getItem(STORAGE_KEY_CLEARED) === '1';
 
+  // 永続図鑑データの読み込み
+  let unlockedFishMap = {};
+  try {
+    const rawZukan = localStorage.getItem(STORAGE_KEY_FISH_ZUKAN);
+    if (rawZukan) unlockedFishMap = JSON.parse(rawZukan) || {};
+  } catch (e) {
+    unlockedFishMap = {};
+  }
+
+  function saveFishToZukan(fishId) {
+    const isFirstTime = !unlockedFishMap[fishId];
+    unlockedFishMap[fishId] = (unlockedFishMap[fishId] || 0) + 1;
+    try {
+      localStorage.setItem(STORAGE_KEY_FISH_ZUKAN, JSON.stringify(unlockedFishMap));
+    } catch (e) {}
+    return isFirstTime;
+  }
+
+  function getUnlockedFishCount() {
+    return FISH_CATALOG.filter(f => unlockedFishMap[f.id] > 0).length;
+  }
+
   const walls = buildBoardWalls();
 
+  // マリンスノー（常時ゆっくり漂う白い粒子 45個）と上昇する泡
+  const marineSnow = Array.from({ length: 45 }, () => ({
+    x: 16 + Math.random() * (LANE_X - 24),
+    y: Math.random() * WORLD_H,
+    r: 0.8 + Math.random() * 1.5,
+    vy: 8 + Math.random() * 14,
+    phase: Math.random() * Math.PI * 2,
+    alpha: 0.15 + Math.random() * 0.35
+  }));
+  const seaBubbles = [];
+
   const state = {
-    phase: 'TITLE', // TITLE | PLAY | CLEAR_ANIM | DRAFT | PLACE | PAUSE | RESULT
+    phase: 'TITLE',
     prevPhaseBeforePause: 'PLAY',
+    prevPhaseBeforeZukan: 'TITLE',
     round: 1,
     endlessMode: false,
     roundScore: 0,
@@ -1285,16 +1652,16 @@
     flipperLevel: 0,
     rerollsLeft: 1,
 
-    // カメラ位置 (0 = 最上層 〜 MAX_CAM_Y(580) = 最下層)
-    cameraY: MAX_CAM_Y,
-    targetCameraY: MAX_CAM_Y,
-    manualCamDrag: false,
-    dragStartY: 0,
-    dragStartCamY: 0,
-
     // 10か所のスロット
     slots: new Array(10).fill(null),
     activeSynergies: [],
+
+    // 泳ぐ深海魚とラン中パッシブ効果（5系統）
+    activeFishes: [], // 最大3匹
+    fishSpawnTimer: 1.2,
+    caughtFishThisRun: [], // このランで回収した魚ID履歴
+    activeFishGroups: new Set(), // 'luminescent' | 'school' | 'guard' | 'giant' | 'agile'
+    guardExtraSavesLeft: 0, // 守りグループによる追加ボールセーバー残り回数
 
     // 配置フェーズ用
     pendingCard: null,
@@ -1314,29 +1681,31 @@
     tiltPenalty: false,
     stuckTimer: 0,
 
-    // 移動ジャックポット（黄金の聖杯）＆ R8ボス（深淵の魔王核）
+    // 移動ジャックポット（黄金オウムガイ） ＆ R8ボス（深海の主: 187, 315）
     jackpotDrone: {
       active: false,
       x: 187,
-      y: 112,
-      vx: 78,
-      r: 15
+      y: 98,
+      vx: 76,
+      r: 14
     },
     bossCore: {
       active: false,
       x: 187,
-      y: 610,
-      vx: 60,
+      y: 315,
+      baseY: 315,
+      vx: 46,
       r: 22,
       hpHits: 0,
       pulse: 1,
-      cooldown: 0
+      cooldown: 0,
+      swimPhase: 0
     },
 
-    // ボール状態
+    // ボール状態（光る真珠: 初期位置 y=610）
     ball: {
       x: 391,
-      y: 1185,
+      y: 610,
       vx: 0,
       vy: 0,
       inLane: true,
@@ -1351,55 +1720,24 @@
       power: 0
     },
 
-    // 下層メインフリッパー + 上層サブフリッパー（計4基が連動して動く！）
+    // 左右フリッパー（y=588）
     leftFlipper: {
       pivotX: 108,
-      pivotY: 1162,
+      pivotY: 588,
       restAngle: 0.45,
       activeAngle: -0.52,
       angle: 0.45,
       angVel: 0,
-      scale: 1.0,
       pressed: false
     },
     rightFlipper: {
       pivotX: 278,
-      pivotY: 1162,
+      pivotY: 588,
       restAngle: Math.PI - 0.45,
       activeAngle: Math.PI + 0.52,
       angle: Math.PI - 0.45,
       angVel: 0,
-      scale: 1.0,
       pressed: false
-    },
-    upperLeftFlipper: {
-      pivotX: 56,
-      pivotY: 535,
-      restAngle: 0.48,
-      activeAngle: -0.50,
-      angle: 0.48,
-      angVel: 0,
-      scale: 0.76,
-      pressed: false
-    },
-    upperRightFlipper: {
-      pivotX: 330,
-      pivotY: 535,
-      restAngle: Math.PI - 0.48,
-      activeAngle: Math.PI + 0.50,
-      angle: Math.PI - 0.48,
-      angVel: 0,
-      scale: 0.76,
-      pressed: false
-    },
-
-    // 下層中央から上層へボールを跳ね上げる常設「昇天の魔導陣（アセンション・パッド）」
-    ascensionPad: {
-      x: 187,
-      y: 785,
-      r: 18,
-      cooldown: 0,
-      pulse: 1
     },
 
     // 演出エフェクト
@@ -1413,14 +1751,20 @@
     shakeIntensity: 0
   };
 
-  function getFlipperLength(flipper) {
-    return (66 + state.flipperLevel * 7) * (flipper.scale || 1.0);
+  function hasFishBuff(groupId) {
+    return state.activeFishGroups.has(groupId);
+  }
+
+  function getFlipperLength() {
+    return 66 + state.flipperLevel * 7;
   }
   function getFlipperSpeed() {
-    return 18 + state.flipperLevel * 2.2;
+    return 18 + state.flipperLevel * 2.2 + (hasFishBuff('agile') ? 1.8 : 0);
   }
   function getComboMultiplier() {
-    return 1 + Math.min(state.combo, 50) * 0.04;
+    // 通常は最大×3.00（50コンボ）、大物グループ発動時は上限+0.5倍（最大×3.50 / 62.5コンボ相当）
+    const maxBonus = hasFishBuff('giant') ? 2.5 : 2.0;
+    return 1 + Math.min(state.combo * 0.04, maxBonus);
   }
   function getBoosterMultiplier() {
     let mult = 1 + state.scoreBoosterCount * 0.10;
@@ -1439,7 +1783,7 @@
     state.activeSynergies = SYNERGY_DEFINITIONS.filter(def => def.check(state.slots));
     state.activeSynergies.forEach(s => {
       if (!prevIds.has(s.id) && state.phase !== 'TITLE') {
-        spawnPopup(VIEW_W / 2, state.cameraY + 220, `✨契約成立【${s.name}】!`, '#ffd86b', 15);
+        spawnPopup(VIEW_W / 2, 220, `✨海流シナジー【${s.name}】!`, '#ffd97d', 15);
       }
     });
   }
@@ -1450,7 +1794,140 @@
   }
 
   // =========================================================================
-  // 5. 初期化・ラウンド進行・スコア加算
+  // 5. 深海魚スポーン・移動・回収処理
+  // =========================================================================
+  function pickRandomFishSpec() {
+    const totalW = FISH_CATALOG.reduce((acc, f) => acc + f.weight, 0);
+    let r = Math.random() * totalW;
+    for (let i = 0; i < FISH_CATALOG.length; i++) {
+      r -= FISH_CATALOG[i].weight;
+      if (r <= 0) return FISH_CATALOG[i];
+    }
+    return FISH_CATALOG[0];
+  }
+
+  function spawnOneFish() {
+    if (state.activeFishes.length >= 3) return;
+    const spec = pickRandomFishSpec();
+    const fromLeft = Math.random() < 0.5;
+    const dir = fromLeft ? 1 : -1;
+    const yMin = spec.bandY[0];
+    const yMax = spec.bandY[1];
+    const baseY = yMin + Math.random() * (yMax - yMin);
+
+    state.activeFishes.push({
+      spec,
+      x: fromLeft ? 20 : (LANE_X - 18),
+      y: baseY,
+      baseY,
+      dir,
+      vx: dir * spec.speed * (0.9 + Math.random() * 0.2),
+      swimPhase: Math.random() * Math.PI * 2,
+      ampY: 5 + Math.random() * 6
+    });
+  }
+
+  function updateFishes(dt) {
+    // 補充スポーンタイマー（最大3匹まで）
+    if (state.activeFishes.length < 3) {
+      state.fishSpawnTimer -= dt;
+      if (state.fishSpawnTimer <= 0) {
+        spawnOneFish();
+        state.fishSpawnTimer = 2.4 + Math.random() * 1.6;
+      }
+    }
+
+    for (let i = state.activeFishes.length - 1; i >= 0; i--) {
+      const f = state.activeFishes[i];
+      f.x += f.vx * dt;
+      f.swimPhase += dt * (3.5 + f.spec.speed * 0.04);
+      f.y = f.baseY + Math.sin(f.swimPhase) * f.ampY;
+
+      // 盤面の反対側の壁まで泳ぎ切ったら消えて次が補充される
+      if ((f.dir > 0 && f.x > LANE_X - 14) || (f.dir < 0 && f.x < 16)) {
+        state.activeFishes.splice(i, 1);
+      }
+    }
+  }
+
+  function collideFishes() {
+    const b = state.ball;
+    for (let i = state.activeFishes.length - 1; i >= 0; i--) {
+      const f = state.activeFishes[i];
+      const dx = b.x - f.x;
+      const dy = b.y - f.y;
+      const dist = Math.hypot(dx, dy);
+      const minDist = f.spec.r + BALL_R;
+
+      if (dist < minDist && dist > 0.0001) {
+        // 1. 実体のある的としてボールを跳ね返す
+        const nx = dx / dist;
+        const ny = dy / dist;
+        b.x = f.x + nx * minDist;
+        b.y = f.y + ny * minDist;
+        const dot = b.vx * nx + b.vy * ny;
+        if (dot < 0) {
+          b.vx -= 1.85 * dot * nx;
+          b.vy -= 1.85 * dot * ny;
+        }
+        b.vx += nx * 135;
+        b.vy += ny * 135;
+
+        // 2. 魚を回収（発光バースト＋図鑑登録＋パッシブ発動＋スコア加算）
+        onCatchFish(f, i);
+        break;
+      }
+    }
+  }
+
+  function onCatchFish(fishObj, indexInActive) {
+    const spec = fishObj.spec;
+    state.activeFishes.splice(indexInActive, 1);
+
+    const isNewZukan = saveFishToZukan(spec.id);
+    state.caughtFishThisRun.push(spec.id);
+
+    // パッシブグループ効果の有効化（未発動グループなら新規発動！）
+    let newlyActivatedGroup = null;
+    if (!state.activeFishGroups.has(spec.group)) {
+      state.activeFishGroups.add(spec.group);
+      newlyActivatedGroup = FISH_GROUPS[spec.group];
+      if (spec.group === 'guard') {
+        state.guardExtraSavesLeft++;
+      }
+    }
+
+    sfx.fishCatch(spec.rarity);
+    if (spec.rarity === 'ssr') {
+      state.hitStopTimer = 0.055;
+      triggerShake(0.18, 4.5);
+    } else if (spec.rarity === 'rare') {
+      triggerShake(0.11, 3);
+    }
+
+    // 発光バースト演出
+    spawnParticles(fishObj.x, fishObj.y, spec.color, spec.rarity === 'ssr' ? 28 : 16, 180);
+    spawnParticles(fishObj.x, fishObj.y, spec.subColor, 10, 140);
+    spawnShockwave(fishObj.x, fishObj.y, spec.color, spec.rarity === 'ssr' ? 78 : 50);
+
+    const tag = isNewZukan ? `🐟NEW! ${spec.name}` : `🐟${spec.name}`;
+    addScore(spec.points, fishObj.x, fishObj.y, spec.color, spec.rarity === 'ssr' ? 3 : (spec.rarity === 'rare' ? 2 : 1), -1, tag);
+
+    if (newlyActivatedGroup) {
+      spawnPopup(
+        fishObj.x,
+        fishObj.y - 18,
+        `${newlyActivatedGroup.icon}【${newlyActivatedGroup.name}】発動: ${newlyActivatedGroup.effectDesc}`,
+        '#ffd97d',
+        12.5
+      );
+    }
+    updateHUD();
+    updateTitleRecords();
+  }
+
+  // =========================================================================
+  // 6. 初期化・ラウンド進行・スコア加算
   // =========================================================================
   function initNewRun(startEndless = false) {
     state.round = startEndless ? 9 : 1;
@@ -1470,7 +1947,14 @@
     state.particles = [];
     state.shockwaves = [];
 
-    // 初期盤面：丸バンパー2個を設置済み（上層のスロット0とスロット1）
+    // ラン中魚コレクション・パッシブのリセット
+    state.activeFishes = [];
+    state.caughtFishThisRun = [];
+    state.activeFishGroups = new Set();
+    state.guardExtraSavesLeft = 0;
+    state.fishSpawnTimer = 0.8;
+
+    // 初期盤面：真珠貝（丸バンパー）2個を設置済み
     placePartInSlot(0, 'bumper_circle', 1);
     placePartInSlot(1, 'bumper_circle', 1);
 
@@ -1519,20 +2003,28 @@
     state.centerPostTimer = 0;
     state.feverTimer = 0;
 
+    // ラウンド開始時に魚を2匹泳がせておく
+    while (state.activeFishes.length < 2) {
+      spawnOneFish();
+    }
+
+    // R8以降：深海の主（ボス）出現
     state.bossCore.active = (roundNum >= 8);
     state.bossCore.x = 187;
-    state.bossCore.y = 610;
+    state.bossCore.y = 315;
+    state.bossCore.baseY = 315;
     state.bossCore.hpHits = 0;
+    state.bossCore.swimPhase = 0;
 
     hideAllOverlays();
     document.getElementById('place-banner').classList.remove('show');
     resetBallToPlunger();
 
-    const titleText = roundNum === 8 ? 'FINAL ROUND 8 (深淵の魔王)' : (roundNum > 8 ? `ABYSS ROUND ${roundNum}` : `ROUND ${roundNum}`);
+    const titleText = roundNum === 8 ? 'FINAL ROUND 8 (深海の主)' : (roundNum > 8 ? `TRENCH ROUND ${roundNum}` : `ROUND ${roundNum}`);
     showCenterBanner(
       titleText,
       `目標ノルマ: ${state.norma.toLocaleString()} PTS`,
-      roundNum >= 8 ? '#ff4d4d' : '#ffd86b',
+      roundNum >= 8 ? '#ff5c8a' : '#70f5ff',
       1.6
     );
     updateHUD();
@@ -1540,7 +2032,7 @@
 
   function resetBallToPlunger() {
     state.ball.x = (LANE_X + 408) / 2;
-    state.ball.y = 1185;
+    state.ball.y = 610;
     state.ball.vx = 0;
     state.ball.vy = 0;
     state.ball.inLane = true;
@@ -1558,8 +2050,6 @@
     state.leftKickbackReady = true;
     state.rightKickbackReady = true;
 
-    state.targetCameraY = MAX_CAM_Y;
-
     const filledIndices = state.slots.map((s, idx) => s ? idx : -1).filter(idx => idx !== -1);
     state.skillShotSlotId = filledIndices.length > 0
       ? filledIndices[Math.floor(Math.random() * filledIndices.length)]
@@ -1568,15 +2058,15 @@
     updateHUD();
   }
 
-  function spawnPopup(x, y, text, color = '#ffd86b', size = 13) {
+  function spawnPopup(x, y, text, color = '#70f5ff', size = 13) {
     state.popups.push({
-      x: Math.max(50, Math.min(VIEW_W - 50, x)),
+      x: Math.max(55, Math.min(VIEW_W - 55, x)),
       y: y - 10,
       text,
       color,
       size,
       alpha: 1,
-      vy: -42
+      vy: -40
     });
   }
 
@@ -1596,7 +2086,7 @@
     state.shakeIntensity = Math.max(state.shakeIntensity, intensity);
   }
 
-  function addScore(basePoints, x, y, color = '#ffd86b', comboGain = 1, slotId = -1, labelPrefix = '') {
+  function addScore(basePoints, x, y, color = '#70f5ff', comboGain = 1, slotId = -1, labelPrefix = '') {
     if (state.phase !== 'PLAY') return;
 
     if (comboGain > 0) {
@@ -1606,15 +2096,23 @@
         state.maxComboThisRun = state.combo;
       }
       const newBucket = Math.floor(state.combo / 10);
-      if (newBucket > prevBucket && state.combo <= 60) {
-        spawnShockwave(x, y, '#ffd86b', 72);
-        spawnPopup(VIEW_W / 2, state.cameraY + 165, `🔥 ${newBucket * 10} COMBO!! (×${getComboMultiplier().toFixed(2)})`, '#ffd86b', 15);
+      if (newBucket > prevBucket && state.combo <= 70) {
+        spawnShockwave(x, y, '#70f5ff', 72);
+        spawnPopup(VIEW_W / 2, 165, `🌊 ${newBucket * 10} COMBO!! (×${getComboMultiplier().toFixed(2)})`, '#70f5ff', 15);
       }
     }
 
     let modifiedBase = basePoints;
     if (slotId >= 0 && state.slots[slotId]) {
       const p = state.slots[slotId];
+      // 魚パッシブ【発光グループ】：全パーツの基礎スコア +10%
+      if (hasFishBuff('luminescent')) {
+        modifiedBase *= 1.10;
+      }
+      // 魚パッシブ【群れグループ】：スピナーの加点 +25%
+      if (p.type === 'spinner' && hasFishBuff('school')) {
+        modifiedBase *= 1.25;
+      }
       if ((p.type === 'bumper_circle' || p.type === 'bumper_tri') && hasSynergy('bumper_kingdom')) {
         modifiedBase *= 1.35;
       }
@@ -1626,11 +2124,6 @@
       }
     }
 
-    // 上層（天上聖堂フロア: y < 520）でのヒットは天上ボーナス +15%！
-    if (y < 520) {
-      modifiedBase *= 1.15;
-    }
-
     let isSkillShot = false;
     if (state.skillShotTimer > 0 && slotId === state.skillShotSlotId) {
       state.skillShotTimer = 0;
@@ -1639,7 +2132,7 @@
       isSkillShot = true;
       state.hitStopTimer = 0.045;
       sfx.skillShot();
-      spawnShockwave(x, y, '#ffd86b', 68);
+      spawnShockwave(x, y, '#ffd97d', 68);
     }
 
     const comboMult = getComboMultiplier();
@@ -1657,7 +2150,7 @@
     const popText = isSkillShot
       ? `🎯SKILL SHOT! +${gained.toLocaleString()}`
       : (labelPrefix ? `${labelPrefix} +${gained.toLocaleString()}` : `+${gained.toLocaleString()}`);
-    spawnPopup(x, y, popText, isSkillShot ? '#ffd86b' : color, isSkillShot ? 15 : 13);
+    spawnPopup(x, y, popText, isSkillShot ? '#ffd97d' : color, isSkillShot ? 15 : 13);
 
     updateHUD();
 
@@ -1682,7 +2175,7 @@
     }
   }
 
-  function showCenterBanner(text, sub, color = '#ffd86b', duration = 1.5) {
+  function showCenterBanner(text, sub, color = '#70f5ff', duration = 1.5) {
     state.bannerText = { text, sub, color, timer: duration, maxTimer: duration };
   }
 
@@ -1691,19 +2184,19 @@
     setFlippersPressed(true, false);
     setFlippersPressed(false, false);
     sfx.roundClear();
-    spawnParticles(state.ball.x, state.ball.y, '#ffd86b', 30, 230);
-    spawnShockwave(state.ball.x, state.ball.y, '#ffd86b', 95);
+    spawnParticles(state.ball.x, state.ball.y, '#20e3b2', 30, 230);
+    spawnShockwave(state.ball.x, state.ball.y, '#20e3b2', 95);
 
     const unusedBalls = Math.max(0, state.ballsLeft - 1);
     const ballBonus = unusedBalls * (400 * state.round);
     if (ballBonus > 0) {
       state.totalScore += ballBonus;
-      spawnPopup(VIEW_W / 2, state.cameraY + 260, `ORB BONUS +${ballBonus.toLocaleString()}`, '#51cf66', 15);
+      spawnPopup(VIEW_W / 2, 260, `PEARL BONUS +${ballBonus.toLocaleString()}`, '#20e3b2', 15);
     }
 
     const token = state.runToken;
     if (state.round === 8 && !state.endlessMode) {
-      showCenterBanner('ALL ROUNDS CLEAR!!', '見事！古城の全8ラウンドを制覇！', '#ffd86b', 2.2);
+      showCenterBanner('ALL ROUNDS CLEAR!!', '見事！深海の全8ラウンドを制覇！', '#ffd97d', 2.2);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           showResultScreen(true);
@@ -1711,9 +2204,9 @@
       }, 2100);
     } else {
       const subMsg = ballBonus > 0
-        ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS！遺物選択へ`
-        : 'ノルマ達成！遺物カード選択へ';
-      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#51cf66', 1.7);
+        ? `残り真珠ボーナス +${ballBonus.toLocaleString()} PTS！ドラフトへ`
+        : 'ノルマ達成！深海カードドラフトへ';
+      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#20e3b2', 1.7);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           openDraftModal(ballBonus);
@@ -1725,17 +2218,22 @@
   function onBallLost() {
     if (state.phase !== 'PLAY') return;
 
+    // 1. 時間制ボールセーバー有効時
     if (state.ballSaverTimer > 0) {
       state.ballSaverTimer = 0;
       sfx.ballSave();
-      showCenterBanner('SOUL SAVED!', '守護結界が発動！コンボ継続で天上へ再射出', '#51cf66', 1.2);
-      state.ball.x = (LANE_X + 408) / 2;
-      state.ball.y = 1160;
-      state.ball.inLane = true;
-      state.ball.waitingLaunch = false;
-      state.ball.vx = 0;
-      state.ball.vy = -1240;
-      state.ball.trail = [];
+      showCenterBanner('PEARL SAVED!', '海流バリア発動！コンボ継続で再射出', '#20e3b2', 1.2);
+      relaunchSavedBall();
+      return;
+    }
+
+    // 2. 魚パッシブ【守りグループ】による追加ボールセーバー発動回数がある場合
+    if (state.guardExtraSavesLeft > 0) {
+      state.guardExtraSavesLeft--;
+      sfx.ballSave();
+      showCenterBanner('🛡️魚効果: 守り発動!', 'マンボウ/ハコフグの加護で真珠を救出！', '#ffd97d', 1.3);
+      updateHUD();
+      relaunchSavedBall();
       return;
     }
 
@@ -1747,16 +2245,26 @@
     if (state.ballsLeft <= 0) {
       state.phase = 'CLEAR_ANIM';
       const token = state.runToken;
-      showCenterBanner('ORB LOST...', 'ノルマ未達成', '#ff4d4d', 1.8);
+      showCenterBanner('PEARL LOST...', 'ノルマ未達成', '#ff5c8a', 1.8);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           showResultScreen(false);
         }
       }, 1700);
     } else {
-      showCenterBanner('ORB LOST', `残りオーブ ${state.ballsLeft}個`, '#ff4d4d', 1.1);
+      showCenterBanner('PEARL LOST', `残り真珠 ${state.ballsLeft}個`, '#ff5c8a', 1.1);
       resetBallToPlunger();
     }
+  }
+
+  function relaunchSavedBall() {
+    state.ball.x = (LANE_X + 408) / 2;
+    state.ball.y = 590;
+    state.ball.inLane = true;
+    state.ball.waitingLaunch = false;
+    state.ball.vx = 0;
+    state.ball.vy = -900;
+    state.ball.trail = [];
   }
 
   function showResultScreen(isClear) {
@@ -1781,11 +2289,11 @@
     const resSub = document.getElementById('res-sub');
     if (isClear) {
       resTitle.textContent = 'GAME CLEAR!';
-      resTitle.style.color = '#ffd86b';
+      resTitle.style.color = '#20e3b2';
       resSub.textContent = '全8ラウンドのノルマを達成しました！';
     } else {
-      resTitle.textContent = state.endlessMode ? `ABYSS R${state.round} FINISH` : 'GAME OVER';
-      resTitle.style.color = state.endlessMode ? '#ffd86b' : '#ff4d4d';
+      resTitle.textContent = state.endlessMode ? `TRENCH R${state.round} FINISH` : 'GAME OVER';
+      resTitle.style.color = state.endlessMode ? '#ffd97d' : '#ff5c8a';
       resSub.textContent = `ROUND ${state.round} ノルマ達成率 ${Math.floor((state.roundScore / state.norma) * 100)}%`;
     }
     document.getElementById('res-total').textContent = state.totalScore.toLocaleString();
@@ -1798,7 +2306,7 @@
       if (s && s.totalEarned > bestScore) {
         bestScore = s.totalEarned;
         const c = CARD_CATALOG.find(item => item.id === s.type);
-        mvpText = `${c ? c.name : s.type} Lv${s.level} (#${idx + 1})`;
+        mvpText = `${c ? c.shortName : s.type} Lv${s.level} (#${idx + 1})`;
       }
     });
 
@@ -1809,16 +2317,16 @@
         <div class="s-val">ROUND ${state.round}</div>
       </div>
       <div class="stat-cell">
+        <div class="s-lbl">今回回収した深海魚</div>
+        <div class="s-val" style="color:var(--pearl-gold);">${state.caughtFishThisRun.length} 匹 (図鑑 ${getUnlockedFishCount()}/12)</div>
+      </div>
+      <div class="stat-cell">
         <div class="s-lbl">最大コンボ</div>
-        <div class="s-val">${state.maxComboThisRun} HIT (×${(1 + Math.min(state.maxComboThisRun, 50) * 0.04).toFixed(2)})</div>
+        <div class="s-val">${state.maxComboThisRun} HIT</div>
       </div>
       <div class="stat-cell">
-        <div class="s-lbl">発動シナジー数</div>
-        <div class="s-val">${state.activeSynergies.length} 個</div>
-      </div>
-      <div class="stat-cell">
-        <div class="s-lbl">MVP遺物パーツ</div>
-        <div class="s-val" style="color:var(--gold-bright); font-size:11.5px;">${mvpText}</div>
+        <div class="s-lbl">MVPパーツ</div>
+        <div class="s-val" style="color:var(--aqua-bright); font-size:11.5px;">${mvpText}</div>
       </div>
     `;
 
@@ -1828,7 +2336,249 @@
   }
 
   // =========================================================================
-  // 6. ドラフト＆配置フェーズ
+  // 7. 深海魚図鑑（永続コレクション画面）と魚シルエット/カラーCanvas描画
+  // =========================================================================
+  function drawFishShapeOnContext(c, spec, x, y, r, dir, swimPhase, silhouetteOnly = false) {
+    c.save();
+    c.translate(x, y);
+    c.scale(dir, 1);
+
+    const wag = Math.sin(swimPhase) * 3.2;
+    const mainCol = silhouetteOnly ? '#162d4c' : spec.color;
+    const subCol = silhouetteOnly ? '#1e3a5f' : spec.subColor;
+
+    c.fillStyle = mainCol;
+    c.strokeStyle = silhouetteOnly ? 'rgba(112, 245, 255, 0.35)' : '#ffffff';
+    c.lineWidth = 1.2;
+    if (!silhouetteOnly) {
+      c.shadowColor = spec.color;
+      c.shadowBlur = spec.rarity === 'ssr' ? 14 : 8;
+    }
+
+    // 1. リュウグウノツカイ（長いリボン状の体＋赤い冠びれ）
+    if (spec.shape === 'oarfish') {
+      c.beginPath();
+      c.moveTo(r * 1.4, -3);
+      c.quadraticCurveTo(0, -5 + wag, -r * 2.1, -2 - wag);
+      c.lineTo(-r * 2.3, 2 - wag);
+      c.quadraticCurveTo(0, 5 + wag, r * 1.4, 3);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // 赤い背びれ冠
+      c.strokeStyle = subCol;
+      c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(r * 1.1, -3);
+      c.lineTo(r * 1.5, -11);
+      c.moveTo(r * 0.8, -3);
+      c.lineTo(r * 1.1, -9);
+      c.stroke();
+    }
+    // 2. ダイオウイカ（三角外套膜＋触腕）
+    else if (spec.shape === 'squid') {
+      c.beginPath();
+      c.moveTo(r * 1.4, 0);
+      c.lineTo(-r * 0.3, -r * 0.65);
+      c.lineTo(-r * 0.3, r * 0.65);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // 触腕
+      c.strokeStyle = subCol;
+      c.lineWidth = 2;
+      for (let t = -1; t <= 1; t++) {
+        c.beginPath();
+        c.moveTo(-r * 0.3, t * 3);
+        c.quadraticCurveTo(-r * 1.1, t * 4 + wag * 0.5, -r * 1.8, t * 3 - wag);
+        c.stroke();
+      }
+    }
+    // 3. チョウチンアンコウ（丸い体＋発光ルアー提灯）
+    else if (spec.shape === 'angler') {
+      c.beginPath();
+      c.ellipse(0, 2, r * 0.95, r * 0.78, 0, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+
+      // 尾びれ
+      c.beginPath();
+      c.moveTo(-r * 0.85, 2);
+      c.lineTo(-r * 1.4, -5 + wag);
+      c.lineTo(-r * 1.4, 8 + wag);
+      c.closePath();
+      c.fill();
+
+      // 提灯アンテナ
+      c.strokeStyle = subCol;
+      c.lineWidth = 1.5;
+      c.beginPath();
+      c.moveTo(r * 0.4, -r * 0.5);
+      c.quadraticCurveTo(r * 0.9, -r * 1.3, r * 1.25, -r * 0.7);
+      c.stroke();
+
+      c.fillStyle = silhouetteOnly ? '#274c77' : '#70f5ff';
+      c.beginPath();
+      c.arc(r * 1.25, -r * 0.7, 3.2, 0, Math.PI * 2);
+      c.fill();
+    }
+    // 4. マンボウ（縦に高い独特の体型）
+    else if (spec.shape === 'sunfish') {
+      c.beginPath();
+      c.ellipse(0, 0, r * 0.85, r * 0.95, 0, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+      // 背びれ・尻びれ
+      c.beginPath();
+      c.moveTo(-2, -r * 0.85);
+      c.lineTo(-r * 0.6, -r * 1.55);
+      c.lineTo(-r * 0.7, -r * 0.6);
+      c.moveTo(-2, r * 0.85);
+      c.lineTo(-r * 0.6, r * 1.55);
+      c.lineTo(-r * 0.7, r * 0.6);
+      c.fill();
+    }
+    // 5. イワシの群れ（3匹の小魚が編隊で泳ぐ）
+    else if (spec.shape === 'school') {
+      const offsets = [[5, -4], [-5, 4], [2, 5]];
+      offsets.forEach(([ox, oy]) => {
+        c.beginPath();
+        c.ellipse(ox, oy, 6.5, 3, 0, 0, Math.PI * 2);
+        c.fill();
+        c.beginPath();
+        c.moveTo(ox - 6, oy);
+        c.lineTo(ox - 10, oy - 3 + wag * 0.4);
+        c.lineTo(ox - 10, oy + 3 + wag * 0.4);
+        c.closePath();
+        c.fill();
+      });
+    }
+    // 6. フクロウナギ（大口＋細長い尾）
+    else if (spec.shape === 'eel') {
+      c.beginPath();
+      c.moveTo(r * 1.1, -4);
+      c.lineTo(r * 0.2, -7);
+      c.quadraticCurveTo(-r * 0.9, -2 + wag, -r * 1.8, -wag);
+      c.quadraticCurveTo(-r * 0.9, 4 + wag, r * 0.2, 5);
+      c.lineTo(r * 1.1, 2);
+      c.closePath();
+      c.fill();
+      c.stroke();
+    }
+    // 7. ハコフグ（角丸の四角体型）
+    else if (spec.shape === 'box_fish') {
+      c.beginPath();
+      c.roundRect(-r * 0.75, -r * 0.65, r * 1.5, r * 1.3, 4);
+      c.fill();
+      c.stroke();
+      c.beginPath();
+      c.moveTo(-r * 0.75, 0);
+      c.lineTo(-r * 1.25, -5 + wag);
+      c.lineTo(-r * 1.25, 5 + wag);
+      c.closePath();
+      c.fill();
+    }
+    // 8. デメニギス / キンメダイ / ハダカイワシ / ミツクリザメ / シーラカンス（標準〜流線魚体型）
+    else {
+      c.beginPath();
+      c.ellipse(0, 0, r * 1.05, r * 0.62, 0, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+
+      // 尾びれ
+      c.fillStyle = subCol;
+      c.beginPath();
+      c.moveTo(-r * 0.95, 0);
+      c.lineTo(-r * 1.55, -r * 0.6 + wag);
+      c.lineTo(-r * 1.55, r * 0.6 + wag);
+      c.closePath();
+      c.fill();
+
+      // デメニギスの透明頭部ドーム
+      if (spec.shape === 'barreleye' && !silhouetteOnly) {
+        c.fillStyle = 'rgba(112, 245, 255, 0.35)';
+        c.beginPath();
+        c.arc(r * 0.45, -3, 5.5, Math.PI, 0);
+        c.fill();
+      }
+    }
+
+    // 目（シルエット時は描かない）
+    if (!silhouetteOnly && spec.shape !== 'school') {
+      c.fillStyle = '#ffffff';
+      c.shadowBlur = 0;
+      c.beginPath();
+      c.arc(r * 0.55, -2, 2.3, 0, Math.PI * 2);
+      c.fill();
+      c.fillStyle = '#030916';
+      c.beginPath();
+      c.arc(r * 0.62, -2, 1.1, 0, Math.PI * 2);
+      c.fill();
+    }
+
+    c.restore();
+  }
+
+  function openZukanModal(fromPhase) {
+    state.prevPhaseBeforeZukan = fromPhase;
+    hideAllOverlays();
+
+    const count = getUnlockedFishCount();
+    document.getElementById('zukan-subtitle').textContent = `回収した深海生物の記録 (${count} / 12種)`;
+
+    const grid = document.getElementById('zukan-grid');
+    grid.innerHTML = '';
+
+    FISH_CATALOG.forEach(spec => {
+      const caughtCount = unlockedFishMap[spec.id] || 0;
+      const unlocked = caughtCount > 0;
+      const grp = FISH_GROUPS[spec.group];
+
+      const card = document.createElement('div');
+      card.className = `zukan-card ${unlocked ? 'unlocked ' + spec.rarity : 'locked'}`;
+
+      const cvs = document.createElement('canvas');
+      cvs.width = 88;
+      cvs.height = 60;
+      cvs.className = 'zk-canvas';
+      const c2 = cvs.getContext('2d');
+      drawFishShapeOnContext(c2, spec, 46, 30, 14, 1, 0.4, !unlocked);
+
+      const topDiv = document.createElement('div');
+      topDiv.className = 'zk-top';
+      topDiv.appendChild(cvs);
+
+      const titleWrap = document.createElement('div');
+      titleWrap.className = 'zk-title-wrap';
+      titleWrap.innerHTML = `
+        <span class="zk-rarity" style="color:${unlocked ? spec.color : '#7fa6c4'};">${spec.rarityLabel} (${spec.points}pt)</span>
+        <span class="zk-name">${unlocked ? spec.name : '？？？'}</span>
+      `;
+      topDiv.appendChild(titleWrap);
+      card.appendChild(topDiv);
+
+      const descDiv = document.createElement('div');
+      descDiv.className = 'zk-desc';
+      descDiv.textContent = unlocked ? spec.desc : `ヒント: ${spec.bandHint}`;
+      card.appendChild(descDiv);
+
+      const buffDiv = document.createElement('div');
+      buffDiv.className = 'zk-buff';
+      buffDiv.textContent = unlocked
+        ? `${grp.icon}【${grp.name}】${grp.effectDesc} (回収:${caughtCount}回)`
+        : `${grp.icon}【${grp.name}グループ】`;
+      card.appendChild(buffDiv);
+
+      grid.appendChild(card);
+    });
+
+    document.getElementById('ov-zukan').classList.add('show');
+  }
+
+  // =========================================================================
+  // 8. ドラフト＆配置フェーズ
   // =========================================================================
   function canCardBeUsed(card) {
     const emptyCount = state.slots.filter(s => s === null).length;
@@ -1858,7 +2608,7 @@
       const upgradable = existing.filter(s => s.level < 3).length;
       if (card.id === 'warp_gate') {
         const pairs = Math.floor(existing.length / 2);
-        return pairs > 0 ? `現在 ${pairs}組設置中（同スロット選択でLvUP）` : '空きスロット2か所に連結設置（上層と下層を結ぶと強力！）';
+        return pairs > 0 ? `現在 ${pairs}組設置中（同スロット選択でLvUP）` : '空きスロット2か所に連結設置';
       }
       return existing.length > 0
         ? `現在 ${existing.length}個設置中（${upgradable > 0 ? '重ねてLvUP可' : 'すべて最大Lv'}）`
@@ -1869,13 +2619,13 @@
       return `強化可能な既存パーツ: ${count}個`;
     }
     if (card.id === 'extra_ball') {
-      return `毎ラウンド球数: ${state.maxBallsPerRound} → ${state.maxBallsPerRound + 1}個（残り枠 ${2 - state.extraBallPurchases}回）`;
+      return `毎ラウンド真珠数: ${state.maxBallsPerRound} → ${state.maxBallsPerRound + 1}個（残り枠 ${2 - state.extraBallPurchases}回）`;
     }
     if (card.id === 'score_booster') {
       return `スコアボーナス: +${state.scoreBoosterCount * 10}% → +${(state.scoreBoosterCount + 1) * 10}%`;
     }
     if (card.id === 'flipper_up') {
-      return `フリッパー強化: Lv${state.flipperLevel} → Lv${state.flipperLevel + 1} (上層・下層とも強化)`;
+      return `フリッパー強化: Lv${state.flipperLevel} → Lv${state.flipperLevel + 1} (最大Lv3)`;
     }
     return '';
   }
@@ -1935,7 +2685,7 @@
     cards.forEach(card => {
       const item = document.createElement('div');
       item.className = `card-item ${card.category !== 'part' ? 'instant' : ''}`;
-      const badgeLabel = card.category === 'part' ? '遺物配置' : (card.id === 'upgrade_chip' ? '遺物強化' : '即時秘儀');
+      const badgeLabel = card.category === 'part' ? 'パーツ配置' : (card.id === 'upgrade_chip' ? 'パーツ強化' : '即時発動');
       const synAlert = predictNewSynergyForCard(card);
 
       item.innerHTML = `
@@ -1964,11 +2714,19 @@
     hideAllOverlays();
     const ov = document.getElementById('ov-draft');
     ov.classList.remove('peek-mode');
-    document.getElementById('btn-peek-board').textContent = '👁 盤面を確認(上下ドラッグ)';
+    document.getElementById('btn-peek-board').textContent = '👁 盤面を確認';
     document.getElementById('draft-header').textContent = `ROUND ${state.round} CLEAR!`;
     document.getElementById('draft-bonus-info').textContent = ballBonus > 0
-      ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS 獲得！報酬カードを1枚選択`
-      : '報酬カードを1枚選んで古城の盤面を構築しよう';
+      ? `残り真珠ボーナス +${ballBonus.toLocaleString()} PTS 獲得！報酬カードを1枚選択`
+      : '報酬カードを1枚選んで深海の盤面を構築しよう';
+
+    const fishBuffsEl = document.getElementById('draft-fish-buffs');
+    if (state.activeFishGroups.size > 0) {
+      const list = Array.from(state.activeFishGroups).map(gid => `${FISH_GROUPS[gid].icon}${FISH_GROUPS[gid].name}`).join(' / ');
+      fishBuffsEl.textContent = `🐟発動中の魚効果: ${list}`;
+    } else {
+      fishBuffsEl.textContent = `🐟泳ぐ魚に真珠を当てるとラン中パッシブ効果が発動します`;
+    }
 
     renderDraftCards();
     ov.classList.add('show');
@@ -1998,17 +2756,6 @@
     state.phase = 'PLACE';
     state.pendingCard = card;
     state.warpFirstSlot = null;
-
-    // 選択可能なスロットが集中している高さへカメラを自動フォーカス
-    let focusY = 260;
-    for (let i = 0; i < SLOT_POSITIONS.length; i++) {
-      if (getSlotActionType(i) === 'upgrade') {
-        focusY = SLOT_POSITIONS[i].y - 250;
-        break;
-      }
-    }
-    state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, focusY));
-
     updatePlaceBanner();
     document.getElementById('place-banner').classList.add('show');
   }
@@ -2020,19 +2767,19 @@
     const subEl = document.getElementById('place-sub');
 
     if (card.id === 'upgrade_chip') {
-      titleEl.textContent = `【強化チップ】対象パーツを選択`;
-      subEl.textContent = `上下ドラッグまたは▲上層/▼下層で移動し、黄枠パーツをタップ`;
+      titleEl.textContent = `【深海結晶】対象パーツを選択`;
+      subEl.textContent = `黄枠の既存パーツをタップして Lv+1（最大Lv3）`;
     } else if (card.id === 'warp_gate') {
       if (state.warpFirstSlot === null) {
-        titleEl.textContent = `【ワープゲート】1つ目のスロットを選択`;
-        subEl.textContent = `緑枠で新規設置（下層と上層をつなぐと強力！）、黄枠でLvUP`;
+        titleEl.textContent = `【渦潮】1つ目のスロットを選択`;
+        subEl.textContent = `緑枠（空き2か所必要）で新規設置、黄枠で既存ペアLvUP`;
       } else {
-        titleEl.textContent = `【ワープゲート】2つ目の空きスロットを選択`;
+        titleEl.textContent = `【渦潮】2つ目の空きスロットを選択`;
         subEl.textContent = `出口の空きスロットをタップ（1つ目を再タップで解除）`;
       }
     } else {
-      titleEl.textContent = `【${card.name}】配置スロットを選択`;
-      subEl.textContent = `緑＝新規配置 / 黄＝同種LvUP（上下ドラッグまたは▲▼で視点移動）`;
+      titleEl.textContent = `【${card.shortName}】配置スロットを選択`;
+      subEl.textContent = `緑＝新規配置 / 黄＝同種LvUP（別種スロットは上書き不可）`;
     }
   }
 
@@ -2084,7 +2831,7 @@
       }
       refreshSynergies();
       sfx.place();
-      spawnParticles(pos.x, pos.y, '#51cf66', 18, 150);
+      spawnParticles(pos.x, pos.y, '#20e3b2', 18, 150);
       finishPlacementPhase();
       return;
     }
@@ -2107,14 +2854,14 @@
         }
         refreshSynergies();
         sfx.place();
-        spawnParticles(pos.x, pos.y, '#cc5de8', 18, 150);
+        spawnParticles(pos.x, pos.y, '#a855f7', 18, 150);
         finishPlacementPhase();
         return;
       }
       if (state.warpFirstSlot === null) {
         state.warpFirstSlot = slotId;
         sfx.place();
-        spawnParticles(pos.x, pos.y, '#cc5de8', 12, 100);
+        spawnParticles(pos.x, pos.y, '#a855f7', 12, 100);
         updatePlaceBanner();
         return;
       } else {
@@ -2122,7 +2869,7 @@
         placePartInSlot(firstId, 'warp_gate', 1, slotId);
         placePartInSlot(slotId, 'warp_gate', 1, firstId);
         sfx.warp();
-        spawnParticles(pos.x, pos.y, '#cc5de8', 22, 170);
+        spawnParticles(pos.x, pos.y, '#a855f7', 22, 170);
         finishPlacementPhase();
         return;
       }
@@ -2148,7 +2895,7 @@
   }
 
   // =========================================================================
-  // 7. 物理演算エンジン ＆ カメラ追従システム
+  // 9. 物理演算エンジン（1画面固定・深海魚衝突・魚パッシブ補正込み）
   // =========================================================================
   function closestPointOnSegment(px, py, x1, y1, x2, y2) {
     const dx = x2 - x1;
@@ -2177,7 +2924,7 @@
 
   function collideFlipper(flipper) {
     const b = state.ball;
-    const len = getFlipperLength(flipper);
+    const len = getFlipperLength();
     const x1 = flipper.pivotX;
     const y1 = flipper.pivotY;
     const x2 = x1 + Math.cos(flipper.angle) * len;
@@ -2206,12 +2953,13 @@
       const relDot = relVx * nx + relVy * ny;
 
       if (relDot < 0) {
-        const restitution = 0.85 + state.flipperLevel * 0.06;
+        const agileBonus = hasFishBuff('agile') ? 0.10 : 0;
+        const restitution = 0.82 + state.flipperLevel * 0.06 + agileBonus;
         b.vx -= (1 + restitution) * relDot * nx;
         b.vy -= (1 + restitution) * relDot * ny;
 
         if (Math.abs(flipper.angVel) > 0.5) {
-          const tipBoost = (0.52 + 0.82 * cp.t) * (1 + state.flipperLevel * 0.15);
+          const tipBoost = (0.45 + 0.78 * cp.t) * (1 + state.flipperLevel * 0.14 + (hasFishBuff('agile') ? 0.12 : 0));
           b.vx += fvx * tipBoost;
           b.vy += fvy * tipBoost;
         }
@@ -2224,10 +2972,6 @@
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
       if (w.oneWayLeft && b.inLane && b.vx < 0) {
-        continue;
-      }
-      // 発射レーン内を上昇中のボールは上層右ガイド斜壁(x<LANE_X)に干渉しない
-      if (b.inLane && (w.x1 < LANE_X || w.x2 < LANE_X) && w.y1 >= 470 && w.y2 <= 600) {
         continue;
       }
 
@@ -2249,17 +2993,17 @@
           if (w.isSlingshot && Math.hypot(b.vx, b.vy) > 110) {
             w.pulse = 1.0;
             sfx.bumper(state.combo);
-            addScore(35, cp.x, cp.y, '#ff6b6b', 1, -1);
-            spawnParticles(cp.x, cp.y, '#ff6b6b', 6, 95);
+            addScore(35, cp.x, cp.y, '#ff5c8a', 1, -1);
+            spawnParticles(cp.x, cp.y, '#ff5c8a', 6, 95);
           }
         }
       }
     }
 
-    // センターセーフティピラー（最上層3ルーン達成で下層メインフリッパー間に出現する守護柱）
+    // センターセーフティピラー（発光プランクトン3か所達成でフリッパー間に出現する海流柱）
     if (state.centerPostTimer > 0) {
       const px = 193;
-      const py = 1182;
+      const py = 605;
       const pr = 9;
       const dx = b.x - px;
       const dy = b.y - py;
@@ -2273,47 +3017,31 @@
         if (dot < 0) {
           b.vx -= 1.85 * dot * nx;
           b.vy -= 1.85 * dot * ny;
-          b.vy -= 130;
+          b.vy -= 110;
           sfx.bumper(state.combo);
-          spawnParticles(px, py, '#51cf66', 8, 110);
+          spawnParticles(px, py, '#20e3b2', 8, 110);
         }
       }
     }
 
     if (b.inLane && b.x < LANE_X - BALL_R) {
       b.inLane = false;
-      state.ballSaverTimer = 5.5;
-      state.skillShotTimer = 5.5;
+      state.ballSaverTimer = 4.5;
+      state.skillShotTimer = 4.5;
     }
   }
 
   function checkBoardGimmicks(subDt) {
     const b = state.ball;
 
-    // 0. 下層中央の「昇天の魔導陣（アセンション・パッド）」：踏むと上層フロアへボールを一気に撃ち上げる！
-    const pad = state.ascensionPad;
-    if (pad.cooldown > 0) pad.cooldown = Math.max(0, pad.cooldown - subDt);
-    if (pad.pulse > 1) pad.pulse = Math.max(1, pad.pulse - subDt * 2.5);
-    if (Math.hypot(b.x - pad.x, b.y - pad.y) < pad.r + BALL_R && pad.cooldown <= 0) {
-      pad.cooldown = 0.65;
-      pad.pulse = 1.6;
-      b.vy = -820;
-      b.vx = (Math.random() - 0.5) * 140;
-      sfx.kicker();
-      triggerShake(0.11, 3);
-      addScore(100, pad.x, pad.y, '#cc5de8', 1, -1, '▲ASCENSION!');
-      spawnShockwave(pad.x, pad.y, '#cc5de8', 46);
-      spawnParticles(pad.x, pad.y, '#cc5de8', 14, 170);
-    }
-
-    // 1. 最上層3ルーン祭壇 (太陽・月・星)
+    // 1. 最上部・発光プランクトンの溜まり場3か所 (y=64)
     for (let i = 0; i < TOP_ROLLOVERS.length; i++) {
       const ro = TOP_ROLLOVERS[i];
       if (!ro.lit && Math.hypot(b.x - ro.x, b.y - ro.y) < 15) {
         ro.lit = true;
         sfx.targetLit();
-        addScore(120, ro.x, ro.y, '#ffd86b', 1, -1, `RUNE [${ro.label}]`);
-        spawnParticles(ro.x, ro.y, '#ffd86b', 8, 100);
+        addScore(120, ro.x, ro.y, '#70f5ff', 1, -1, `PLANKTON`);
+        spawnParticles(ro.x, ro.y, '#70f5ff', 8, 100);
 
         if (TOP_ROLLOVERS.every(r => r.lit)) {
           const token = state.runToken;
@@ -2322,25 +3050,25 @@
               TOP_ROLLOVERS.forEach(r => { r.lit = false; });
             }
           }, 450);
-          state.centerPostTimer = 18.0;
+          state.centerPostTimer = 15.0;
           state.jackpotDrone.active = true;
           sfx.skillShot();
-          addScore(500, 187, 90, '#ffd86b', 2, -1, '★TRINITY RUNE! 聖杯出現');
-          spawnShockwave(187, 90, '#ffd86b', 75);
+          addScore(500, 187, 80, '#ffd97d', 2, -1, '★PLANKTON BLOOM! 黄金オウムガイ出現');
+          spawnShockwave(187, 80, '#ffd97d', 75);
         }
       }
     }
 
-    // 2. 左右壁の4つの魔導燭台ターゲット
+    // 2. 左右壁の4つのイソギンチャク (y=250, y=470)
     for (let i = 0; i < WALL_TARGETS.length; i++) {
       const wt = WALL_TARGETS[i];
       if (Math.abs(b.x - wt.x) < BALL_R + 5 && b.y >= wt.y1 && b.y <= wt.y2) {
         if (!wt.lit) {
           wt.lit = true;
-          b.vx += wt.normalX * 140;
+          b.vx += wt.normalX * 135;
           sfx.targetLit();
-          addScore(140, wt.x + wt.normalX * 16, wt.y, '#ffa94d', 1, -1, 'TORCH LIT');
-          spawnParticles(wt.x, wt.y, '#ffa94d', 9, 110);
+          addScore(140, wt.x + wt.normalX * 16, wt.y, '#ff5c8a', 1, -1, 'ANEMONE');
+          spawnParticles(wt.x, wt.y, '#ff5c8a', 9, 110);
 
           if (WALL_TARGETS.every(t => t.lit)) {
             const token = state.runToken;
@@ -2349,17 +3077,17 @@
                 WALL_TARGETS.forEach(t => { t.lit = false; });
               }
             }, 500);
-            state.feverTimer = 12.0;
-            state.ballSaverTimer = Math.max(state.ballSaverTimer, 9.0);
+            state.feverTimer = 10.0;
+            state.ballSaverTimer = Math.max(state.ballSaverTimer, 8.0);
             sfx.jackpot();
-            addScore(800, VIEW_W / 2, b.y, '#ff4d4d', 3, -1, '🔥BLOOD MOON 12s (×1.25)');
-            spawnShockwave(b.x, b.y, '#ff4d4d', 90);
+            addScore(800, VIEW_W / 2, 260, '#20e3b2', 3, -1, '🌊BIOLUMINESCENCE FEVER 10s (×1.25)');
+            spawnShockwave(VIEW_W / 2, 260, '#20e3b2', 90);
           }
         }
       }
     }
 
-    // 3. 移動ジャックポット（黄金の聖杯）
+    // 3. 移動ジャックポット（黄金オウムガイ）
     if (state.jackpotDrone.active) {
       const jd = state.jackpotDrone;
       const dx = b.x - jd.x;
@@ -2370,13 +3098,13 @@
         state.hitStopTimer = 0.055;
         sfx.jackpot();
         triggerShake(0.22, 5);
-        addScore(1000, jd.x, jd.y, '#ffd86b', 4, -1, '👑HOLY GRAIL JACKPOT!!');
-        spawnParticles(jd.x, jd.y, '#ffd86b', 26, 210);
-        spawnShockwave(jd.x, jd.y, '#ffd86b', 85);
+        addScore(1000, jd.x, jd.y, '#ffd97d', 4, -1, '🐚GOLDEN NAUTILUS JACKPOT!!');
+        spawnParticles(jd.x, jd.y, '#ffd97d', 26, 210);
+        spawnShockwave(jd.x, jd.y, '#ffd97d', 85);
       }
     }
 
-    // 4. R8ボス（深淵の魔王核）
+    // 4. R8ボス：大型の深海魚「深海の主」 (ゆっくり泳ぎ回り、当てるたびにダメージ表示＋得点)
     if (state.bossCore.active) {
       const bc = state.bossCore;
       if (bc.cooldown > 0) bc.cooldown = Math.max(0, bc.cooldown - subDt);
@@ -2394,8 +3122,8 @@
           b.vx -= 2.0 * dot * nx;
           b.vy -= 2.0 * dot * ny;
         }
-        b.vx += nx * 220;
-        b.vy += ny * 220;
+        b.vx += nx * 210;
+        b.vy += ny * 210;
 
         if (bc.cooldown <= 0) {
           bc.cooldown = 0.08;
@@ -2405,39 +3133,39 @@
           if (bc.hpHits % 5 === 0) {
             state.hitStopTimer = 0.06;
             sfx.jackpot();
-            addScore(1200, bc.x, bc.y, '#ffd86b', 3, -1, '💥DEMON CORE BREAK!');
-            spawnShockwave(bc.x, bc.y, '#ffd86b', 85);
-            spawnParticles(bc.x, bc.y, '#ffd86b', 24, 200);
+            addScore(1200, bc.x, bc.y, '#ffd97d', 3, -1, '💥深海の主 CRITICAL DAMAGE!');
+            spawnShockwave(bc.x, bc.y, '#ffd97d', 85);
+            spawnParticles(bc.x, bc.y, '#ffd97d', 24, 200);
           } else {
             sfx.bumper(state.combo);
-            addScore(350, bc.x, bc.y, '#ff4d4d', 2, -1, 'BOSS HIT');
-            spawnShockwave(bc.x, bc.y, '#ff4d4d', 50);
-            spawnParticles(bc.x, bc.y, '#ff4d4d', 14, 150);
+            addScore(350, bc.x, bc.y, '#ff5c8a', 2, -1, '⚔️深海の主 DAMAGE!');
+            spawnShockwave(bc.x, bc.y, '#ff5c8a', 50);
+            spawnParticles(bc.x, bc.y, '#ff5c8a', 14, 150);
           }
         }
       }
     }
 
-    // 5. 左右サイドレーン・キックバック（毎ボール1回ずつ、両端アウトレーンから上層へ撃ち戻す）
-    if (state.leftKickbackReady && b.x > 12 && b.x < 45 && b.y > 1085 && b.y < 1115 && b.vy > 0) {
+    // 5. 左右サイドレーン・キックバック
+    if (state.leftKickbackReady && b.x > 12 && b.x < 45 && b.y > 505 && b.y < 535 && b.vy > 0) {
       state.leftKickbackReady = false;
-      b.vy = -860;
-      b.vx = 105;
+      b.vy = -650;
+      b.vx = 95;
       sfx.kicker();
       triggerShake(0.12, 3);
-      addScore(200, 29, 1090, '#ffd86b', 1, -1, '⚡RUNE KICKBACK!');
-      spawnShockwave(29, 1095, '#ffd86b', 42);
-      spawnParticles(29, 1095, '#ffd86b', 14, 160);
+      addScore(200, 29, 510, '#70f5ff', 1, -1, '🌊JET KICKBACK!');
+      spawnShockwave(29, 515, '#70f5ff', 42);
+      spawnParticles(29, 515, '#70f5ff', 14, 160);
     }
-    if (state.rightKickbackReady && b.x > 341 && b.x < 373 && b.y > 1085 && b.y < 1115 && b.vy > 0) {
+    if (state.rightKickbackReady && b.x > 341 && b.x < 373 && b.y > 505 && b.y < 535 && b.vy > 0) {
       state.rightKickbackReady = false;
-      b.vy = -860;
-      b.vx = -105;
+      b.vy = -650;
+      b.vx = -95;
       sfx.kicker();
       triggerShake(0.12, 3);
-      addScore(200, 357, 1090, '#ffd86b', 1, -1, '⚡RUNE KICKBACK!');
-      spawnShockwave(357, 1095, '#ffd86b', 42);
-      spawnParticles(357, 1095, '#ffd86b', 14, 160);
+      addScore(200, 357, 510, '#70f5ff', 1, -1, '🌊JET KICKBACK!');
+      spawnShockwave(357, 515, '#70f5ff', 42);
+      spawnParticles(357, 515, '#70f5ff', 14, 160);
     }
   }
 
@@ -2470,7 +3198,7 @@
       const dy = b.y - pos.y;
       const dist = Math.hypot(dx, dy);
 
-      // 1. 丸バンパー
+      // 1. 真珠貝（丸バンパー）
       if (part.type === 'bumper_circle') {
         const r = 18;
         const minDist = r + BALL_R;
@@ -2484,7 +3212,7 @@
             b.vx -= 1.9 * dot * nx;
             b.vy -= 1.9 * dot * ny;
           }
-          const impulse = 160 + part.level * 28;
+          const impulse = 155 + part.level * 28;
           b.vx += nx * impulse;
           b.vy += ny * impulse;
 
@@ -2493,16 +3221,16 @@
             part.pulse = 1.45;
             sfx.bumper(state.combo);
             triggerShake(0.08, 2.2);
-            addScore(100 * part.level, pos.x, pos.y, '#ff6b6b', 1, i);
-            spawnParticles(pos.x + nx * r, pos.y + ny * r, '#ff6b6b', 10, 140);
+            addScore(100 * part.level, pos.x, pos.y, '#ff5c8a', 1, i);
+            spawnParticles(pos.x + nx * r, pos.y + ny * r, '#ff5c8a', 10, 140);
             if (hasSynergy('bumper_kingdom')) {
-              spawnShockwave(pos.x, pos.y, '#ff6b6b', 44);
+              spawnShockwave(pos.x, pos.y, '#ff5c8a', 44);
             }
           }
         }
       }
 
-      // 2. 三角バンパー
+      // 2. 枝珊瑚（三角バンパー）
       else if (part.type === 'bumper_tri') {
         const verts = getTriangleVertices(pos.x, pos.y, 21, part.dir);
         for (let e = 0; e < 3; e++) {
@@ -2522,7 +3250,7 @@
               b.vx -= 1.95 * dot * nx;
               b.vy -= 1.95 * dot * ny;
             }
-            const impulse = 195 + part.level * 30;
+            const impulse = 190 + part.level * 30;
             b.vx += nx * impulse;
             b.vy += ny * impulse;
 
@@ -2531,10 +3259,10 @@
               part.pulse = 1.45;
               sfx.bumper(state.combo);
               triggerShake(0.09, 2.5);
-              addScore(150 * part.level, pos.x, pos.y, '#ffa94d', comboGainReflect, i);
-              spawnParticles(cp.x, cp.y, '#ffa94d', 11, 155);
+              addScore(150 * part.level, pos.x, pos.y, '#ff9e00', comboGainReflect, i);
+              spawnParticles(cp.x, cp.y, '#ff9e00', 11, 155);
               if (hasSynergy('bumper_kingdom')) {
-                spawnShockwave(pos.x, pos.y, '#ffa94d', 46);
+                spawnShockwave(pos.x, pos.y, '#ff9e00', 46);
               }
             }
             break;
@@ -2542,7 +3270,7 @@
         }
       }
 
-      // 3. キッカー（下層から上層まで届くよう強力な上昇力を付与）
+      // 3. 熱水噴出孔（キッカー）
       else if (part.type === 'kicker') {
         const r = 17;
         const minDist = r + BALL_R;
@@ -2552,23 +3280,23 @@
           b.x = pos.x + nx * minDist;
           b.y = pos.y + ny * minDist;
 
-          const kickVy = -(680 + part.level * 70 + (hasSynergy('perpetual_engine') ? 65 : 0));
+          const kickVy = -(530 + part.level * 55 + (hasSynergy('perpetual_engine') ? 45 : 0));
           b.vy = Math.min(b.vy, kickVy);
-          b.vx = b.vx * 0.6 + nx * 175;
+          b.vx = b.vx * 0.6 + nx * 170;
 
           if (part.cooldown <= 0) {
             part.cooldown = 0.09;
             part.pulse = 1.5;
             sfx.kicker();
             triggerShake(0.1, 2.8);
-            addScore(150 * part.level, pos.x, pos.y, '#51cf66', 1, i);
-            spawnParticles(pos.x, pos.y - 10, '#51cf66', 14, 180);
-            spawnShockwave(pos.x, pos.y, '#51cf66', 44);
+            addScore(150 * part.level, pos.x, pos.y, '#20e3b2', 1, i);
+            spawnParticles(pos.x, pos.y - 10, '#20e3b2', 14, 180);
+            spawnShockwave(pos.x, pos.y, '#20e3b2', 44);
           }
         }
       }
 
-      // 4. スピナー
+      // 4. 海流の渦（スピナー）
       else if (part.type === 'spinner') {
         const r = 20;
         if (dist < r + BALL_R && part.cooldown <= 0) {
@@ -2576,21 +3304,21 @@
           part.spinVel = 30;
           part.pulse = 1.25;
           const spd = Math.hypot(b.vx, b.vy);
-          const accelBoost = hasSynergy('perpetual_engine') ? 1.12 : 1.08;
+          const accelBoost = hasSynergy('perpetual_engine') ? 1.11 : 1.07;
           if (spd > 15) {
-            const newSpd = Math.min(920, spd * accelBoost + 32);
+            const newSpd = Math.min(840, spd * accelBoost + 30);
             b.vx = (b.vx / spd) * newSpd;
             b.vy = (b.vy / spd) * newSpd;
           } else {
-            b.vy -= 110;
+            b.vy -= 95;
           }
           sfx.spinner();
-          addScore(30 * part.level, pos.x, pos.y, '#ffd86b', 1, i);
-          spawnParticles(b.x, b.y, '#ffd86b', 5, 85);
+          addScore(30 * part.level, pos.x, pos.y, '#00e5ff', 1, i);
+          spawnParticles(b.x, b.y, '#00e5ff', 5, 85);
         }
       }
 
-      // 5. リバウンド壁
+      // 5. 岩礁（リバウンド壁）
       else if (part.type === 'rebound_wall') {
         const angle = part.dir > 0 ? 0.52 : -0.52;
         const halfLen = 23;
@@ -2615,21 +3343,21 @@
             b.vx -= 1.85 * dot * nx;
             b.vy -= 1.85 * dot * ny;
           }
-          const pushPower = 100 + part.level * 18;
+          const pushPower = 95 + part.level * 18;
           b.vx += nx * pushPower;
-          b.vy += (ny < 0 ? ny * pushPower : ny * pushPower * 0.2 - 40);
+          b.vy += (ny < 0 ? ny * pushPower : ny * pushPower * 0.2 - 35);
 
           if (part.cooldown <= 0) {
             part.cooldown = 0.07;
             part.pulse = 1.4;
             sfx.bumper(state.combo);
-            addScore(50 * part.level, pos.x, pos.y, '#ffd86b', comboGainReflect, i);
-            spawnParticles(cp.x, cp.y, '#ffd86b', 8, 120);
+            addScore(50 * part.level, pos.x, pos.y, '#ffd97d', comboGainReflect, i);
+            spawnParticles(cp.x, cp.y, '#ffd97d', 8, 120);
           }
         }
       }
 
-      // 6. ワープゲート
+      // 6. 渦潮（ワープゲート）
       else if (part.type === 'warp_gate') {
         const r = 16;
         if (dist < r && b.warpCooldown <= 0 && part.pairSlotId !== null) {
@@ -2639,10 +3367,10 @@
             b.x = destPos.x;
             b.y = destPos.y;
             const spd = Math.hypot(b.vx, b.vy);
-            if (spd < 200) {
+            if (spd < 190) {
               const a = Math.atan2(b.vy || -1, b.vx || 0.2);
-              b.vx = Math.cos(a) * 260;
-              b.vy = Math.sin(a) * 260;
+              b.vx = Math.cos(a) * 250;
+              b.vy = Math.sin(a) * 250;
             }
             b.warpCooldown = 0.45;
             b.trail = [];
@@ -2655,11 +3383,11 @@
               warpCombo = 3;
               state.warpAuraTimer = 3.0;
             }
-            addScore(300 * part.level, destPos.x, destPos.y, '#cc5de8', warpCombo, i, '🔮ABYSS WARP');
-            spawnShockwave(pos.x, pos.y, '#cc5de8', 48);
-            spawnShockwave(destPos.x, destPos.y, '#ffd86b', 58);
-            spawnParticles(pos.x, pos.y, '#cc5de8', 14, 150);
-            spawnParticles(destPos.x, destPos.y, '#ffd86b', 18, 190);
+            addScore(300 * part.level, destPos.x, destPos.y, '#a855f7', warpCombo, i, '🌊MAELSTROM');
+            spawnShockwave(pos.x, pos.y, '#a855f7', 48);
+            spawnShockwave(destPos.x, destPos.y, '#00e5ff', 58);
+            spawnParticles(pos.x, pos.y, '#a855f7', 14, 150);
+            spawnParticles(destPos.x, destPos.y, '#00e5ff', 18, 190);
             break;
           }
         }
@@ -2670,9 +3398,9 @@
   function triggerNudge(dirX = 0) {
     if (state.phase !== 'PLAY' || state.ball.waitingLaunch || state.ball.inLane || state.tiltPenalty) return;
     state.nudgeHeat += 0.42;
-    const vxAdd = (dirX !== 0 ? dirX : (Math.random() < 0.5 ? -1 : 1)) * 130;
+    const vxAdd = (dirX !== 0 ? dirX : (Math.random() < 0.5 ? -1 : 1)) * 125;
     state.ball.vx += vxAdd;
-    state.ball.vy -= 95;
+    state.ball.vy -= 85;
     triggerShake(0.15, 4.5);
     sfx.nudge();
 
@@ -2681,34 +3409,47 @@
       setFlippersPressed(true, false);
       setFlippersPressed(false, false);
       sfx.tilt();
-      showCenterBanner('CURSED TILT!!', '揺らしすぎ警告！大剣フリッパーが一時封印', '#ff4d4d', 1.4);
+      showCenterBanner('PRESSURE TILT!!', '揺らしすぎ警告！フリッパーが一時ロック', '#ff5c8a', 1.4);
       updateHUD();
     } else if (state.nudgeHeat >= 0.7) {
-      spawnPopup(state.ball.x, state.ball.y, '⚠ DANGER (封印注意)', '#ffd86b', 12);
+      spawnPopup(state.ball.x, state.ball.y, '⚠ DANGER (水圧TILT注意)', '#ffd97d', 12);
     }
   }
 
-  function updateCamera(dt) {
-    if (state.phase === 'PLAY') {
-      if (state.ball.waitingLaunch) {
-        // 発射チャージ中はパワーに応じてカメラが少しずつ上へパンし、広大なステージを見せる
-        state.targetCameraY = MAX_CAM_Y - state.plunger.power * 210;
-      } else {
-        // ボールのY座標＋速度先読みで滑らかに追従
-        const lookAheadY = state.ball.y + state.ball.vy * 0.14 - VIEW_H * 0.46;
-        state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, lookAheadY));
+  function updateMarineEnvironment(dt) {
+    // マリンスノー更新
+    for (let i = 0; i < marineSnow.length; i++) {
+      const ms = marineSnow[i];
+      ms.y += ms.vy * dt;
+      ms.phase += dt * 1.4;
+      ms.x += Math.sin(ms.phase) * 6 * dt;
+      if (ms.y > WORLD_H) {
+        ms.y = -4;
+        ms.x = 16 + Math.random() * (LANE_X - 24);
       }
-    } else if (state.phase === 'TITLE') {
-      // タイトル画面では古城の上層〜下層をゆっくりパノラマ往復
-      state.targetCameraY = (Math.sin(performance.now() * 0.00045) * 0.5 + 0.5) * MAX_CAM_Y;
     }
 
-    const lerpSpeed = (state.phase === 'PLACE' || state.phase === 'DRAFT') ? 10 : 8.5;
-    state.cameraY += (state.targetCameraY - state.cameraY) * Math.min(1, dt * lerpSpeed);
+    // 泡（下から上へ時々昇る）
+    if (Math.random() < dt * 2.2 && seaBubbles.length < 18) {
+      seaBubbles.push({
+        x: 24 + Math.random() * (LANE_X - 40),
+        y: WORLD_H + 6,
+        r: 1.8 + Math.random() * 3.2,
+        vy: -(38 + Math.random() * 45),
+        wobble: Math.random() * Math.PI * 2
+      });
+    }
+    for (let i = seaBubbles.length - 1; i >= 0; i--) {
+      const bb = seaBubbles[i];
+      bb.y += bb.vy * dt;
+      bb.wobble += dt * 4;
+      bb.x += Math.sin(bb.wobble) * 14 * dt;
+      if (bb.y < -10) seaBubbles.splice(i, 1);
+    }
   }
 
   function stepPhysics(dt) {
-    updateCamera(dt);
+    updateMarineEnvironment(dt);
 
     if (state.hitStopTimer > 0) {
       state.hitStopTimer = Math.max(0, state.hitStopTimer - dt);
@@ -2731,6 +3472,10 @@
       state.nudgeHeat = Math.max(0, state.nudgeHeat - dt * 0.25);
     }
 
+    if (state.phase === 'PLAY') {
+      updateFishes(dt);
+    }
+
     if (state.jackpotDrone.active) {
       const jd = state.jackpotDrone;
       jd.x += jd.vx * dt;
@@ -2738,18 +3483,21 @@
       if (jd.x > 298) { jd.x = 298; jd.vx = -Math.abs(jd.vx); }
     }
 
+    // R8以降：深海の主（大型深海魚ボス）のゆっくり回遊
     if (state.bossCore.active) {
       const bc = state.bossCore;
       bc.x += bc.vx * dt;
-      if (bc.x < 115) { bc.x = 115; bc.vx = Math.abs(bc.vx); }
-      if (bc.x > 258) { bc.x = 258; bc.vx = -Math.abs(bc.vx); }
+      bc.swimPhase += dt * 2.4;
+      bc.y = bc.baseY + Math.sin(bc.swimPhase) * 14;
+      if (bc.x < 105) { bc.x = 105; bc.vx = Math.abs(bc.vx); }
+      if (bc.x > 268) { bc.x = 268; bc.vx = -Math.abs(bc.vx); }
       if (bc.pulse > 1) bc.pulse = Math.max(1, bc.pulse - dt * 2.5);
     }
 
     if (state.phase === 'PLAY' && state.ball.waitingLaunch) {
       if (state.plunger.charging) {
         state.plunger.power = Math.min(1, state.plunger.power + dt * 1.15);
-        state.ball.y = 1185 + state.plunger.power * 16;
+        state.ball.y = 610 + state.plunger.power * 14;
       }
     }
 
@@ -2760,8 +3508,8 @@
       if (p.spinVel > 0) {
         p.angle += p.spinVel * dt;
         p.spinVel = Math.max(0, p.spinVel - dt * 18);
-      } else if (p.type === 'warp_gate') {
-        p.angle += dt * 2.2;
+      } else if (p.type === 'warp_gate' || p.type === 'spinner') {
+        p.angle += dt * (p.type === 'warp_gate' ? 2.2 : 0.8);
       }
     }
     for (let i = 0; i < walls.length; i++) {
@@ -2794,15 +3542,9 @@
 
     if (state.phase !== 'PLAY') return;
 
-    const allFlippers = [
-      state.leftFlipper,
-      state.rightFlipper,
-      state.upperLeftFlipper,
-      state.upperRightFlipper
-    ];
-
     if (state.ball.waitingLaunch) {
-      allFlippers.forEach(f => updateFlipper(f, dt));
+      updateFlipper(state.leftFlipper, dt);
+      updateFlipper(state.rightFlipper, dt);
       return;
     }
 
@@ -2812,24 +3554,25 @@
       state.stuckTimer += dt;
       if (state.stuckTimer > 2.5) {
         state.stuckTimer = 0;
-        b.vx = (Math.random() < 0.5 ? -1 : 1) * 190;
-        b.vy = -260;
-        spawnPopup(b.x, b.y, 'AUTO RELEASE', '#ffd86b', 11);
+        b.vx = (Math.random() < 0.5 ? -1 : 1) * 180;
+        b.vy = -220;
+        spawnPopup(b.x, b.y, 'CURRENT RELEASE', '#70f5ff', 11);
       }
     } else {
       state.stuckTimer = 0;
     }
 
-    const subSteps = Math.max(6, Math.min(22, Math.ceil((speed * dt) / (BALL_R * 0.35))));
+    const subSteps = Math.max(6, Math.min(20, Math.ceil((speed * dt) / (BALL_R * 0.35))));
     const subDt = dt / subSteps;
 
     for (let s = 0; s < subSteps; s++) {
-      allFlippers.forEach(f => updateFlipper(f, subDt));
+      updateFlipper(state.leftFlipper, subDt);
+      updateFlipper(state.rightFlipper, subDt);
 
       b.vy += GRAVITY * subDt;
 
       const curSpd = Math.hypot(b.vx, b.vy);
-      const maxSpd = 1280;
+      const maxSpd = 980;
       if (curSpd > maxSpd) {
         b.vx = (b.vx / curSpd) * maxSpd;
         b.vy = (b.vy / curSpd) * maxSpd;
@@ -2838,14 +3581,15 @@
       b.x += b.vx * subDt;
       b.y += b.vy * subDt;
 
-      allFlippers.forEach(f => collideFlipper(f));
+      collideFlipper(state.leftFlipper);
+      collideFlipper(state.rightFlipper);
       collideWalls();
       checkBoardGimmicks(subDt);
       collideParts(subDt);
+      collideFishes();
 
-      // 発射レーンの底に戻った場合
-      if (b.inLane && b.y > 1188 && b.vy >= 0) {
-        b.y = 1185;
+      if (b.inLane && b.y > 612 && b.vy >= 0) {
+        b.y = 610;
         b.vx = 0;
         b.vy = 0;
         b.waitingLaunch = true;
@@ -2855,7 +3599,7 @@
     }
 
     b.trail.push({ x: b.x, y: b.y });
-    if (b.trail.length > 13) b.trail.shift();
+    if (b.trail.length > 11) b.trail.shift();
 
     if (!b.inLane && b.y > WORLD_H + BALL_R * 2) {
       onBallLost();
@@ -2863,29 +3607,24 @@
   }
 
   // =========================================================================
-  // 8. Canvas 描画処理（ダークファンタジー古城・カメラ変換・ミニマップ）
+  // 10. Canvas 描画処理（深海グラデーション・魚・発光生物・真珠ボール）
   // =========================================================================
   function drawBoard() {
     ctx.clearRect(0, 0, VIEW_W, VIEW_H);
 
     ctx.save();
-    // 画面シェイク
     if (state.shakeTimer > 0) {
       const mag = state.shakeIntensity * (state.shakeTimer / 0.16);
       ctx.translate((Math.random() - 0.5) * mag * 2, (Math.random() - 0.5) * mag * 2);
     }
 
-    // --- ワールド座標系 (カメラオフセット適用) ---
-    ctx.save();
-    ctx.translate(0, -state.cameraY);
-
-    drawDarkFantasyBackground();
+    drawDeepSeaBackground();
     drawPinballGimmicks();
 
-    // ワープゲートのペア連結ライン
+    // 渦潮（ワープゲート）のペア連結ライン
     ctx.save();
     let warpPairIndex = 0;
-    const warpPairColors = ['rgba(204, 93, 232, 0.5)', 'rgba(255, 216, 107, 0.5)', 'rgba(81, 207, 102, 0.5)'];
+    const warpPairColors = ['rgba(168, 85, 247, 0.5)', 'rgba(0, 229, 255, 0.5)', 'rgba(255, 217, 125, 0.5)'];
     for (let i = 0; i < state.slots.length; i++) {
       const p = state.slots[i];
       if (p && p.type === 'warp_gate' && p.pairSlotId !== null && i < p.pairSlotId) {
@@ -2904,8 +3643,8 @@
     ctx.restore();
 
     drawSlotsAndParts();
+    drawSwimmingFishes();
 
-    // ショックウェーブリング
     ctx.save();
     for (let i = 0; i < state.shockwaves.length; i++) {
       const sw = state.shockwaves[i];
@@ -2920,14 +3659,14 @@
     }
     ctx.restore();
 
-    // 古城の石壁・真鍮フレーム描画
+    // 海底洞窟フレーム壁の描画
     ctx.save();
     ctx.lineCap = 'round';
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
-      ctx.strokeStyle = w.pulse > 0 ? '#fff3bf' : w.color;
-      ctx.lineWidth = w.oneWayLeft ? 2.5 : (4 + w.pulse * 2.5);
-      ctx.shadowColor = w.isSlingshot ? '#e03131' : '#000000';
+      ctx.strokeStyle = w.pulse > 0 ? '#ffffff' : w.color;
+      ctx.lineWidth = w.oneWayLeft ? 2.5 : (3.5 + w.pulse * 2.5);
+      ctx.shadowColor = w.isSlingshot ? '#ff5c8a' : '#00b4d8';
       ctx.shadowBlur = w.isSlingshot ? 12 : 6;
       if (w.oneWayLeft) {
         ctx.setLineDash([5, 4]);
@@ -2944,15 +3683,11 @@
     drawPlunger();
     drawLaunchPreview();
 
-    // 下層メインフリッパー＆上層サブフリッパー描画
     drawFlipper(state.leftFlipper);
     drawFlipper(state.rightFlipper);
-    drawFlipper(state.upperLeftFlipper);
-    drawFlipper(state.upperRightFlipper);
 
     drawBall();
 
-    // パーティクル
     ctx.save();
     for (let i = 0; i < state.particles.length; i++) {
       const pt = state.particles[i];
@@ -2967,7 +3702,6 @@
     }
     ctx.restore();
 
-    // スコアポップ
     ctx.save();
     ctx.textAlign = 'center';
     for (let i = 0; i < state.popups.length; i++) {
@@ -2983,30 +3717,25 @@
 
     drawSlotTooltip();
 
-    ctx.restore(); // --- ワールド座標系ここまで ---
-
-    // --- スクリーン固定UI（右端の高さミニマップ＆フロア表示＆センターバナー） ---
-    drawAltitudeMinimap();
-
     if (state.bannerText) {
       const bt = state.bannerText;
       const alpha = Math.min(1, bt.timer * 3);
       ctx.save();
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = 'rgba(20, 14, 10, 0.92)';
+      ctx.fillStyle = 'rgba(4, 15, 32, 0.92)';
       ctx.strokeStyle = bt.color;
       ctx.lineWidth = 2;
-      ctx.shadowColor = '#000';
-      ctx.shadowBlur = 18;
+      ctx.shadowColor = bt.color;
+      ctx.shadowBlur = 16;
       ctx.fillRect(26, 275, VIEW_W - 52, 82);
       ctx.strokeRect(26, 275, VIEW_W - 52, 82);
 
       ctx.fillStyle = bt.color;
-      ctx.font = '900 20px serif';
+      ctx.font = '900 20px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(bt.text, VIEW_W / 2, 311);
 
-      ctx.fillStyle = '#f3ead8';
+      ctx.fillStyle = '#e6f6ff';
       ctx.font = '700 12.5px sans-serif';
       ctx.fillText(bt.sub, VIEW_W / 2, 338);
       ctx.restore();
@@ -3015,296 +3744,371 @@
     ctx.restore();
   }
 
-  function drawDarkFantasyBackground() {
+  function drawDeepSeaBackground() {
     ctx.save();
 
-    // 石畳の目地パターン
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.045)';
-    ctx.lineWidth = 1;
-    const brickH = 40;
-    const brickW = 60;
-    const startRow = Math.max(0, Math.floor(state.cameraY / brickH) - 1);
-    const endRow = Math.min(Math.ceil(WORLD_H / brickH), Math.ceil((state.cameraY + VIEW_H) / brickH) + 1);
+    // 1. 深海グラデーション（上部にわずかな光の差し込み、下部ほど濃い紺）
+    const seaGrad = ctx.createLinearGradient(0, 0, 0, WORLD_H);
+    seaGrad.addColorStop(0, '#0b2e59');
+    seaGrad.addColorStop(0.28, '#061a38');
+    seaGrad.addColorStop(0.68, '#030d20');
+    seaGrad.addColorStop(1, '#01050e');
+    ctx.fillStyle = seaGrad;
+    ctx.fillRect(0, 0, VIEW_W, WORLD_H);
 
-    for (let r = startRow; r < endRow; r++) {
-      const y = r * brickH;
+    // 2. 海面からの光の筋（ゴッドレイ）
+    const now = performance.now() * 0.001;
+    ctx.save();
+    for (let i = 0; i < 4; i++) {
+      const rx = 85 + i * 75 + Math.sin(now * 0.7 + i) * 14;
+      const rayGrad = ctx.createLinearGradient(rx, 0, rx + 25, 290);
+      rayGrad.addColorStop(0, 'rgba(112, 245, 255, 0.11)');
+      rayGrad.addColorStop(1, 'rgba(112, 245, 255, 0)');
+      ctx.fillStyle = rayGrad;
       ctx.beginPath();
-      ctx.moveTo(12, y);
-      ctx.lineTo(LANE_X, y);
-      ctx.stroke();
+      ctx.moveTo(rx - 18, 12);
+      ctx.lineTo(rx + 18, 12);
+      ctx.lineTo(rx + 52, 290);
+      ctx.lineTo(rx - 32, 290);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
 
-      const offset = (r % 2) * (brickW / 2);
-      for (let x = 12 + offset; x < LANE_X; x += brickW) {
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x, y + brickH);
-        ctx.stroke();
-      }
+    // 3. マリンスノー（白い粒子がゆっくり漂う）
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < marineSnow.length; i++) {
+      const ms = marineSnow[i];
+      ctx.globalAlpha = ms.alpha;
+      ctx.beginPath();
+      ctx.arc(ms.x, ms.y, ms.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // 4. 下から上へ昇る泡
+    ctx.strokeStyle = 'rgba(112, 245, 255, 0.45)';
+    ctx.fillStyle = 'rgba(112, 245, 255, 0.12)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < seaBubbles.length; i++) {
+      const bb = seaBubbles[i];
+      ctx.beginPath();
+      ctx.arc(bb.x, bb.y, bb.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
     }
 
-    // 上層（天上聖堂: y=260）と下層（深淵祭壇: y=860）の大型魔導陣（ルーンサークル）装飾
-    const drawMagicCircle = (cx, cy, radius, color, label) => {
+    // 5. 壁際の発光クラゲ装飾（ゆらゆら漂う6匹）
+    JELLYFISH_POSITIONS.forEach((jf, idx) => {
+      const bobY = jf.y + Math.sin(now * 2.2 + jf.phase) * 5;
+      const pulseW = 1 + Math.sin(now * 3.5 + jf.phase) * 0.12;
       ctx.save();
-      ctx.translate(cx, cy);
-      ctx.strokeStyle = color;
+      ctx.translate(jf.x, bobY);
+
+      // 周囲の淡い発光ハロー
+      const halo = ctx.createRadialGradient(0, 0, 2, 0, 0, 42);
+      halo.addColorStop(0, jf.color + '33');
+      halo.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(0, 0, 42, 0, Math.PI * 2);
+      ctx.fill();
+
+      // クラゲの傘
+      ctx.scale(pulseW, 2 - pulseW);
+      ctx.fillStyle = jf.color + '55';
+      ctx.strokeStyle = jf.color;
       ctx.lineWidth = 1.5;
+      ctx.shadowColor = jf.color;
+      ctx.shadowBlur = 10;
       ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(0, 0, radius * 0.78, 0, Math.PI * 2);
+      ctx.arc(0, 0, 8, Math.PI, 0);
+      ctx.closePath();
+      ctx.fill();
       ctx.stroke();
 
-      // 六芒星幾何学ライン
-      for (let k = 0; k < 2; k++) {
+      // クラゲの触手
+      ctx.lineWidth = 1;
+      for (let t = -5; t <= 5; t += 5) {
         ctx.beginPath();
-        for (let i = 0; i < 3; i++) {
-          const a = (i * 2 * Math.PI) / 3 + (k * Math.PI) / 3 - Math.PI / 2;
-          const px = Math.cos(a) * radius * 0.78;
-          const py = Math.sin(a) * radius * 0.78;
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        ctx.closePath();
+        ctx.moveTo(t, 0);
+        ctx.quadraticCurveTo(t + Math.sin(now * 4 + idx) * 3, 7, t, 14);
         ctx.stroke();
       }
-
-      ctx.fillStyle = color;
-      ctx.font = '700 11px serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(label, 0, radius + 16);
       ctx.restore();
-    };
-
-    drawMagicCircle(192, 270, 115, 'rgba(212, 175, 55, 0.09)', '― UPPER SANCTUM (天上聖堂 スコア+15%) ―');
-    drawMagicCircle(192, 870, 115, 'rgba(201, 42, 42, 0.09)', '― LOWER ALTAR (深淵の祭壇) ―');
-
-    // 上層と下層の境界アーチライン (y=560)
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.16)';
-    ctx.setLineDash([8, 6]);
-    ctx.beginPath();
-    ctx.moveTo(56, 535);
-    ctx.lineTo(330, 535);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // 松明（トーチ）の揺らめく炎と暖色ライト
-    const now = performance.now() * 0.006;
-    TORCH_POSITIONS.forEach((t, idx) => {
-      const flicker = Math.sin(now + idx * 1.7) * 6;
-      const grad = ctx.createRadialGradient(t.x, t.y, 4, t.x, t.y, 72 + flicker);
-      grad.addColorStop(0, 'rgba(255, 160, 40, 0.22)');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(t.x, t.y, 72 + flicker, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 燭台と炎
-      ctx.fillStyle = '#5c4938';
-      ctx.fillRect(t.x - 3, t.y, 6, 11);
-      ctx.fillStyle = '#ffa94d';
-      ctx.beginPath();
-      ctx.arc(t.x, t.y - 3, 4 + Math.sin(now * 2 + idx) * 1.2, 0, Math.PI * 2);
-      ctx.fill();
     });
 
     // コンボ倍率ウォーターマーク
     ctx.textAlign = 'center';
-    ctx.fillStyle = state.feverTimer > 0 ? 'rgba(255, 77, 77, 0.18)' : 'rgba(212, 175, 55, 0.1)';
-    ctx.font = '900 30px serif';
-    ctx.fillText(`×${getComboMultiplier().toFixed(2)}`, 192, 1020);
+    ctx.fillStyle = state.feverTimer > 0 ? 'rgba(32, 227, 178, 0.2)' : 'rgba(0, 229, 255, 0.09)';
+    ctx.font = '900 28px sans-serif';
+    ctx.fillText(`×${getComboMultiplier().toFixed(2)}`, 187, 562);
     if (state.feverTimer > 0) {
-      ctx.font = '800 13px serif';
-      ctx.fillStyle = 'rgba(255, 216, 107, 0.55)';
-      ctx.fillText(`BLOOD MOON FEVER ${state.feverTimer.toFixed(1)}s`, 192, 1042);
+      ctx.font = '800 12px sans-serif';
+      ctx.fillStyle = 'rgba(32, 227, 178, 0.65)';
+      ctx.fillText(`BIOLUMINESCENCE FEVER ${state.feverTimer.toFixed(1)}s`, 187, 580);
     } else if (state.warpAuraTimer > 0) {
-      ctx.font = '800 12px serif';
-      ctx.fillStyle = 'rgba(204, 93, 232, 0.55)';
-      ctx.fillText(`ABYSS AURA ×1.25 (${state.warpAuraTimer.toFixed(1)}s)`, 192, 1042);
+      ctx.font = '800 11.5px sans-serif';
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.65)';
+      ctx.fillText(`MAELSTROM AURA ×1.25 (${state.warpAuraTimer.toFixed(1)}s)`, 187, 580);
     }
 
     ctx.restore();
   }
 
+  function drawSwimmingFishes() {
+    const now = performance.now() * 0.003;
+    for (let i = 0; i < state.activeFishes.length; i++) {
+      const f = state.activeFishes[i];
+      ctx.save();
+
+      // レア度に応じた背面オーラリング
+      if (f.spec.rarity !== 'normal') {
+        ctx.strokeStyle = f.spec.rarity === 'ssr' ? 'rgba(255, 217, 125, 0.55)' : 'rgba(112, 245, 255, 0.35)';
+        ctx.lineWidth = f.spec.rarity === 'ssr' ? 2 : 1.2;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.spec.r + 5 + Math.sin(now * 3 + i) * 2, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      drawFishShapeOnContext(ctx, f.spec, f.x, f.y, f.spec.r, f.dir, f.swimPhase, false);
+
+      // 魚の名前＆レアラベル
+      ctx.fillStyle = f.spec.rarity === 'ssr' ? '#ffd97d' : (f.spec.rarity === 'rare' ? '#70f5ff' : 'rgba(230, 246, 255, 0.75)');
+      ctx.font = '700 8.5px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(f.spec.name, f.x, f.y + f.spec.r + 10);
+      ctx.restore();
+    }
+  }
+
   function drawPinballGimmicks() {
     ctx.save();
+    const now = performance.now() * 0.004;
 
-    // 0. 下層中央「昇天の魔導陣（アセンション・パッド）」
-    const pad = state.ascensionPad;
-    ctx.save();
-    ctx.translate(pad.x, pad.y);
-    ctx.scale(pad.pulse, pad.pulse);
-    ctx.fillStyle = 'rgba(156, 54, 181, 0.24)';
-    ctx.strokeStyle = '#cc5de8';
-    ctx.lineWidth = 2;
-    ctx.shadowColor = '#cc5de8';
-    ctx.shadowBlur = 10;
-    ctx.beginPath();
-    ctx.arc(0, 0, pad.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    ctx.fillStyle = '#f3d9fa';
-    ctx.font = '800 9px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('▲昇天', 0, 0);
-    ctx.restore();
-
-    // 1. 最上層3ルーン祭壇
-    TOP_ROLLOVERS.forEach(ro => {
-      ctx.strokeStyle = ro.lit ? '#ffd86b' : 'rgba(212, 175, 55, 0.35)';
-      ctx.fillStyle = ro.lit ? 'rgba(212, 175, 55, 0.3)' : 'rgba(15, 11, 8, 0.6)';
+    // 1. 最上部・発光プランクトンの溜まり場3か所 (y=64)
+    TOP_ROLLOVERS.forEach((ro, idx) => {
+      ctx.save();
+      ctx.translate(ro.x, ro.y);
+      ctx.strokeStyle = ro.lit ? '#20e3b2' : 'rgba(0, 229, 255, 0.35)';
+      ctx.fillStyle = ro.lit ? 'rgba(32, 227, 178, 0.3)' : 'rgba(5, 20, 40, 0.6)';
       ctx.lineWidth = 2;
-      ctx.shadowColor = '#ffd86b';
-      ctx.shadowBlur = ro.lit ? 12 : 0;
+      ctx.shadowColor = '#20e3b2';
+      ctx.shadowBlur = ro.lit ? 14 : 4;
       ctx.beginPath();
-      ctx.arc(ro.x, ro.y, 12, 0, Math.PI * 2);
+      ctx.arc(0, 0, 11, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = ro.lit ? '#ffffff' : 'rgba(212, 175, 55, 0.65)';
-      ctx.font = '800 12px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(ro.rune, ro.x, ro.y);
+      // プランクトンの発光粒子群
+      ctx.fillStyle = ro.lit ? '#ffffff' : '#70f5ff';
+      for (let p = 0; p < 5; p++) {
+        const a = now + p * 1.25 + idx;
+        const pr = 4.5 * Math.sin(now * 0.8 + p);
+        ctx.beginPath();
+        ctx.arc(Math.cos(a) * pr, Math.sin(a) * pr, ro.lit ? 2 : 1.3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
     });
 
-    // 2. 左右壁の4つの魔導燭台ターゲット
-    WALL_TARGETS.forEach(wt => {
-      ctx.strokeStyle = wt.lit ? '#ffd86b' : 'rgba(212, 175, 55, 0.35)';
-      ctx.lineWidth = wt.lit ? 5 : 3;
-      ctx.shadowColor = wt.lit ? '#ffd86b' : '#ffa94d';
-      ctx.shadowBlur = wt.lit ? 12 : 4;
+    // 2. 左右壁の4つのイソギンチャク（触れると発光）
+    WALL_TARGETS.forEach((wt, idx) => {
+      const col = wt.lit ? '#ffd97d' : '#ff5c8a';
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = wt.lit ? 4.5 : 3;
+      ctx.shadowColor = col;
+      ctx.shadowBlur = wt.lit ? 14 : 6;
       ctx.beginPath();
       ctx.moveTo(wt.x, wt.y1);
       ctx.lineTo(wt.x, wt.y2);
       ctx.stroke();
+
+      // イソギンチャクの触手ひだ
+      ctx.lineWidth = 1.5;
+      for (let ty = wt.y1 + 4; ty <= wt.y2 - 4; ty += 6) {
+        const sway = Math.sin(now * 2 + ty * 0.2 + idx) * 2.5;
+        ctx.beginPath();
+        ctx.moveTo(wt.x, ty);
+        ctx.lineTo(wt.x + wt.normalX * (7 + (wt.lit ? 3 : 0)), ty + sway);
+        ctx.stroke();
+      }
+      ctx.restore();
     });
 
-    // 3. 移動ジャックポット（黄金の聖杯）
+    // 3. 移動ジャックポット（黄金オウムガイ）
     if (state.jackpotDrone.active) {
       const jd = state.jackpotDrone;
       ctx.save();
       ctx.translate(jd.x, jd.y);
-      ctx.strokeStyle = '#ffd86b';
-      ctx.fillStyle = 'rgba(212, 175, 55, 0.28)';
+      ctx.strokeStyle = '#ffd97d';
+      ctx.fillStyle = 'rgba(255, 217, 125, 0.28)';
       ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#ffd86b';
+      ctx.shadowColor = '#ffd97d';
       ctx.shadowBlur = 14;
       ctx.beginPath();
       ctx.arc(0, 0, jd.r, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#fff6e0';
-      ctx.font = '900 9px serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 8.5px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('🏆聖杯', 0, 0);
+      ctx.fillText('🐚JACKPOT', 0, 0);
       ctx.restore();
     }
 
-    // 4. R8ボス（深淵の魔王核）
+    // 4. R8ボス：大型の深海魚「深海の主」 (187, 315 を中心にゆっくり泳ぎ回る)
     if (state.bossCore.active) {
       const bc = state.bossCore;
       ctx.save();
       ctx.translate(bc.x, bc.y);
       ctx.scale(bc.pulse, bc.pulse);
-      ctx.strokeStyle = '#ff4d4d';
-      ctx.fillStyle = 'rgba(201, 42, 42, 0.32)';
-      ctx.lineWidth = 3;
-      ctx.shadowColor = '#ff4d4d';
-      ctx.shadowBlur = 16;
+
+      // 外周の深淵オーラ
+      ctx.strokeStyle = 'rgba(255, 92, 138, 0.55)';
+      ctx.fillStyle = 'rgba(255, 92, 138, 0.18)';
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = '#ff5c8a';
+      ctx.shadowBlur = 18;
       ctx.beginPath();
-      ctx.arc(0, 0, bc.r, 0, Math.PI * 2);
+      ctx.arc(0, 0, bc.r + 3, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#fff';
-      ctx.font = '900 9px serif';
+      // 大型深海魚（深海の主）のシルエット＆発光眼・提灯描画
+      const dir = bc.vx >= 0 ? 1 : -1;
+      ctx.save();
+      ctx.scale(dir, 1);
+      const wag = Math.sin(bc.swimPhase * 2) * 4;
+
+      ctx.fillStyle = '#2b0938';
+      ctx.strokeStyle = '#ff5c8a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(0, 2, bc.r * 1.15, bc.r * 0.82, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // 尾びれ
+      ctx.beginPath();
+      ctx.moveTo(-bc.r * 1.05, 2);
+      ctx.lineTo(-bc.r * 1.65, -10 + wag);
+      ctx.lineTo(-bc.r * 1.65, 14 + wag);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // 巨大な発光誘引突起（ルアー）
+      ctx.strokeStyle = '#70f5ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(bc.r * 0.4, -bc.r * 0.65);
+      ctx.quadraticCurveTo(bc.r * 1.1, -bc.r * 1.4, bc.r * 1.45, -bc.r * 0.75);
+      ctx.stroke();
+      ctx.fillStyle = '#ffd97d';
+      ctx.beginPath();
+      ctx.arc(bc.r * 1.45, -bc.r * 0.75, 4.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 眼光
+      ctx.fillStyle = '#ffd97d';
+      ctx.beginPath();
+      ctx.arc(bc.r * 0.65, -2, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 9px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`魔王 ${5 - (bc.hpHits % 5)}`, 0, 0);
+      ctx.fillText(`深海の主 ${5 - (bc.hpHits % 5)}`, 0, 3);
       ctx.restore();
     }
 
-    // 5. 守護結界（ボールセイバー）
-    if (state.ballSaverTimer > 0) {
-      const blink = state.ballSaverTimer < 1.5 ? (Math.sin(performance.now() * 0.025) > 0) : true;
+    // 5. 海流バリア（ボールセイバー）＆ 魚効果【守り】インジケーター
+    if (state.ballSaverTimer > 0 || state.guardExtraSavesLeft > 0) {
+      const blink = (state.ballSaverTimer > 0 && state.ballSaverTimer < 1.5) ? (Math.sin(performance.now() * 0.025) > 0) : true;
       if (blink) {
-        ctx.strokeStyle = 'rgba(81, 207, 102, 0.78)';
+        const col = state.ballSaverTimer > 0 ? '#20e3b2' : '#ffd97d';
+        ctx.strokeStyle = col;
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#51cf66';
+        ctx.shadowColor = col;
         ctx.shadowBlur = 10;
         ctx.setLineDash([6, 4]);
         ctx.beginPath();
-        ctx.moveTo(118, 1202);
-        ctx.lineTo(268, 1202);
+        ctx.moveTo(118, 624);
+        ctx.lineTo(268, 624);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = '#51cf66';
-        ctx.font = '800 10px serif';
+        ctx.fillStyle = col;
+        ctx.font = '800 9.5px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`✦ SOUL GUARD ${state.ballSaverTimer.toFixed(1)}s ✦`, 193, 1218);
+        const label = state.ballSaverTimer > 0
+          ? `🌊 PEARL SAVE ${state.ballSaverTimer.toFixed(1)}s${state.guardExtraSavesLeft > 0 ? ` (+🛡️×${state.guardExtraSavesLeft})` : ''}`
+          : `🛡️ 魚の守りバリア待機中 (残り${state.guardExtraSavesLeft}回)`;
+        ctx.fillText(label, 193, 638);
       }
     }
 
-    // 6. センターセーフティピラー（守護の石柱）
+    // 6. センターセーフティピラー
     if (state.centerPostTimer > 0) {
-      ctx.fillStyle = 'rgba(212, 175, 55, 0.38)';
-      ctx.strokeStyle = '#ffd86b';
+      ctx.fillStyle = 'rgba(32, 227, 178, 0.35)';
+      ctx.strokeStyle = '#20e3b2';
       ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#ffd86b';
+      ctx.shadowColor = '#20e3b2';
       ctx.shadowBlur = 12;
       ctx.beginPath();
-      ctx.arc(193, 1182, 9, 0, Math.PI * 2);
+      ctx.arc(193, 605, 9, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
     }
 
-    // 7. スリングショット内部の紅蓮装飾
-    ctx.fillStyle = 'rgba(201, 42, 42, 0.16)';
+    // 7. スリングショット内部の珊瑚発光装飾
+    ctx.fillStyle = 'rgba(255, 92, 138, 0.15)';
     ctx.beginPath();
-    ctx.moveTo(46, 1025);
-    ctx.lineTo(46, 1092);
-    ctx.lineTo(92, 1122);
+    ctx.moveTo(46, 462);
+    ctx.lineTo(46, 518);
+    ctx.lineTo(88, 546);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(340, 1025);
-    ctx.lineTo(340, 1092);
-    ctx.lineTo(294, 1122);
+    ctx.moveTo(340, 462);
+    ctx.lineTo(340, 518);
+    ctx.lineTo(298, 546);
     ctx.closePath();
     ctx.fill();
 
-    // 8. サイドアウトレーン・ルーンキックバック
+    // 8. サイドアウトレーン・水流キックバック
     if (state.leftKickbackReady) {
-      ctx.strokeStyle = '#ffd86b';
+      ctx.strokeStyle = '#70f5ff';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(14, 1095);
-      ctx.lineTo(44, 1095);
+      ctx.moveTo(14, 518);
+      ctx.lineTo(44, 518);
       ctx.stroke();
-      ctx.fillStyle = '#ffd86b';
+      ctx.fillStyle = '#70f5ff';
       ctx.font = '800 8px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('RUNE', 29, 1089);
+      ctx.fillText('JET', 29, 512);
     }
     if (state.rightKickbackReady) {
-      ctx.strokeStyle = '#ffd86b';
+      ctx.strokeStyle = '#70f5ff';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(342, 1095);
-      ctx.lineTo(372, 1095);
+      ctx.moveTo(342, 518);
+      ctx.lineTo(372, 518);
       ctx.stroke();
-      ctx.fillStyle = '#ffd86b';
+      ctx.fillStyle = '#70f5ff';
       ctx.font = '800 8px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('RUNE', 357, 1089);
+      ctx.fillText('JET', 357, 512);
     }
 
     ctx.restore();
@@ -3313,6 +4117,7 @@
   function drawSlotsAndParts() {
     const isPlacePhase = state.phase === 'PLACE';
     const showSkillTarget = state.phase === 'PLAY' && (state.ball.waitingLaunch || state.skillShotTimer > 0);
+    const now = performance.now() * 0.004;
 
     for (let i = 0; i < SLOT_POSITIONS.length; i++) {
       const pos = SLOT_POSITIONS[i];
@@ -3324,17 +4129,17 @@
 
       if (showSkillTarget && i === state.skillShotSlotId && part) {
         const pulseR = 26 + Math.sin(performance.now() * 0.012) * 3;
-        ctx.strokeStyle = '#ffd86b';
+        ctx.strokeStyle = '#ffd97d';
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 3]);
-        ctx.shadowColor = '#ffd86b';
+        ctx.shadowColor = '#ffd97d';
         ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(0, 0, pulseR, 0, Math.PI * 2);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = '#ffd86b';
+        ctx.fillStyle = '#ffd97d';
         ctx.font = '800 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('🎯SKILL', 0, -28);
@@ -3342,27 +4147,27 @@
 
       if (isPlacePhase) {
         if (state.warpFirstSlot === i) {
-          ctx.strokeStyle = '#cc5de8';
+          ctx.strokeStyle = '#a855f7';
           ctx.lineWidth = 3;
-          ctx.shadowColor = '#cc5de8';
+          ctx.shadowColor = '#a855f7';
           ctx.shadowBlur = 14;
           ctx.beginPath();
           ctx.arc(0, 0, 28, 0, Math.PI * 2);
           ctx.stroke();
         } else if (action === 'new') {
-          ctx.strokeStyle = '#51cf66';
-          ctx.fillStyle = 'rgba(81, 207, 102, 0.16)';
+          ctx.strokeStyle = '#20e3b2';
+          ctx.fillStyle = 'rgba(32, 227, 178, 0.16)';
           ctx.lineWidth = 2.5;
-          ctx.shadowColor = '#51cf66';
+          ctx.shadowColor = '#20e3b2';
           ctx.shadowBlur = 12;
           ctx.beginPath();
           ctx.arc(0, 0, 25, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
         } else if (action === 'upgrade') {
-          ctx.strokeStyle = '#ffd86b';
+          ctx.strokeStyle = '#ffd97d';
           ctx.lineWidth = 3;
-          ctx.shadowColor = '#ffd86b';
+          ctx.shadowColor = '#ffd97d';
           ctx.shadowBlur = 15;
           ctx.beginPath();
           ctx.arc(0, 0, 28, 0, Math.PI * 2);
@@ -3372,9 +4177,8 @@
         }
       }
 
-      // 空きスロット（古代の魔法陣台座）
       if (!part) {
-        ctx.strokeStyle = isPlacePhase && action === 'new' ? '#51cf66' : 'rgba(212, 175, 55, 0.28)';
+        ctx.strokeStyle = isPlacePhase && action === 'new' ? '#20e3b2' : 'rgba(112, 245, 255, 0.24)';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([4, 4]);
         ctx.beginPath();
@@ -3382,11 +4186,11 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = isPlacePhase && action === 'new' ? '#51cf66' : 'rgba(212, 175, 55, 0.45)';
-        ctx.font = '700 10px serif';
+        ctx.fillStyle = isPlacePhase && action === 'new' ? '#20e3b2' : 'rgba(112, 245, 255, 0.4)';
+        ctx.font = '700 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(isPlacePhase && action === 'new' ? '＋刻印' : `#${i + 1}`, 0, 0);
+        ctx.fillText(isPlacePhase && action === 'new' ? '＋配置' : `${i + 1}`, 0, 0);
         ctx.restore();
         continue;
       }
@@ -3394,29 +4198,45 @@
       const scale = part.pulse || 1;
       ctx.scale(scale, scale);
 
+      // 1. 真珠貝（丸バンパー：開閉する二枚貝＋内部で光る真珠）
       if (part.type === 'bumper_circle') {
-        ctx.fillStyle = 'rgba(201, 42, 42, 0.28)';
-        ctx.strokeStyle = '#ff6b6b';
-        ctx.lineWidth = 3;
-        ctx.shadowColor = '#e03131';
+        const openGap = 3 + Math.sin(now + i) * 1.5 + (part.pulse - 1) * 8;
+        ctx.fillStyle = 'rgba(255, 92, 138, 0.28)';
+        ctx.strokeStyle = '#ff5c8a';
+        ctx.lineWidth = 2.5;
+        ctx.shadowColor = '#ff5c8a';
         ctx.shadowBlur = 12;
+
+        // 上殻
         ctx.beginPath();
-        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.arc(0, -openGap * 0.4, 17, Math.PI, 0);
+        ctx.closePath();
         ctx.fill();
         ctx.stroke();
 
-        ctx.strokeStyle = '#ffd86b';
-        ctx.lineWidth = 1.5;
+        // 下殻
         ctx.beginPath();
-        ctx.arc(0, 0, 11, 0, Math.PI * 2);
+        ctx.arc(0, openGap * 0.4, 17, 0, Math.PI);
+        ctx.closePath();
+        ctx.fill();
         ctx.stroke();
+
+        // 中心の発光真珠
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#ffd97d';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(0, 0, 6.5, 0, Math.PI * 2);
+        ctx.fill();
       }
+      // 2. 枝珊瑚（三角バンパー：三角形シルエット＋枝サンゴの突起）
       else if (part.type === 'bumper_tri') {
         const verts = getTriangleVertices(0, 0, 21, part.dir);
-        ctx.fillStyle = 'rgba(240, 140, 0, 0.26)';
-        ctx.strokeStyle = '#ffa94d';
+        ctx.fillStyle = 'rgba(255, 158, 0, 0.25)';
+        ctx.strokeStyle = '#ff9e00';
         ctx.lineWidth = 3;
-        ctx.shadowColor = '#f08c00';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = '#ff9e00';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.moveTo(verts[0].x, verts[0].y);
@@ -3425,83 +4245,103 @@
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+
+        // サンゴの枝ポリプ模様
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, 6);
+        ctx.lineTo(0, -9);
+        ctx.moveTo(0, -2);
+        ctx.lineTo(-7, -7);
+        ctx.moveTo(0, 1);
+        ctx.lineTo(7, -5);
+        ctx.stroke();
       }
+      // 3. 熱水噴出孔（キッカー：海底火口＋噴き上がる熱水ジェット）
       else if (part.type === 'kicker') {
-        ctx.fillStyle = 'rgba(47, 158, 68, 0.25)';
-        ctx.strokeStyle = '#51cf66';
+        ctx.fillStyle = 'rgba(32, 227, 178, 0.24)';
+        ctx.strokeStyle = '#20e3b2';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#2f9e44';
+        ctx.shadowColor = '#20e3b2';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(0, 0, 17, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
+        // チムニー（噴出孔の台形火口）と上昇気泡シェブロン
         ctx.beginPath();
-        ctx.moveTo(-8, 3);
+        ctx.moveTo(-8, 4);
         ctx.lineTo(0, -6);
-        ctx.lineTo(8, 3);
-        ctx.moveTo(-6, 9);
+        ctx.lineTo(8, 4);
+        ctx.moveTo(-6, 10);
         ctx.lineTo(0, 2);
-        ctx.lineTo(6, 9);
+        ctx.lineTo(6, 10);
         ctx.stroke();
       }
+      // 4. 海流の渦（スピナー：回転する渦巻きストリーム）
       else if (part.type === 'spinner') {
         ctx.save();
         ctx.rotate(part.angle);
-        ctx.strokeStyle = '#ffd86b';
+        ctx.strokeStyle = '#00e5ff';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#d4af37';
+        ctx.shadowColor = '#00e5ff';
         ctx.shadowBlur = 10;
+        for (let arm = 0; arm < 3; arm++) {
+          ctx.save();
+          ctx.rotate((arm * Math.PI * 2) / 3);
+          ctx.beginPath();
+          ctx.arc(6, 0, 10, 0, Math.PI * 1.15);
+          ctx.stroke();
+          ctx.restore();
+        }
         ctx.beginPath();
-        ctx.moveTo(-17, 0);
-        ctx.lineTo(17, 0);
-        ctx.moveTo(0, -17);
-        ctx.lineTo(0, 17);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(0, 0, 7, 0, Math.PI * 2);
-        ctx.fillStyle = '#1a120b';
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#70f5ff';
         ctx.fill();
-        ctx.stroke();
         ctx.restore();
       }
+      // 5. 岩礁（リバウンド壁：ゴツゴツした発光鉱石岩礁）
       else if (part.type === 'rebound_wall') {
         const angle = part.dir > 0 ? 0.52 : -0.52;
         const halfLen = 23;
-        ctx.strokeStyle = '#ffd86b';
-        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#ffd97d';
+        ctx.lineWidth = 6.5;
         ctx.lineCap = 'round';
-        ctx.shadowColor = '#d4af37';
+        ctx.shadowColor = '#ffd97d';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.moveTo(-Math.cos(angle) * halfLen, -Math.sin(angle) * halfLen);
         ctx.lineTo(Math.cos(angle) * halfLen, Math.sin(angle) * halfLen);
         ctx.stroke();
       }
+      // 6. 渦潮（ワープゲート：二重の深淵渦潮ポータル）
       else if (part.type === 'warp_gate') {
         ctx.save();
         ctx.rotate(part.angle);
-        ctx.strokeStyle = '#cc5de8';
-        ctx.fillStyle = 'rgba(156, 54, 181, 0.28)';
+        ctx.strokeStyle = '#a855f7';
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.28)';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#9c36b5';
+        ctx.shadowColor = '#a855f7';
         ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(0, 0, 16, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        ctx.strokeStyle = '#ffd86b';
+        ctx.strokeStyle = '#70f5ff';
         ctx.beginPath();
-        ctx.arc(0, 0, 9, 0, Math.PI * 1.3);
+        ctx.arc(0, 0, 10, 0, Math.PI * 1.35);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, Math.PI, Math.PI * 2.35);
         ctx.stroke();
         ctx.restore();
       }
 
       ctx.scale(1 / scale, 1 / scale);
       if (part.level >= 2) {
-        ctx.strokeStyle = part.level === 3 ? 'rgba(255, 216, 107, 0.65)' : 'rgba(81, 207, 102, 0.45)';
+        ctx.strokeStyle = part.level === 3 ? 'rgba(255, 217, 125, 0.65)' : 'rgba(32, 227, 178, 0.45)';
         ctx.lineWidth = part.level === 3 ? 2 : 1.2;
         ctx.beginPath();
         ctx.arc(0, 0, 22, 0, Math.PI * 2);
@@ -3509,14 +4349,14 @@
       }
       ctx.shadowBlur = 4;
       ctx.shadowColor = '#000';
-      ctx.fillStyle = part.level === 3 ? '#ffd86b' : (part.level === 2 ? '#51cf66' : '#f3ead8');
+      ctx.fillStyle = part.level === 3 ? '#ffd97d' : (part.level === 2 ? '#20e3b2' : '#e6f6ff');
       ctx.font = '900 10px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(part.level === 3 ? '★MAX' : `Lv${part.level}`, 0, 25);
 
       if (isPlacePhase && action === 'upgrade') {
-        ctx.fillStyle = '#ffd86b';
+        ctx.fillStyle = '#ffd97d';
         ctx.font = '800 10px sans-serif';
         ctx.fillText('▲LvUP!', 0, -25);
       }
@@ -3534,20 +4374,20 @@
     const pos = SLOT_POSITIONS[state.hoverSlotId];
 
     const tx = Math.max(85, Math.min(VIEW_W - 85, pos.x));
-    const ty = pos.y - 44;
+    const ty = pos.y > 110 ? pos.y - 44 : pos.y + 42;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(20, 14, 10, 0.94)';
+    ctx.fillStyle = 'rgba(5, 18, 38, 0.94)';
     ctx.strokeStyle = card.color;
     ctx.lineWidth = 1.5;
     ctx.fillRect(tx - 82, ty - 18, 164, 34);
     ctx.strokeRect(tx - 82, ty - 18, 164, 34);
 
-    ctx.fillStyle = '#fff6e0';
+    ctx.fillStyle = '#ffffff';
     ctx.font = '800 11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`${card.name} Lv${part.level} (${card.basePt * part.level}pt)`, tx, ty - 4);
-    ctx.fillStyle = '#a89984';
+    ctx.fillText(`${card.shortName} Lv${part.level} (${card.basePt * part.level}pt)`, tx, ty - 4);
+    ctx.fillStyle = '#7fa6c4';
     ctx.font = '600 9.5px sans-serif';
     ctx.fillText(`累計獲得: ${part.totalEarned.toLocaleString()} PTS (${part.hits}回)`, tx, ty + 10);
     ctx.restore();
@@ -3558,15 +4398,15 @@
 
     const p = Math.max(0.18, state.plunger.power);
     ctx.save();
-    ctx.strokeStyle = state.plunger.charging ? 'rgba(255, 216, 107, 0.6)' : 'rgba(212, 175, 55, 0.25)';
+    ctx.strokeStyle = state.plunger.charging ? 'rgba(255, 217, 125, 0.6)' : 'rgba(0, 229, 255, 0.25)';
     ctx.lineWidth = state.plunger.charging ? 2.5 : 1.5;
     ctx.setLineDash([6, 5]);
-    ctx.shadowColor = '#ffd86b';
+    ctx.shadowColor = '#70f5ff';
     ctx.shadowBlur = 8;
 
     ctx.beginPath();
-    ctx.moveTo(391, 1175);
-    ctx.lineTo(391, 120);
+    ctx.moveTo(391, 600);
+    ctx.lineTo(391, 115);
 
     const archSteps = Math.floor(2 + p * 6);
     const previewPts = [
@@ -3587,7 +4427,7 @@
     const lastPt = previewPts[Math.min(archSteps, previewPts.length) - 1];
     if (lastPt && state.plunger.charging) {
       ctx.setLineDash([]);
-      ctx.fillStyle = '#ffd86b';
+      ctx.fillStyle = '#ffd97d';
       ctx.beginPath();
       ctx.arc(lastPt[0], lastPt[1], 4.5, 0, Math.PI * 2);
       ctx.fill();
@@ -3597,11 +4437,11 @@
 
   function drawPlunger() {
     const cx = (LANE_X + 408) / 2;
-    const topY = 1194 + state.plunger.power * 16;
-    const botY = 1212;
+    const topY = 619 + state.plunger.power * 14;
+    const botY = 632;
 
     ctx.save();
-    ctx.strokeStyle = state.plunger.charging ? '#ffd86b' : '#c92a2a';
+    ctx.strokeStyle = state.plunger.charging ? '#ffd97d' : '#ff5c8a';
     ctx.lineWidth = 3;
     ctx.shadowColor = ctx.strokeStyle;
     ctx.shadowBlur = 8;
@@ -3617,33 +4457,33 @@
     ctx.stroke();
 
     if (state.ball.waitingLaunch && state.plunger.power > 0.01) {
-      const h = 110 * state.plunger.power;
-      ctx.fillStyle = 'rgba(212, 175, 55, 0.35)';
-      ctx.fillRect(LANE_X + 3, 1185 - h, 408 - LANE_X - 6, h);
+      const h = 75 * state.plunger.power;
+      ctx.fillStyle = 'rgba(0, 229, 255, 0.35)';
+      ctx.fillRect(LANE_X + 3, 610 - h, 408 - LANE_X - 6, h);
     }
     ctx.restore();
   }
 
   function drawFlipper(flipper) {
-    const len = getFlipperLength(flipper);
+    const len = getFlipperLength();
     const x1 = flipper.pivotX;
     const y1 = flipper.pivotY;
     const x2 = x1 + Math.cos(flipper.angle) * len;
     const y2 = y1 + Math.sin(flipper.angle) * len;
 
-    const color = state.tiltPenalty ? '#c92a2a' : (state.flipperLevel > 0 ? '#ffd86b' : '#d4af37');
+    const color = state.tiltPenalty ? '#ff5c8a' : (state.flipperLevel > 0 ? '#20e3b2' : '#00e5ff');
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = (flipper.scale || 1) < 1 ? 9 : 11;
+    ctx.lineWidth = 11;
     ctx.lineCap = 'round';
     ctx.shadowColor = color;
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 12;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
 
-    ctx.fillStyle = '#fff6e0';
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     ctx.arc(x1, y1, 3.5, 0, Math.PI * 2);
     ctx.fill();
@@ -3654,7 +4494,7 @@
     const b = state.ball;
     ctx.save();
 
-    const trailColor = state.feverTimer > 0 ? '255, 77, 77' : (state.warpAuraTimer > 0 ? '204, 93, 232' : '212, 175, 55');
+    const trailColor = state.feverTimer > 0 ? '32, 227, 178' : (state.warpAuraTimer > 0 ? '168, 85, 247' : '112, 245, 255');
     for (let i = 0; i < b.trail.length; i++) {
       const t = b.trail[i];
       const ratio = (i + 1) / b.trail.length;
@@ -3664,68 +4504,29 @@
       ctx.fill();
     }
 
-    // 重厚な白銀の魔導オーブ
+    // 発光する真珠ボール（光沢ハイライトグラデーション）
     const grad = ctx.createRadialGradient(b.x - 3, b.y - 3, 1, b.x, b.y, BALL_R);
     grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.7, '#e9ecef');
-    grad.addColorStop(1, '#adb5bd');
+    grad.addColorStop(0.55, '#fff6e5');
+    grad.addColorStop(1, '#98e2ff');
     ctx.fillStyle = grad;
-    ctx.shadowColor = state.feverTimer > 0 ? '#ff4d4d' : '#ffd86b';
-    ctx.shadowBlur = 12;
+    ctx.shadowColor = state.feverTimer > 0 ? '#20e3b2' : '#70f5ff';
+    ctx.shadowBlur = 16;
     ctx.beginPath();
     ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 
-  // 右端に全体マップと現在のカメラ位置・ボール高度・スロット配置を表示するミニゲージ
-  function drawAltitudeMinimap() {
-    const mapX = 411;
-    const mapY = 14;
-    const mapW = 6;
-    const mapH = 130;
-
-    ctx.save();
-    ctx.fillStyle = 'rgba(15, 11, 8, 0.75)';
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-    ctx.lineWidth = 1;
-    ctx.fillRect(mapX, mapY, mapW, mapH);
-    ctx.strokeRect(mapX, mapY, mapW, mapH);
-
-    // カメラ視野枠
-    const camTopRatio = state.cameraY / WORLD_H;
-    const camHeightRatio = VIEW_H / WORLD_H;
-    ctx.fillStyle = 'rgba(212, 175, 55, 0.25)';
-    ctx.strokeStyle = '#ffd86b';
-    ctx.fillRect(mapX, mapY + camTopRatio * mapH, mapW, camHeightRatio * mapH);
-    ctx.strokeRect(mapX, mapY + camTopRatio * mapH, mapW, camHeightRatio * mapH);
-
-    // 設置済みスロットのドット
-    for (let i = 0; i < state.slots.length; i++) {
-      if (!state.slots[i]) continue;
-      const sy = mapY + (SLOT_POSITIONS[i].y / WORLD_H) * mapH;
-      ctx.fillStyle = '#51cf66';
-      ctx.fillRect(mapX + 1, sy - 1, mapW - 2, 2);
-    }
-
-    // ボール現在位置ドット
-    const by = mapY + (Math.max(0, Math.min(WORLD_H, state.ball.y)) / WORLD_H) * mapH;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(mapX + mapW / 2, by, 2.8, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
   // =========================================================================
-  // 9. UI & HUD 更新・イベントハンドラ
+  // 11. UI & HUD 更新・イベントハンドラ
   // =========================================================================
   function updateHUD() {
     const rBadge = document.getElementById('round-badge');
     if (state.round === 8 && !state.endlessMode) {
-      rBadge.textContent = 'ROUND 8 (魔王)';
+      rBadge.textContent = 'ROUND 8 (深海の主)';
     } else if (state.round > 8 || state.endlessMode) {
-      rBadge.textContent = `ABYSS R${state.round}`;
+      rBadge.textContent = `TRENCH R${state.round}`;
     } else {
       rBadge.textContent = `ROUND ${state.round} / 8`;
     }
@@ -3759,10 +4560,23 @@
     cBadge.textContent = `${state.combo} HIT (×${mult.toFixed(2)})`;
     cBadge.classList.toggle('fever', state.feverTimer > 0);
 
+    // 発動中の魚パッシブ効果バッジ表示（HUDの端にアイコン＋名前で小さく表示）
+    const fishBuffBar = document.getElementById('fish-buff-bar');
+    fishBuffBar.innerHTML = '';
+    state.activeFishGroups.forEach(gid => {
+      const grp = FISH_GROUPS[gid];
+      if (!grp) return;
+      const pill = document.createElement('span');
+      pill.className = 'fish-buff-pill';
+      pill.title = `【${grp.name}】${grp.effectDesc}`;
+      pill.textContent = `${grp.icon}${grp.name}`;
+      fishBuffBar.appendChild(pill);
+    });
+
     const synTag = document.getElementById('synergy-tag');
     if (state.activeSynergies.length > 0) {
       synTag.style.display = 'inline-block';
-      synTag.textContent = `✨契約×${state.activeSynergies.length}`;
+      synTag.textContent = `✨シナジー×${state.activeSynergies.length}`;
     } else {
       synTag.style.display = 'none';
     }
@@ -3793,8 +4607,9 @@
   function updateTitleRecords() {
     document.getElementById('title-hiscore').textContent = hiScore.toLocaleString();
     const clEl = document.getElementById('title-cleared');
-    clEl.textContent = hasClearedEver ? '★ 試練突破済' : '未クリア';
-    clEl.style.color = hasClearedEver ? '#51cf66' : '#a89984';
+    clEl.textContent = hasClearedEver ? '★ 制覇済' : '未クリア';
+    clEl.style.color = hasClearedEver ? '#20e3b2' : '#7fa6c4';
+    document.getElementById('title-zukan-count').textContent = `${getUnlockedFishCount()} / 12`;
     document.getElementById('btn-practice').style.display = hasClearedEver ? 'block' : 'none';
   }
 
@@ -3802,17 +4617,14 @@
     document.querySelectorAll('.overlay').forEach(el => el.classList.remove('show'));
   }
 
-  // 下層と上層の左右フリッパーを同時制御
   function setFlippersPressed(isLeft, pressed) {
     if (state.phase !== 'PLAY' || state.tiltPenalty) {
       if (!pressed) {
         if (isLeft) {
           state.leftFlipper.pressed = false;
-          state.upperLeftFlipper.pressed = false;
           document.getElementById('ctrl-left').classList.remove('pressed');
         } else {
           state.rightFlipper.pressed = false;
-          state.upperRightFlipper.pressed = false;
           document.getElementById('ctrl-right').classList.remove('pressed');
         }
       }
@@ -3821,12 +4633,10 @@
     if (isLeft) {
       if (pressed && !state.leftFlipper.pressed) sfx.flipper();
       state.leftFlipper.pressed = pressed;
-      state.upperLeftFlipper.pressed = pressed;
       document.getElementById('ctrl-left').classList.toggle('pressed', pressed);
     } else {
       if (pressed && !state.rightFlipper.pressed) sfx.flipper();
       state.rightFlipper.pressed = pressed;
-      state.upperRightFlipper.pressed = pressed;
       document.getElementById('ctrl-right').classList.toggle('pressed', pressed);
     }
   }
@@ -3843,12 +4653,11 @@
     document.getElementById('ctrl-launch').classList.remove('charging');
     if (state.phase !== 'PLAY' || !state.ball.waitingLaunch) return;
 
-    const p = Math.max(0.2, state.plunger.power);
+    const p = Math.max(0.18, state.plunger.power);
     state.plunger.power = 0;
     state.ball.waitingLaunch = false;
-    state.ball.y = 1180;
-    // 1240pxのロングレーンを最上層アーチまで一気に駆け上がる初速
-    state.ball.vy = -(1060 + p * 380 + (Math.random() * 24 - 12));
+    state.ball.y = 606;
+    state.ball.vy = -(550 + p * 440 + (Math.random() * 20 - 10));
     state.ball.vx = 0;
     sfx.launch(p);
     updateHUD();
@@ -3867,11 +4676,7 @@
       startPlungerCharge();
     } else if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyX' || e.code === 'ArrowUp') {
       e.preventDefault();
-      if (state.phase === 'PLACE' || state.phase === 'DRAFT') {
-        state.targetCameraY = Math.max(0, state.targetCameraY - 220);
-      } else {
-        triggerNudge(e.code === 'ShiftLeft' ? 1 : (e.code === 'ShiftRight' ? -1 : 0));
-      }
+      triggerNudge(e.code === 'ShiftLeft' ? 1 : (e.code === 'ShiftRight' ? -1 : 0));
     } else if (e.code === 'KeyP' || e.code === 'Escape') {
       togglePause();
     }
@@ -3885,22 +4690,6 @@
     } else if (e.code === 'Space' || e.code === 'ArrowDown') {
       releasePlunger();
     }
-  });
-
-  // マウスホイールでのカメラ上下スクロール（配置フェーズ・盤面確認中）
-  canvas.addEventListener('wheel', (e) => {
-    if (state.phase === 'PLACE' || state.phase === 'DRAFT') {
-      e.preventDefault();
-      state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, state.targetCameraY + e.deltaY * 0.7));
-    }
-  }, { passive: false });
-
-  // 配置フェーズの上層・下層カメラ切替ボタン
-  document.getElementById('btn-cam-up').addEventListener('click', () => {
-    state.targetCameraY = 0;
-  });
-  document.getElementById('btn-cam-down').addEventListener('click', () => {
-    state.targetCameraY = MAX_CAM_Y;
   });
 
   function bindHoldButton(el, onDown, onUp) {
@@ -3927,33 +4716,18 @@
 
   const activeCanvasTouches = new Map();
 
-  // スクリーン座標をワールド座標（カメラオフセット込み）に変換
-  function getWorldCoords(clientX, clientY) {
+  function getCanvasCoords(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    const viewX = ((clientX - rect.left) / rect.width) * VIEW_W;
-    const viewY = ((clientY - rect.top) / rect.height) * VIEW_H;
     return {
-      x: viewX,
-      y: viewY + state.cameraY,
-      viewY
+      x: ((clientX - rect.left) / rect.width) * VIEW_W,
+      y: ((clientY - rect.top) / rect.height) * VIEW_H
     };
   }
 
   canvas.addEventListener('pointermove', (e) => {
-    const pt = getWorldCoords(e.clientX, e.clientY);
-
-    // 配置フェーズ・ドラフト盤面確認中はドラッグで上下にカメラをスクロール可能
-    if (state.manualCamDrag && (state.phase === 'PLACE' || state.phase === 'DRAFT')) {
-      const dy = pt.viewY - state.dragStartY;
-      if (Math.abs(dy) > 6) {
-        state.movedDuringDrag = true;
-      }
-      state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, state.dragStartCamY - dy * 1.4));
-      return;
-    }
-
+    const pt = getCanvasCoords(e.clientX, e.clientY);
     let bestId = -1;
-    let bestDist = 28;
+    let bestDist = 26;
     for (let i = 0; i < SLOT_POSITIONS.length; i++) {
       const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
       if (d < bestDist) {
@@ -3966,20 +4740,10 @@
 
   canvas.addEventListener('pointerleave', () => {
     state.hoverSlotId = -1;
-    state.manualCamDrag = false;
   });
 
   canvas.addEventListener('pointerdown', (e) => {
-    const pt = getWorldCoords(e.clientX, e.clientY);
-
-    if (state.phase === 'PLACE' || state.phase === 'DRAFT') {
-      state.manualCamDrag = true;
-      state.movedDuringDrag = false;
-      state.dragStartY = pt.viewY;
-      state.dragStartCamY = state.targetCameraY;
-      canvas.setPointerCapture(e.pointerId);
-      return;
-    }
+    const pt = getCanvasCoords(e.clientX, e.clientY);
 
     let nearestSlotId = -1;
     let nearestDist = 36;
@@ -3991,11 +4755,24 @@
       }
     }
 
+    if (state.phase === 'PLACE') {
+      if (nearestSlotId !== -1) {
+        state.hoverSlotId = nearestSlotId;
+        handleSlotClick(nearestSlotId);
+      }
+      return;
+    }
+
+    if (state.phase === 'DRAFT') {
+      state.hoverSlotId = nearestSlotId;
+      return;
+    }
+
     if (state.phase === 'PLAY') {
       if (nearestSlotId !== -1 && state.slots[nearestSlotId]) {
         state.hoverSlotId = nearestSlotId;
       }
-      if (state.ball.waitingLaunch && pt.x > LANE_X - 20 && pt.viewY > 450) {
+      if (state.ball.waitingLaunch && pt.x > LANE_X - 20 && pt.y > 480) {
         activeCanvasTouches.set(e.pointerId, 'launch');
         startPlungerCharge();
       } else if (pt.x < VIEW_W / 2) {
@@ -4009,29 +4786,6 @@
   });
 
   function endCanvasPointer(e) {
-    if (state.manualCamDrag) {
-      state.manualCamDrag = false;
-      if (!state.movedDuringDrag) {
-        const pt = getWorldCoords(e.clientX, e.clientY);
-        let nearestSlotId = -1;
-        let nearestDist = 36;
-        for (let i = 0; i < SLOT_POSITIONS.length; i++) {
-          const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
-          if (d < nearestDist) {
-            nearestDist = d;
-            nearestSlotId = i;
-          }
-        }
-        if (nearestSlotId !== -1) {
-          state.hoverSlotId = nearestSlotId;
-          if (state.phase === 'PLACE') {
-            handleSlotClick(nearestSlotId);
-          }
-        }
-      }
-      return;
-    }
-
     const role = activeCanvasTouches.get(e.pointerId);
     if (!role) return;
     activeCanvasTouches.delete(e.pointerId);
@@ -4045,7 +4799,7 @@
   document.getElementById('btn-peek-board').addEventListener('click', () => {
     const ov = document.getElementById('ov-draft');
     const isPeek = ov.classList.toggle('peek-mode');
-    document.getElementById('btn-peek-board').textContent = isPeek ? '🃏 カード選択に戻る' : '👁 盤面を確認(上下ドラッグ)';
+    document.getElementById('btn-peek-board').textContent = isPeek ? '🃏 カード選択に戻る' : '👁 盤面を確認';
   });
 
   document.getElementById('btn-reroll').addEventListener('click', () => {
@@ -4073,23 +4827,32 @@
       state.prevPhaseBeforePause = state.phase;
       state.phase = 'PAUSE';
 
+      const fishHtml = state.activeFishGroups.size > 0
+        ? Array.from(state.activeFishGroups).map(gid => {
+            const g = FISH_GROUPS[gid];
+            return `・<span class="syn-hl">${g.icon}【${g.name}】</span>: ${g.effectDesc}`;
+          }).join('<br>')
+        : '・まだ魚パッシブは発動していません（泳ぐ深海魚に当てて回収しよう！）';
+
       const synHtml = state.activeSynergies.length > 0
         ? state.activeSynergies.map(s => `・<span class="syn-hl">【${s.name}】</span>: ${s.effectText}`).join('<br>')
-        : '・現在発動中の契約シナジーはありません（遺物パーツを組み合わせよう）';
+        : '・現在発動中の海流シナジーはありません';
 
       const partsHtml = state.slots
         .map((s, idx) => {
           if (!s) return null;
           const c = CARD_CATALOG.find(item => item.id === s.type);
-          return `#${idx + 1}(${SLOT_POSITIONS[idx].label}): <b>${c ? c.name : s.type} Lv${s.level}</b> (${s.totalEarned.toLocaleString()}pt)`;
+          return `#${idx + 1}(${SLOT_POSITIONS[idx].label}): <b>${c ? c.shortName : s.type} Lv${s.level}</b> (${s.totalEarned.toLocaleString()}pt)`;
         })
         .filter(Boolean)
         .join('<br>');
 
       document.getElementById('pause-stats').innerHTML = `
         <b>現在ラウンド</b>: ROUND ${state.round} / <b>総スコア</b>: ${state.totalScore.toLocaleString()} PTS<br>
-        <b>王家の祝福(スコアブースト)</b>: +${state.scoreBoosterCount * 10}% / <b>大剣フリッパー強化</b>: Lv${state.flipperLevel}<br><br>
-        <b>【発動中シナジー (${state.activeSynergies.length}個)】</b><br>
+        <b>海神の祝福(スコアブースト)</b>: +${state.scoreBoosterCount * 10}% / <b>海流フィン強化</b>: Lv${state.flipperLevel}<br><br>
+        <b>【🐟発動中の深海魚パッシブ (${state.activeFishGroups.size}/5系統)】</b><br>
+        ${fishHtml}<br><br>
+        <b>【✨発動中の構築シナジー (${state.activeSynergies.length}個)】</b><br>
         ${synHtml}<br><br>
         <b>【設置パーツ一覧 (全10スロット)】</b><br>
         ${partsHtml || 'なし'}
@@ -4118,6 +4881,25 @@
   document.getElementById('btn-place-skip').addEventListener('click', () => {
     if (state.phase === 'PLACE') {
       finishPlacementPhase();
+    }
+  });
+
+  // 図鑑の開閉ボタン（タイトル画面＆リザルト画面から）
+  document.getElementById('btn-open-zukan-title').addEventListener('click', () => {
+    sfx.place();
+    openZukanModal('TITLE');
+  });
+  document.getElementById('btn-open-zukan-result').addEventListener('click', () => {
+    sfx.place();
+    openZukanModal('RESULT');
+  });
+  document.getElementById('btn-close-zukan').addEventListener('click', () => {
+    sfx.place();
+    document.getElementById('ov-zukan').classList.remove('show');
+    if (state.prevPhaseBeforeZukan === 'RESULT') {
+      document.getElementById('ov-result').classList.add('show');
+    } else {
+      document.getElementById('ov-title').classList.add('show');
     }
   });
 
@@ -4154,11 +4936,13 @@
   });
 
   // =========================================================================
-  // 10. メインループ (60fps)
+  // 12. メインループ (60fps)
   // =========================================================================
   updateTitleRecords();
   placePartInSlot(0, 'bumper_circle', 1);
   placePartInSlot(1, 'bumper_circle', 1);
+  spawnOneFish();
+  spawnOneFish();
   updateHUD();
 
   let lastTime = performance.now();
