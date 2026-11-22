@@ -3,19 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>弾む思いつき - 物理ピンボール×デッキ構築</title>
+<title>弾む思いつき - 古城の魔導ピンボール×デッキ構築</title>
 <style>
   :root {
-    --bg-dark: #060711;
-    --panel-bg: rgba(12, 16, 36, 0.94);
-    --neon-cyan: #00f0ff;
-    --neon-pink: #ff2a85;
-    --neon-yellow: #ffe600;
-    --neon-green: #00ff88;
-    --neon-purple: #b845ff;
-    --neon-orange: #ff8c00;
-    --text-main: #eef4ff;
-    --text-sub: #8a9bc2;
+    --bg-dark: #0e0a08;
+    --panel-bg: rgba(24, 18, 14, 0.95);
+    --gold-main: #d4af37;
+    --gold-bright: #ffd86b;
+    --crimson: #c92a2a;
+    --blood-bright: #ff4d4d;
+    --emerald: #37b24d;
+    --soul-green: #51cf66;
+    --arcane-purple: #9c36b5;
+    --arcane-bright: #cc5de8;
+    --text-main: #f3ead8;
+    --text-sub: #a89984;
+    --border-brass: #7c6238;
   }
   * {
     box-sizing: border-box;
@@ -29,9 +32,9 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: radial-gradient(circle at 50% 25%, #121738 0%, #04050c 100%);
+    background: radial-gradient(circle at 50% 25%, #231812 0%, #090605 100%);
     color: var(--text-main);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+    font-family: "Georgia", "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", -apple-system, BlinkMacSystemFont, serif;
     touch-action: none;
   }
   #app {
@@ -43,7 +46,9 @@
     display: flex;
     flex-direction: column;
     background: var(--bg-dark);
-    box-shadow: 0 0 48px rgba(0, 240, 255, 0.14);
+    box-shadow: 0 0 50px rgba(212, 175, 55, 0.16);
+    border-left: 1px solid rgba(124, 98, 56, 0.35);
+    border-right: 1px solid rgba(124, 98, 56, 0.35);
     overflow: hidden;
   }
 
@@ -51,8 +56,9 @@
   #hud {
     flex: 0 0 auto;
     padding: 7px 11px 6px;
-    background: linear-gradient(180deg, rgba(16, 22, 50, 0.98) 0%, rgba(9, 11, 25, 0.92) 100%);
-    border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+    background: linear-gradient(180deg, rgba(32, 23, 17, 0.98) 0%, rgba(18, 13, 10, 0.95) 100%);
+    border-bottom: 2px solid var(--border-brass);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
     z-index: 10;
   }
   .hud-top {
@@ -67,25 +73,25 @@
     gap: 8px;
   }
   .round-badge {
-    background: rgba(0, 240, 255, 0.14);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid var(--gold-main);
+    color: var(--gold-bright);
     font-weight: 800;
     font-size: 12px;
-    padding: 2px 7px;
-    border-radius: 6px;
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
   }
   .round-badge.boss {
-    background: rgba(255, 42, 133, 0.2);
-    border-color: var(--neon-pink);
-    color: var(--neon-pink);
-    text-shadow: 0 0 8px rgba(255, 42, 133, 0.8);
+    background: rgba(201, 42, 42, 0.28);
+    border-color: var(--blood-bright);
+    color: #ff8787;
+    text-shadow: 0 0 8px rgba(255, 77, 77, 0.8);
     animation: pulseBoss 1.2s infinite alternate;
   }
   @keyframes pulseBoss {
-    from { box-shadow: 0 0 4px rgba(255, 42, 133, 0.4); }
-    to   { box-shadow: 0 0 14px rgba(255, 42, 133, 0.9); }
+    from { box-shadow: 0 0 4px rgba(201, 42, 42, 0.4); }
+    to   { box-shadow: 0 0 14px rgba(255, 77, 77, 0.9); }
   }
   .balls-box {
     display: flex;
@@ -93,32 +99,35 @@
     gap: 4px;
     font-size: 11px;
     color: var(--text-sub);
+    font-family: sans-serif;
+    font-weight: 700;
   }
   .ball-dot {
-    width: 9px;
-    height: 9px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: #1d2440;
-    border: 1px solid #3c4b7c;
+    background: #221a15;
+    border: 1px solid #5c4938;
     transition: all 0.2s;
   }
   .ball-dot.active {
-    background: var(--neon-cyan);
+    background: radial-gradient(circle at 35% 35%, #fff, #d4af37);
     border-color: #fff;
-    box-shadow: 0 0 7px var(--neon-cyan);
+    box-shadow: 0 0 7px var(--gold-main);
   }
   .icon-btns {
     display: flex;
     gap: 5px;
+    font-family: sans-serif;
   }
   .icon-btn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 240, 200, 0.06);
+    border: 1px solid var(--border-brass);
     color: var(--text-main);
     min-width: 28px;
     height: 25px;
     padding: 0 6px;
-    border-radius: 6px;
+    border-radius: 4px;
     font-size: 11.5px;
     font-weight: 700;
     cursor: pointer;
@@ -130,24 +139,24 @@
     transform: scale(0.93);
   }
   .icon-btn.muted {
-    color: var(--neon-pink);
-    border-color: rgba(255, 42, 133, 0.5);
+    color: var(--blood-bright);
+    border-color: rgba(255, 77, 77, 0.5);
   }
   .icon-btn.bgm-off {
     color: var(--text-sub);
     opacity: 0.6;
   }
   .icon-btn.nudge-btn {
-    color: var(--neon-yellow);
-    border-color: rgba(255, 230, 0, 0.4);
+    color: var(--gold-bright);
+    border-color: rgba(212, 175, 55, 0.5);
   }
   .icon-btn.nudge-btn.tilted {
-    color: var(--neon-pink);
-    border-color: var(--neon-pink);
+    color: var(--blood-bright);
+    border-color: var(--blood-bright);
     opacity: 0.5;
   }
 
-  /* Arcade Round Progress Stepper */
+  /* Round Progress Stepper */
   .round-stepper {
     display: flex;
     gap: 3px;
@@ -157,20 +166,20 @@
     flex: 1;
     height: 4px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 235, 190, 0.12);
     transition: all 0.25s;
   }
   .r-step.done {
-    background: var(--neon-green);
-    box-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+    background: var(--emerald);
+    box-shadow: 0 0 6px rgba(81, 207, 102, 0.45);
   }
   .r-step.current {
-    background: var(--neon-cyan);
-    box-shadow: 0 0 8px var(--neon-cyan);
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px var(--gold-main);
   }
   .r-step.boss.current {
-    background: var(--neon-pink);
-    box-shadow: 0 0 8px var(--neon-pink);
+    background: var(--blood-bright);
+    box-shadow: 0 0 8px var(--blood-bright);
   }
 
   .hud-mid {
@@ -178,6 +187,7 @@
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 4px;
+    font-family: sans-serif;
   }
   .score-area {
     display: flex;
@@ -187,8 +197,8 @@
   .score-current {
     font-size: 19px;
     font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    color: #fff6e0;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.55);
     font-variant-numeric: tabular-nums;
   }
   .score-norma {
@@ -206,8 +216,8 @@
   .synergy-tag {
     font-size: 10px;
     color: #fff;
-    background: linear-gradient(135deg, rgba(184, 69, 255, 0.35), rgba(0, 240, 255, 0.35));
-    border: 1px solid var(--neon-purple);
+    background: linear-gradient(135deg, rgba(156, 54, 181, 0.45), rgba(212, 175, 55, 0.35));
+    border: 1px solid var(--arcane-bright);
     padding: 1px 5px;
     border-radius: 4px;
     font-weight: 700;
@@ -215,9 +225,9 @@
   }
   .boost-tag {
     font-size: 10px;
-    color: var(--neon-green);
-    background: rgba(0, 255, 136, 0.12);
-    border: 1px solid rgba(0, 255, 136, 0.4);
+    color: var(--soul-green);
+    background: rgba(55, 178, 77, 0.16);
+    border: 1px solid rgba(81, 207, 102, 0.45);
     padding: 1px 5px;
     border-radius: 4px;
     font-weight: 700;
@@ -225,33 +235,33 @@
   .combo-badge {
     font-size: 13px;
     font-weight: 800;
-    color: var(--neon-yellow);
-    text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+    color: var(--gold-bright);
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
     font-variant-numeric: tabular-nums;
   }
   .combo-badge.fever {
-    color: var(--neon-pink);
-    text-shadow: 0 0 10px var(--neon-pink);
+    color: var(--blood-bright);
+    text-shadow: 0 0 10px var(--blood-bright);
   }
 
   .norma-bar-bg {
     width: 100%;
     height: 7px;
-    background: #141932;
+    background: #1a130e;
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
     position: relative;
   }
   .norma-bar-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
-    box-shadow: 0 0 10px var(--neon-cyan);
+    background: linear-gradient(90deg, #b8860b, var(--gold-bright), var(--soul-green));
+    box-shadow: 0 0 10px var(--gold-main);
     transition: width 0.12s ease-out;
   }
   .norma-bar-fill.fever {
-    background: linear-gradient(90deg, var(--neon-pink), var(--neon-yellow), var(--neon-cyan));
+    background: linear-gradient(90deg, var(--crimson), var(--gold-bright), var(--arcane-bright));
   }
 
   /* Canvas Stage */
@@ -263,30 +273,32 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: radial-gradient(ellipse at center, #0e1329 0%, #050711 100%);
+    background: radial-gradient(ellipse at center, #1e1610 0%, #0b0806 100%);
   }
   canvas {
     display: block;
     max-width: 100%;
     max-height: 100%;
-    box-shadow: 0 0 24px rgba(0, 240, 255, 0.08);
+    box-shadow: 0 0 28px rgba(0, 0, 0, 0.85);
   }
 
-  /* Placement Top Banner */
+  /* Placement Top Banner & Camera Scroll Buttons */
   #place-banner {
     position: absolute;
     top: 8px;
-    left: 10px;
-    right: 10px;
-    background: rgba(12, 18, 42, 0.95);
-    border: 1.5px solid var(--neon-yellow);
-    box-shadow: 0 0 20px rgba(255, 230, 0, 0.28);
-    border-radius: 10px;
-    padding: 8px 12px;
+    left: 8px;
+    right: 8px;
+    background: rgba(28, 20, 14, 0.96);
+    border: 1.5px solid var(--gold-main);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.75);
+    border-radius: 8px;
+    padding: 7px 10px;
     display: none;
     justify-content: space-between;
     align-items: center;
+    gap: 6px;
     z-index: 15;
+    font-family: sans-serif;
   }
   #place-banner.show {
     display: flex;
@@ -295,26 +307,41 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
   }
   .place-title {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 800;
-    color: var(--neon-yellow);
+    color: var(--gold-bright);
   }
   .place-sub {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-main);
   }
+  .place-btns {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .cam-btn {
+    background: rgba(212, 175, 55, 0.16);
+    border: 1px solid var(--gold-main);
+    color: var(--gold-bright);
+    padding: 5px 7px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+  }
   .skip-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     color: var(--text-sub);
-    padding: 5px 10px;
-    border-radius: 6px;
+    padding: 5px 8px;
+    border-radius: 5px;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    flex-shrink: 0;
   }
 
   /* Bottom Controls Bar */
@@ -325,12 +352,13 @@
     grid-template-columns: 1fr 96px 1fr;
     gap: 6px;
     padding: 6px 10px 8px;
-    background: rgba(9, 12, 26, 0.97);
-    border-top: 1px solid rgba(0, 240, 255, 0.22);
+    background: linear-gradient(180deg, #16100c 0%, #0d0907 100%);
+    border-top: 2px solid var(--border-brass);
     z-index: 10;
+    font-family: sans-serif;
   }
   .ctrl-btn {
-    border-radius: 10px;
+    border-radius: 8px;
     font-weight: 800;
     font-size: 14px;
     display: flex;
@@ -343,31 +371,31 @@
     overflow: hidden;
   }
   .ctrl-flip {
-    background: rgba(0, 240, 255, 0.1);
-    border: 1.5px solid rgba(0, 240, 255, 0.45);
-    color: var(--neon-cyan);
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.16) 0%, rgba(124, 98, 56, 0.12) 100%);
+    border: 1.5px solid var(--border-brass);
+    color: var(--gold-bright);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
   }
   .ctrl-flip.pressed {
-    background: rgba(0, 240, 255, 0.3);
-    border-color: #fff;
+    background: rgba(212, 175, 55, 0.35);
+    border-color: var(--gold-bright);
     transform: translateY(1px);
   }
   .ctrl-flip.disabled {
     opacity: 0.3;
-    border-color: var(--neon-pink);
-    color: var(--neon-pink);
+    border-color: var(--crimson);
+    color: var(--blood-bright);
   }
   .ctrl-launch {
-    background: rgba(255, 42, 133, 0.14);
-    border: 1.5px solid rgba(255, 42, 133, 0.55);
-    color: var(--neon-pink);
-    text-shadow: 0 0 8px rgba(255, 42, 133, 0.6);
+    background: linear-gradient(180deg, rgba(201, 42, 42, 0.26) 0%, rgba(120, 20, 20, 0.2) 100%);
+    border: 1.5px solid #a63232;
+    color: #ff9999;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
   }
   .ctrl-launch.charging {
-    background: rgba(255, 230, 0, 0.25);
-    border-color: var(--neon-yellow);
-    color: var(--neon-yellow);
+    background: rgba(212, 175, 55, 0.32);
+    border-color: var(--gold-bright);
+    color: var(--gold-bright);
   }
   .ctrl-launch.disabled {
     opacity: 0.35;
@@ -384,8 +412,8 @@
   .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(5, 7, 16, 0.85);
-    backdrop-filter: blur(5px);
+    background: rgba(10, 7, 5, 0.86);
+    backdrop-filter: blur(4px);
     display: none;
     flex-direction: column;
     align-items: center;
@@ -397,28 +425,26 @@
     display: flex;
   }
   .overlay.peek-mode {
-    background: rgba(5, 7, 16, 0.12);
+    background: rgba(10, 7, 5, 0.12);
     backdrop-filter: none;
     pointer-events: none;
   }
   .overlay.peek-mode .modal-box {
     pointer-events: auto;
+    margin-top: auto;
+    padding: 10px 14px;
+    background: rgba(24, 18, 14, 0.95);
   }
   .overlay.peek-mode .modal-box > *:not(.peek-bar) {
     display: none !important;
-  }
-  .overlay.peek-mode .modal-box {
-    margin-top: auto;
-    padding: 10px 14px;
-    background: rgba(12, 16, 36, 0.92);
   }
   .modal-box {
     width: 100%;
     max-width: 410px;
     background: var(--panel-bg);
-    border: 1.5px solid rgba(0, 240, 255, 0.45);
-    box-shadow: 0 0 32px rgba(0, 240, 255, 0.2);
-    border-radius: 14px;
+    border: 2px solid var(--gold-main);
+    box-shadow: 0 0 36px rgba(0, 0, 0, 0.9), inset 0 0 18px rgba(212, 175, 55, 0.12);
+    border-radius: 10px;
     padding: 18px 16px;
     display: flex;
     flex-direction: column;
@@ -431,25 +457,28 @@
     font-size: 27px;
     font-weight: 900;
     letter-spacing: 2px;
-    color: #fff;
-    text-shadow: 0 0 12px var(--neon-cyan), 0 0 24px var(--neon-pink);
+    color: var(--gold-bright);
+    text-shadow: 0 2px 12px rgba(212, 175, 55, 0.6), 0 0 24px rgba(201, 42, 42, 0.5);
     margin-bottom: 3px;
   }
   .game-subtitle {
     font-size: 11px;
-    color: var(--neon-cyan);
-    letter-spacing: 1.2px;
+    color: var(--text-sub);
+    letter-spacing: 1.5px;
     margin-bottom: 12px;
+    font-family: sans-serif;
+    font-weight: 700;
   }
   .records-box {
     width: 100%;
     display: flex;
     justify-content: space-around;
-    background: rgba(0, 0, 0, 0.38);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--border-brass);
+    border-radius: 8px;
     padding: 9px;
     margin-bottom: 12px;
+    font-family: sans-serif;
   }
   .rec-item {
     display: flex;
@@ -463,43 +492,45 @@
   .rec-val {
     font-size: 15px;
     font-weight: 800;
-    color: var(--neon-yellow);
+    color: var(--gold-bright);
   }
   .howto-box {
     width: 100%;
     text-align: left;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid rgba(124, 98, 56, 0.45);
+    border-radius: 8px;
     padding: 10px 12px;
     font-size: 11.5px;
-    line-height: 1.52;
-    color: #cfd8f0;
+    line-height: 1.55;
+    color: #e2d5c1;
     margin-bottom: 12px;
+    font-family: sans-serif;
   }
   .howto-box b {
-    color: var(--neon-cyan);
+    color: var(--gold-bright);
   }
   .howto-box .syn-hl {
-    color: var(--neon-yellow);
+    color: #ffa94d;
     font-weight: 700;
   }
   .primary-btn {
     width: 100%;
     padding: 12px;
-    border-radius: 10px;
-    border: 1.5px solid var(--neon-cyan);
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.28), rgba(184, 69, 255, 0.28));
-    color: #fff;
+    border-radius: 8px;
+    border: 1.5px solid var(--gold-bright);
+    background: linear-gradient(180deg, #5e3b18 0%, #36200b 100%);
+    color: #fff6e0;
     font-size: 15px;
     font-weight: 800;
     letter-spacing: 1px;
     cursor: pointer;
-    box-shadow: 0 0 18px rgba(0, 240, 255, 0.35);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     transition: transform 0.1s, box-shadow 0.1s;
+    font-family: sans-serif;
   }
   .primary-btn:hover {
-    box-shadow: 0 0 24px rgba(0, 240, 255, 0.6);
+    background: linear-gradient(180deg, #754a1f 0%, #462a0f 100%);
   }
   .primary-btn:active {
     transform: scale(0.97);
@@ -508,41 +539,44 @@
     width: 100%;
     padding: 9px;
     margin-top: 7px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    border: 1px solid var(--border-brass);
+    background: rgba(255, 235, 200, 0.06);
     color: var(--text-main);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+    font-family: sans-serif;
   }
 
   /* Draft Cards & Actions */
   .draft-header {
     font-size: 18px;
     font-weight: 900;
-    color: var(--neon-green);
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    color: var(--gold-bright);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
     margin-bottom: 2px;
   }
   .draft-sub {
     font-size: 11.5px;
     color: var(--text-sub);
     margin-bottom: 10px;
+    font-family: sans-serif;
   }
   .peek-bar {
     width: 100%;
     display: flex;
     gap: 8px;
     margin-bottom: 10px;
+    font-family: sans-serif;
   }
   .util-btn {
     flex: 1;
     padding: 6px 8px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 240, 255, 0.4);
-    background: rgba(0, 240, 255, 0.1);
-    color: var(--neon-cyan);
+    border-radius: 6px;
+    border: 1px solid var(--gold-main);
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--gold-bright);
     font-size: 11.5px;
     font-weight: 700;
     cursor: pointer;
@@ -556,12 +590,13 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    font-family: sans-serif;
   }
   .card-item {
     width: 100%;
-    background: linear-gradient(135deg, rgba(22, 28, 62, 0.96) 0%, rgba(11, 15, 34, 0.96) 100%);
-    border: 1.5px solid rgba(0, 240, 255, 0.35);
-    border-radius: 11px;
+    background: linear-gradient(135deg, rgba(38, 28, 20, 0.96) 0%, rgba(22, 16, 12, 0.96) 100%);
+    border: 1.5px solid var(--border-brass);
+    border-radius: 8px;
     padding: 10px 12px;
     text-align: left;
     cursor: pointer;
@@ -571,26 +606,26 @@
     transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
   }
   .card-item:hover {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 16px rgba(0, 240, 255, 0.32);
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 14px rgba(212, 175, 55, 0.28);
     transform: translateY(-1px);
   }
   .card-item:active {
     transform: scale(0.98);
   }
   .card-item.instant {
-    border-color: rgba(255, 230, 0, 0.45);
+    border-color: rgba(156, 54, 181, 0.65);
   }
   .card-item.instant:hover {
-    border-color: var(--neon-yellow);
-    box-shadow: 0 0 16px rgba(255, 230, 0, 0.32);
+    border-color: var(--arcane-bright);
+    box-shadow: 0 0 14px rgba(204, 93, 232, 0.3);
   }
   .card-icon {
     width: 42px;
     height: 42px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.42);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-brass);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -611,33 +646,33 @@
   .card-name {
     font-size: 13.5px;
     font-weight: 800;
-    color: #fff;
+    color: #fff6e0;
   }
   .card-type {
     font-size: 10px;
     font-weight: 700;
     padding: 1px 6px;
     border-radius: 4px;
-    background: rgba(0, 240, 255, 0.15);
-    color: var(--neon-cyan);
+    background: rgba(212, 175, 55, 0.18);
+    color: var(--gold-bright);
   }
   .card-item.instant .card-type {
-    background: rgba(255, 230, 0, 0.15);
-    color: var(--neon-yellow);
+    background: rgba(156, 54, 181, 0.22);
+    color: #e599f7;
   }
   .card-desc {
     font-size: 11px;
-    color: #c2cde8;
+    color: #d6c7b2;
     line-height: 1.35;
   }
   .card-hint {
     font-size: 10.5px;
-    color: var(--neon-green);
+    color: var(--soul-green);
     font-weight: 600;
   }
   .card-syn-alert {
     font-size: 10px;
-    color: var(--neon-yellow);
+    color: var(--gold-bright);
     font-weight: 700;
   }
   .stats-grid {
@@ -647,11 +682,12 @@
     gap: 6px;
     margin-bottom: 12px;
     text-align: left;
+    font-family: sans-serif;
   }
   .stat-cell {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(124, 98, 56, 0.4);
+    border-radius: 6px;
     padding: 6px 9px;
   }
   .stat-cell .s-lbl {
@@ -661,7 +697,7 @@
   .stat-cell .s-val {
     font-size: 13px;
     font-weight: 800;
-    color: #fff;
+    color: #fff6e0;
   }
 </style>
 </head>
@@ -673,13 +709,13 @@
       <div class="hud-group">
         <span id="round-badge" class="round-badge">ROUND 1 / 8</span>
         <div class="balls-box">
-          <span>BALL</span>
+          <span>ORB</span>
           <div id="balls-dots" style="display:flex; gap:4px;"></div>
         </div>
       </div>
       <div class="icon-btns">
         <button id="btn-nudge" class="icon-btn nudge-btn" title="台揺らし (Shift / X / タップ)">💥揺らす</button>
-        <button id="btn-bgm" class="icon-btn" title="シンセBGM On/Off">🎵</button>
+        <button id="btn-bgm" class="icon-btn" title="ダークファンタジーBGM On/Off">🎵</button>
         <button id="btn-mute" class="icon-btn" title="全サウンド ミュート切替">🔊</button>
         <button id="btn-pause" class="icon-btn" title="一時停止・ビルド確認">⏸</button>
       </div>
@@ -705,10 +741,14 @@
   <div id="stage-wrap">
     <div id="place-banner">
       <div class="place-info">
-        <div id="place-title" class="place-title">パーツ配置フェーズ</div>
-        <div id="place-sub" class="place-sub">盤面のスロットをタップして配置・強化</div>
+        <div id="place-title" class="place-title">魔導パーツ配置フェーズ</div>
+        <div id="place-sub" class="place-sub">上下ドラッグまたはボタンで視点移動・スロット選択</div>
       </div>
-      <button id="btn-place-skip" class="skip-btn">スキップ</button>
+      <div class="place-btns">
+        <button id="btn-cam-up" class="cam-btn" title="上部フロアを見る">▲上層</button>
+        <button id="btn-cam-down" class="cam-btn" title="下部フロアを見る">▼下層</button>
+        <button id="btn-place-skip" class="skip-btn">スキップ</button>
+      </div>
     </div>
     <canvas id="game-canvas" width="420" height="660"></canvas>
 
@@ -716,7 +756,7 @@
     <div id="ov-title" class="overlay show">
       <div class="modal-box">
         <div class="game-title">弾む思いつき</div>
-        <div class="game-subtitle">PHYSICAL PINBALL × SYNERGY DECK BUILDER</div>
+        <div class="game-subtitle">DARK FANTASY PINBALL × DECK BUILDER</div>
         <div class="records-box">
           <div class="rec-item">
             <span class="rec-label">HIGH SCORE</span>
@@ -728,13 +768,13 @@
           </div>
         </div>
         <div class="howto-box">
-          ・各ラウンド<b>3ボール以内</b>にノルマ達成でクリア！全8ラウンド（R8ボス）制覇を目指します。<br>
-          ・クリア後に<b>カード3枚から1枚</b>をドラフト（各ラウンド1回リロール可）。<b>10か所のスロット</b>にパーツを配置・強化（最大Lv3）。<br>
-          ・<span class="syn-hl">★構築シナジー</span>：パーツの組み合わせ（バンパー3個、スピナー＋キッカー等）で強力な連鎖ボーナスが発動！<br>
-          ・<span class="syn-hl">★ピンボールギミック</span>：発射直後の<b>SKILL SHOT</b>、上部3レーン点灯、<b>JACKPOT移動ターゲット</b>、ボールセイバー、台揺らし（Shift/X）を搭載！
+          ・<b>広大な縦長2フロア（全高1,240px）</b>の古城魔導盤面！銀球が上層へ昇ると<b>カメラが自動追従</b>します。<br>
+          ・各ラウンド<b>3ボール以内</b>にノルマ達成でクリア！全8ラウンド制覇を目指します。<br>
+          ・クリア後に<b>カード3枚から1枚</b>をドラフトし、上層〜下層の<b>10か所の魔法陣スロット</b>にパーツを設置・強化（最大Lv3）。<br>
+          ・<span class="syn-hl">★構築シナジー＆ギミック</span>：キッカーやワープゲートでボールを最上層の<b>天上聖堂エリア</b>へ送り込み、連続バウンスとコンボ倍率（最大×3.00）を稼ごう！
         </div>
-        <button id="btn-start" class="primary-btn">GAME START</button>
-        <button id="btn-practice" class="secondary-btn" style="display:none;">フリーエンドレス練習 (R9〜)</button>
+        <button id="btn-start" class="primary-btn">古の盤面へ挑む (GAME START)</button>
+        <button id="btn-practice" class="secondary-btn" style="display:none;">深淵エンドレス練習 (R9〜)</button>
       </div>
     </div>
 
@@ -742,9 +782,9 @@
     <div id="ov-draft" class="overlay">
       <div class="modal-box">
         <div id="draft-header" class="draft-header">ROUND 1 CLEAR!</div>
-        <div id="draft-bonus-info" class="draft-sub">報酬カードを1枚選んで盤面をビルドしよう</div>
+        <div id="draft-bonus-info" class="draft-sub">遺物カードを1枚選んで盤面を構築しよう</div>
         <div class="peek-bar">
-          <button id="btn-peek-board" class="util-btn">👁 盤面を確認</button>
+          <button id="btn-peek-board" class="util-btn">👁 盤面を確認(上下ドラッグ)</button>
           <button id="btn-reroll" class="util-btn">🎲 リロール (残り1回)</button>
         </div>
         <div id="cards-list" class="cards-list"></div>
@@ -754,9 +794,9 @@
     <!-- Pause / Build Info Overlay -->
     <div id="ov-pause" class="overlay">
       <div class="modal-box">
-        <div class="game-title" style="font-size:21px; margin-bottom:10px;">PAUSED / BUILD INFO</div>
+        <div class="game-title" style="font-size:21px; margin-bottom:10px;">PAUSED / GRIMOIRE</div>
         <div id="pause-stats" class="howto-box" style="text-align:left; max-height:290px; overflow-y:auto;"></div>
-        <button id="btn-resume" class="primary-btn">ゲームに戻る</button>
+        <button id="btn-resume" class="primary-btn">戦場へ戻る</button>
         <button id="btn-retire" class="secondary-btn">タイトルへ戻る</button>
       </div>
     </div>
@@ -765,21 +805,21 @@
     <div id="ov-result" class="overlay">
       <div class="modal-box">
         <div id="res-title" class="game-title" style="font-size:25px;">GAME CLEAR!</div>
-        <div id="res-sub" class="game-subtitle">全8ラウンド制覇！おめでとう！</div>
+        <div id="res-sub" class="game-subtitle">全8ラウンド制覇！古城の試練を突破した！</div>
         <div class="records-box" style="flex-direction:column; gap:6px; margin-bottom:10px;">
           <div class="rec-item">
             <span class="rec-label">TOTAL SCORE</span>
-            <span id="res-total" class="rec-val" style="font-size:23px; color:#fff;">0</span>
+            <span id="res-total" class="rec-val" style="font-size:23px; color:#fff6e0;">0</span>
           </div>
-          <div id="res-newrecord" style="display:none; color:var(--neon-pink); font-size:12px; font-weight:800;">★ NEW HIGH SCORE! ★</div>
+          <div id="res-newrecord" style="display:none; color:var(--blood-bright); font-size:12px; font-weight:800;">★ NEW HIGH SCORE! ★</div>
           <div class="rec-item">
             <span class="rec-label">HIGH SCORE</span>
             <span id="res-hiscore" class="rec-val">0</span>
           </div>
         </div>
         <div id="res-stats-grid" class="stats-grid"></div>
-        <button id="btn-endless" class="primary-btn" style="display:none; margin-bottom:7px; border-color:var(--neon-yellow);">★ エンドレスモード (R9〜) へ進む</button>
-        <button id="btn-retry" class="primary-btn">もう一度最初からプレイ</button>
+        <button id="btn-endless" class="primary-btn" style="display:none; margin-bottom:7px; border-color:var(--gold-bright);">★ 深淵エンドレスモード (R9〜) へ進む</button>
+        <button id="btn-retry" class="primary-btn">もう一度最初から挑む</button>
         <button id="btn-to-title" class="secondary-btn">タイトル画面へ</button>
       </div>
     </div>
@@ -807,191 +847,200 @@
   'use strict';
 
   // =========================================================================
-  // 1. 定数・設定・ストレージ（指示書仕様：localStorageはハイスコアとクリア有無のみ）
+  // 1. 定数・ワールド座標・カメラ設定
   // =========================================================================
   const STORAGE_KEY_HISCORE = 'hazumu_omoitsuki_hiscore_v1';
   const STORAGE_KEY_CLEARED = 'hazumu_omoitsuki_cleared_v1';
 
   const NORMAS = [3000, 6000, 10000, 16000, 24000, 35000, 50000, 75000];
-  const W = 420;
-  const H = 660;
+  const VIEW_W = 420;
+  const VIEW_H = 660;
+  const WORLD_H = 1240; // 画面の約2倍の広大な縦長ステージ！
+  const MAX_CAM_Y = WORLD_H - VIEW_H; // 580
   const LANE_X = 374;
   const BALL_R = 9;
-  const GRAVITY = 555;
+  const GRAVITY = 520;
 
-  // 10か所の配置スロット座標（上部〜中部、位置ごとに当たりやすさが異なる）
+  // 10か所の配置スロット座標（上層の天上聖堂エリア〜中層の回廊〜下層の祭壇まで広く配置）
   const SLOT_POSITIONS = [
-    { id: 0, x: 112, y: 132, label: '上左' },
-    { id: 1, x: 262, y: 132, label: '上右' },
-    { id: 2, x: 187, y: 178, label: '上中' },
-    { id: 3, x: 84,  y: 238, label: '中上左' },
-    { id: 4, x: 290, y: 238, label: '中上右' },
-    { id: 5, x: 145, y: 292, label: '中央左' },
-    { id: 6, x: 230, y: 292, label: '中央右' },
-    { id: 7, x: 96,  y: 368, label: '中下左' },
-    { id: 8, x: 278, y: 368, label: '中下右' },
-    { id: 9, x: 187, y: 398, label: '下部中央' }
+    { id: 0, x: 112, y: 165, label: '天上・左' },
+    { id: 1, x: 262, y: 165, label: '天上・右' },
+    { id: 2, x: 187, y: 270, label: '天上・中央' },
+    { id: 3, x: 102, y: 405, label: '上層・左' },
+    { id: 4, x: 272, y: 405, label: '上層・右' },
+    { id: 5, x: 187, y: 540, label: '中層・中央' },
+    { id: 6, x: 115, y: 690, label: '中下・左' },
+    { id: 7, x: 260, y: 690, label: '中下・右' },
+    { id: 8, x: 102, y: 860, label: '下層・左' },
+    { id: 9, x: 272, y: 860, label: '下層・右' }
   ];
 
-  // 上部3レーンロールオーバーセンサー
+  // 最上層の3つのルーン祭壇（旧ロールオーバー）
   const TOP_ROLLOVERS = [
-    { id: 0, x: 112, y: 58, label: 'I', lit: false },
-    { id: 1, x: 187, y: 58, label: 'D', lit: false },
-    { id: 2, x: 262, y: 58, label: 'E', lit: false }
+    { id: 0, x: 112, y: 74, label: '太陽', rune: '❂', lit: false },
+    { id: 1, x: 187, y: 74, label: '月',   rune: '☽', lit: false },
+    { id: 2, x: 262, y: 74, label: '星',   rune: '✦', lit: false }
   ];
 
-  // 左右壁のライトターゲット（バンパー外へ飛んだ球でもスコア＆フィーバーが狙える）
+  // 壁面の4つの魔導燭台ターゲット（上層左右2・下層左右2）
   const WALL_TARGETS = [
-    { id: 0, x: 15, y: 205, y1: 188, y2: 222, lit: false, normalX: 1 },
-    { id: 1, x: 15, y: 330, y1: 313, y2: 347, lit: false, normalX: 1 },
-    { id: 2, x: LANE_X - 3, y: 205, y1: 188, y2: 222, lit: false, normalX: -1 },
-    { id: 3, x: LANE_X - 3, y: 330, y1: 313, y2: 347, lit: false, normalX: -1 }
+    { id: 0, x: 16, y: 295, y1: 276, y2: 314, lit: false, normalX: 1 },
+    { id: 1, x: LANE_X - 4, y: 295, y1: 276, y2: 314, lit: false, normalX: -1 },
+    { id: 2, x: 16, y: 775, y1: 756, y2: 794, lit: false, normalX: 1 },
+    { id: 3, x: LANE_X - 4, y: 775, y1: 756, y2: 794, lit: false, normalX: -1 }
   ];
 
-  // カード一覧（v1の10種）
+  // 壁面の松明（トーチ）装飾座標
+  const TORCH_POSITIONS = [
+    { x: 26, y: 180 }, { x: 358, y: 180 },
+    { x: 26, y: 520 }, { x: 358, y: 520 },
+    { x: 26, y: 880 }, { x: 358, y: 880 }
+  ];
+
+  // カード一覧（v1の10種：ルール・名称・効果は指示書通り、フレーバーとデザインをダークファンタジー仕様に）
   const CARD_CATALOG = [
     {
       id: 'bumper_circle',
       name: '丸バンパー',
       category: 'part',
-      icon: '🟣',
-      color: '#ff2a85',
+      icon: '🛡️',
+      color: '#e03131',
       weight: 16,
       basePt: 100,
-      desc: 'ヒットで 100×Lv 点。全方向に強く跳ね返す王道バンパー。'
+      desc: 'ヒットで 100×Lv 点。全方向に強く跳ね返す紅蓮の刻印盾。'
     },
     {
       id: 'bumper_tri',
       name: '三角バンパー',
       category: 'part',
-      icon: '🔺',
-      color: '#ff9100',
+      icon: '⚜️',
+      color: '#f08c00',
       weight: 14,
       basePt: 150,
-      desc: 'ヒットで 150×Lv 点。斜めに強く跳ね返す。'
+      desc: 'ヒットで 150×Lv 点。斜め方向へ鋭く弾き飛ばす黄金の稜角。'
     },
     {
       id: 'kicker',
       name: 'キッカー',
       category: 'part',
-      icon: '⏫',
-      color: '#00ff88',
-      weight: 13,
+      icon: '🦅',
+      color: '#2f9e44',
+      weight: 14,
       basePt: 150,
-      desc: 'ヒットで 150×Lv 点。ボールを上方向に強く打ち上げる。'
+      desc: 'ヒットで 150×Lv 点。ボールを上層フロアへ強烈に打ち上げる疾風の祭壇！'
     },
     {
       id: 'spinner',
       name: 'スピナー',
       category: 'part',
-      icon: '🌀',
-      color: '#00f0ff',
+      icon: '⚙️',
+      color: '#d4af37',
       weight: 13,
       basePt: 30,
-      desc: '通過で 30×Lv 点を連続加算し、ボールを少し加速する。'
+      desc: '通過で 30×Lv 点を連続加算し、回転しながらボールを加速させる古代歯車。'
     },
     {
       id: 'rebound_wall',
       name: 'リバウンド壁',
       category: 'part',
-      icon: '⚡',
-      color: '#ffe600',
+      icon: '🗡️',
+      color: '#ffd86b',
       weight: 12,
       basePt: 50,
-      desc: '小型の斜め壁。ヒットで 50×Lv 点。ボールの流れを変える。'
+      desc: '小型の斜め魔導障壁。ヒットで 50×Lv 点。ボールの流れを変える。'
     },
     {
       id: 'warp_gate',
       name: 'ワープゲート',
       category: 'part',
-      icon: '🪐',
-      color: '#b845ff',
-      weight: 10,
+      icon: '🔮',
+      color: '#ae3ec9',
+      weight: 11,
       basePt: 300,
-      desc: '2スロットを使う連結ペア。片方に入るともう片方から同じ速度で出る。通過で 300×Lv 点。'
+      desc: '2スロットを使う深淵の転送門。片方に入るともう片方から同速度で出現し 300×Lv 点！'
     },
     {
       id: 'upgrade_chip',
       name: '強化チップ',
       category: 'instant_target',
-      icon: '🔧',
-      color: '#00ffaa',
+      icon: '📜',
+      color: '#51cf66',
       weight: 10,
       basePt: 0,
-      desc: '既存パーツ1つのレベルを +1（配置フェーズで対象を選ぶ）。'
+      desc: '既存パーツ1つのレベルを +1 する古の強化刻印（最大Lv3）。'
     },
     {
       id: 'extra_ball',
       name: '追加ボール',
       category: 'instant',
-      icon: '⚪',
-      color: '#ffffff',
+      icon: '🌕',
+      color: '#fff3bf',
       weight: 7,
       basePt: 0,
-      desc: 'このランの残りボール +1（最大で+2回まで取得可）。'
+      desc: 'このランの毎ラウンド残りボール +1（最大で+2回まで取得可）。'
     },
     {
       id: 'score_booster',
       name: 'スコアブースター',
       category: 'instant',
-      icon: '💎',
-      color: '#ffe600',
+      icon: '👑',
+      color: '#ffd86b',
       weight: 10,
       basePt: 0,
-      desc: 'このランの全スコアに +10%（重ね掛け可）。'
+      desc: 'このランの全獲得スコアに +10% の王家の祝福（重ね掛け可）。'
     },
     {
       id: 'flipper_up',
       name: 'フリッパー強化',
       category: 'instant',
-      icon: '🦾',
-      color: '#00f0ff',
+      icon: '⚔️',
+      color: '#d4af37',
       weight: 9,
       basePt: 0,
-      desc: 'フリッパーが長く・強くなる（最大3回まで）。'
+      desc: '大剣フリッパーが長く・反発が強くなる（最大3回まで）。'
     }
   ];
 
-  // デッキ構築シナジー定義（パーツの組み合わせで自動発動する構築ボーナス）
+  // デッキ構築シナジー定義
   const SYNERGY_DEFINITIONS = [
     {
       id: 'bumper_kingdom',
-      name: 'バンパー王国',
+      name: '鉄벽の聖堂',
       condText: '丸バンパー＋三角バンパー合計3個以上',
-      effectText: '全バンパーの基礎スコア +35% ＆ 電撃ショックウェーブ演出',
+      effectText: '全バンパーの基礎スコア +35% ＆ 衝撃波発生',
       check: (slots) => slots.filter(s => s && (s.type === 'bumper_circle' || s.type === 'bumper_tri')).length >= 3
     },
     {
       id: 'perpetual_engine',
-      name: '永久機関',
+      name: '天翔ける魔導機関',
       condText: 'キッカー1個以上 ＋ スピナー1個以上',
-      effectText: 'キッカーとスピナーの基礎スコア +40% ＆ 加速ブースト強化',
+      effectText: 'キッカーとスピナーの基礎スコア +40% ＆ 上層への打ち上げ力強化',
       check: (slots) => slots.some(s => s && s.type === 'kicker') && slots.some(s => s && s.type === 'spinner')
     },
     {
       id: 'dimensional_accel',
-      name: '次元跳躍',
+      name: '深淵の転移門',
       condText: 'ワープゲート設置済 ＋ スピナーまたはリバウンド壁',
-      effectText: 'ワープ通過時にコンボ +3 ＆ 3秒間全獲得スコア1.25倍オーラ',
+      effectText: 'ワープ通過時にコンボ +3 ＆ 3秒間全スコア1.25倍オーラ',
       check: (slots) => slots.some(s => s && s.type === 'warp_gate') && slots.some(s => s && (s.type === 'spinner' || s.type === 'rebound_wall'))
     },
     {
       id: 'labyrinth_reflect',
-      name: '反射迷宮',
+      name: '古城の鏡迷宮',
       condText: 'リバウンド壁 ＋ 三角バンパー合計3個以上',
       effectText: 'リバウンド壁と三角バンパーのヒット時にコンボが +2 ずつ上昇',
       check: (slots) => slots.filter(s => s && (s.type === 'rebound_wall' || s.type === 'bumper_tri')).length >= 3
     },
     {
       id: 'master_craft',
-      name: '匠の極致',
+      name: '名匠の秘儀',
       condText: 'Lv2以上のパーツが盤面に2個以上',
       effectText: 'Lv2以上のパーツすべての獲得スコア +25%',
       check: (slots) => slots.filter(s => s && s.level >= 2).length >= 2
     },
     {
       id: 'full_spark',
-      name: '百花繚乱',
+      name: '万象の魔導陣',
       condText: '盤面に異なる4種類以上のパーツを設置',
       effectText: '全獲得スコアに +20% 乗算ボーナス',
       check: (slots) => new Set(slots.filter(Boolean).map(s => s.type)).size >= 4
@@ -999,7 +1048,7 @@
   ];
 
   // =========================================================================
-  // 2. Web Audio シンセサイザー効果音 ＆ プロシージャルBGMシーケンサー
+  // 2. Web Audio シンセサイザー効果音 ＆ ダークファンタジーBGM
   // =========================================================================
   class SoundSynth {
     constructor() {
@@ -1029,27 +1078,27 @@
     }
     startBgmLoop() {
       if (this.bgmTimer) return;
-      // 16分音符相当のアルペジオベースシーケンサー (135ms刻み)
-      const bassPatternNorm = [110, 110, 130.81, 110, 146.83, 130.81, 164.81, 146.83];
-      const bassPatternFever = [146.83, 174.61, 220, 174.61, 261.63, 220, 293.66, 261.63];
-      const bassPatternBoss = [98, 98, 116.54, 130.81, 92.5, 98, 146.83, 116.54];
+      // ダークファンタジー風のゴシック・マイナーアルペジオ（Dハーモニックマイナー）
+      const patternNormal = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 138.59, 164.81];
+      const patternUpper  = [220.00, 261.63, 329.63, 349.23, 440.00, 349.23, 329.63, 261.63];
+      const patternBoss   = [110.00, 116.54, 146.83, 116.54, 103.83, 110.00, 164.81, 138.59];
 
       this.bgmTimer = setInterval(() => {
         if (this.muted || !this.bgmEnabled || !this.ctx) return;
         if (typeof state === 'undefined' || state.phase !== 'PLAY') return;
 
-        const isFever = state.feverTimer > 0;
+        const inUpperSanctum = state.ball.y < 520 && !state.ball.inLane;
         const isBoss = state.round >= 8;
-        const pat = isFever ? bassPatternFever : (isBoss ? bassPatternBoss : bassPatternNorm);
+        const pat = isBoss ? patternBoss : (inUpperSanctum || state.feverTimer > 0 ? patternUpper : patternNormal);
         const freq = pat[this.bgmStep % pat.length];
         this.bgmStep++;
 
-        // 控えめで心地よいシンセベース音
-        this.playTone(freq, isBoss ? 'sawtooth' : 'triangle', 0.11, isBoss ? 0.032 : 0.038, freq * 0.98);
-        if (isFever && this.bgmStep % 2 === 0) {
-          this.playTone(freq * 2, 'sine', 0.07, 0.025, freq * 2.02);
+        // パイプオルガン／リュート風の温かみのある倍音トーン
+        this.playTone(freq, 'triangle', 0.16, 0.036, freq * 0.995);
+        if (this.bgmStep % 4 === 1) {
+          this.playTone(freq * 0.5, 'sine', 0.28, 0.04, freq * 0.5);
         }
-      }, 145);
+      }, 175);
     }
     playTone(freq, type, duration, vol = 0.14, slideFreq = null) {
       if (this.muted) return;
@@ -1071,84 +1120,86 @@
       osc.stop(now + duration);
     }
     bumper(combo = 1) {
-      const base = 310 + Math.min(combo, 35) * 16;
-      this.playTone(base, 'triangle', 0.11, 0.19, base * 1.45);
+      const base = 260 + Math.min(combo, 35) * 15;
+      this.playTone(base, 'triangle', 0.12, 0.2, base * 1.4);
     }
     kicker() {
-      this.playTone(210, 'sawtooth', 0.16, 0.17, 700);
+      this.playTone(190, 'sawtooth', 0.18, 0.18, 680);
     }
     spinner() {
-      this.playTone(720 + Math.random() * 200, 'sine', 0.05, 0.09, 980);
+      this.playTone(620 + Math.random() * 180, 'sine', 0.06, 0.09, 880);
     }
     wall() {
-      this.playTone(165, 'sine', 0.05, 0.07, 110);
+      this.playTone(145, 'sine', 0.05, 0.08, 95);
     }
     targetLit() {
-      this.playTone(587.33, 'triangle', 0.1, 0.15, 880);
+      this.playTone(523.25, 'triangle', 0.12, 0.16, 783.99);
     }
     skillShot() {
-      const notes = [587.33, 880, 1174.66];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.14, 0.18), i * 55));
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.15, 0.18), i * 55));
     }
     jackpot() {
-      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.16, 0.16), i * 50));
+      const notes = [440, 554.37, 659.25, 880, 1108.73];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.17, 0.16), i * 55));
     }
     ballSave() {
-      this.playTone(280, 'sine', 0.18, 0.18, 720);
-      setTimeout(() => this.playTone(720, 'triangle', 0.18, 0.16, 960), 90);
+      this.playTone(260, 'sine', 0.2, 0.18, 660);
+      setTimeout(() => this.playTone(660, 'triangle', 0.2, 0.16, 880), 90);
     }
     nudge() {
-      this.playTone(110, 'sawtooth', 0.12, 0.2, 55);
+      this.playTone(95, 'sawtooth', 0.13, 0.22, 48);
     }
     tilt() {
-      this.playTone(150, 'sawtooth', 0.4, 0.22, 65);
+      this.playTone(135, 'sawtooth', 0.42, 0.22, 58);
     }
     warp() {
-      this.playTone(300, 'sine', 0.22, 0.19, 1120);
-      setTimeout(() => this.playTone(620, 'triangle', 0.15, 0.14, 1420), 50);
+      this.playTone(280, 'sine', 0.24, 0.19, 980);
+      setTimeout(() => this.playTone(560, 'triangle', 0.16, 0.14, 1280), 55);
     }
     flipper() {
-      this.playTone(145, 'triangle', 0.065, 0.15, 295);
+      this.playTone(135, 'triangle', 0.07, 0.16, 270);
     }
     launch(power) {
-      this.playTone(150, 'sawtooth', 0.22, 0.19, 300 + power * 460);
+      this.playTone(130, 'sawtooth', 0.24, 0.2, 280 + power * 460);
     }
     place() {
-      this.playTone(440, 'sine', 0.1, 0.16, 660);
-      setTimeout(() => this.playTone(660, 'triangle', 0.12, 0.16, 880), 65);
+      this.playTone(392, 'sine', 0.11, 0.16, 587.33);
+      setTimeout(() => this.playTone(587.33, 'triangle', 0.13, 0.16, 783.99), 65);
     }
     ballLost() {
-      this.playTone(240, 'sawtooth', 0.35, 0.18, 68);
+      this.playTone(220, 'sawtooth', 0.38, 0.18, 62);
     }
     roundClear() {
-      const notes = [523.25, 659.25, 783.99, 1046.5];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.18, 0.18), i * 80));
+      const notes = [440, 554.37, 659.25, 880];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.2, 0.18), i * 85));
     }
     gameOver() {
-      const notes = [392, 349.23, 329.63, 261.63];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.24, 0.16), i * 125));
+      const notes = [349.23, 329.63, 293.66, 220];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'sawtooth', 0.26, 0.16), i * 130));
     }
     gameClear() {
-      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98];
-      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.22, 0.2), i * 90));
+      const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.5];
+      notes.forEach((n, i) => setTimeout(() => this.playTone(n, 'triangle', 0.24, 0.2), i * 95));
     }
   }
 
   const sfx = new SoundSynth();
 
   // =========================================================================
-  // 3. 盤面ジオメトリ（壁・ガイド・スリングショット・レーン）
+  // 3. 広大な2フロア盤面ジオメトリ (全高 WORLD_H = 1240px)
+  //    ・上層 (y: 0〜580)   : 天上聖堂エリア（サブフリッパー＆ルーン祭壇＆スロット0〜5）
+  //    ・下層 (y: 580〜1240): 深淵祭壇エリア（メインフリッパー＆スリングショット＆スロット6〜9）
   // =========================================================================
   function buildBoardWalls() {
     const walls = [];
-    const addSeg = (x1, y1, x2, y2, rest = 0.72, color = '#00f0ff', oneWayLeft = false, isSlingshot = false) => {
+    const addSeg = (x1, y1, x2, y2, rest = 0.74, color = '#8c7355', oneWayLeft = false, isSlingshot = false) => {
       walls.push({ x1, y1, x2, y2, rest, color, oneWayLeft, isSlingshot, pulse: 0 });
     };
 
-    // 上部アーチ
+    // 上部ゴシックアーチ (y=120 -> y=14 -> y=120)
     const archPts = [
-      [408, 120],
+      [408, 125],
       [404, 72],
       [386, 36],
       [345, 16],
@@ -1156,52 +1207,58 @@
       [75,  16],
       [34,  36],
       [14,  72],
-      [12,  120]
+      [12,  125]
     ];
     for (let i = 0; i < archPts.length - 1; i++) {
-      addSeg(archPts[i][0], archPts[i][1], archPts[i + 1][0], archPts[i + 1][1], 0.76, '#00f0ff');
+      addSeg(archPts[i][0], archPts[i][1], archPts[i + 1][0], archPts[i + 1][1], 0.78, '#b89758');
     }
 
-    // 左外壁
-    addSeg(12, 120, 12, 480, 0.72, '#00f0ff');
-    addSeg(12, 480, 34, 535, 0.72, '#00f0ff');
+    // 左外壁（上層〜中層くびれ〜下層まで連続）
+    addSeg(12, 125, 12, 470, 0.74, '#8c7355');
+    addSeg(12, 470, 56, 535, 0.78, '#b89758'); // 上層左サブフリッパーへの誘導斜壁
+    addSeg(56, 535, 12, 600, 0.74, '#8c7355'); // 下層へ広がる壁
+    addSeg(12, 600, 12, 1060, 0.74, '#8c7355');
+    addSeg(12, 1060, 34, 1115, 0.74, '#8c7355');
 
-    // 右外壁（プランジャーレーン外側）
-    addSeg(408, 120, 408, 632, 0.7, '#00f0ff');
-    addSeg(LANE_X, 632, 408, 632, 0.4, '#ff2a85');
+    // 右外壁（プランジャー発射レーン外側: y=125〜1212）
+    addSeg(408, 125, 408, 1212, 0.72, '#8c7355');
+    addSeg(LANE_X, 1212, 408, 1212, 0.4, '#c92a2a');
 
-    // 発射レーン内壁
-    addSeg(LANE_X, 115, LANE_X, 632, 0.72, '#00f0ff');
+    // 発射レーン内壁（y=120〜1212）
+    addSeg(LANE_X, 120, LANE_X, 470, 0.74, '#8c7355');
+    addSeg(LANE_X, 470, 330, 535, 0.78, '#b89758'); // 上層右サブフリッパーへの誘導斜壁
+    addSeg(330, 535, LANE_X, 600, 0.74, '#8c7355');
+    addSeg(LANE_X, 470, LANE_X, 1212, 0.74, '#8c7355'); // 発射レーン側の直通内壁
 
-    // 発射レーン出口の逆流防止ワンウェイゲート
-    addSeg(LANE_X, 34, LANE_X, 115, 0.75, '#ff2a85', true);
+    // 発射レーン最上部の逆流防止ワンウェイゲート
+    addSeg(LANE_X, 34, LANE_X, 120, 0.76, '#d4af37', true);
 
     // フィールド右側の下部ガイド壁
-    addSeg(LANE_X, 480, 352, 535, 0.72, '#00f0ff');
+    addSeg(LANE_X, 1060, 352, 1115, 0.74, '#8c7355');
 
-    // 左スリングショット
-    addSeg(46, 445, 46, 512, 0.75, '#00f0ff');
-    addSeg(46, 512, 92, 542, 0.75, '#00f0ff');
-    addSeg(46, 445, 92, 542, 1.22, '#ff2a85', false, true);
+    // 下層・左スリングショット（紅蓮の魔導石）
+    addSeg(46, 1025, 46, 1092, 0.75, '#8c7355');
+    addSeg(46, 1092, 92, 1122, 0.75, '#8c7355');
+    addSeg(46, 1025, 92, 1122, 1.24, '#e03131', false, true);
 
-    // 右スリングショット
-    addSeg(340, 445, 340, 512, 0.75, '#00f0ff');
-    addSeg(340, 512, 294, 542, 0.75, '#00f0ff');
-    addSeg(340, 445, 294, 542, 1.22, '#ff2a85', false, true);
+    // 下層・右スリングショット
+    addSeg(340, 1025, 340, 1092, 0.75, '#8c7355');
+    addSeg(340, 1092, 294, 1122, 0.75, '#8c7355');
+    addSeg(340, 1025, 294, 1122, 1.24, '#e03131', false, true);
 
-    // フリッパーへと続くインレーン斜壁
-    addSeg(34, 535, 108, 582, 0.65, '#00f0ff');
-    addSeg(352, 535, 278, 582, 0.65, '#00f0ff');
+    // 下層メインフリッパーへと続くインレーン斜壁
+    addSeg(34, 1115, 108, 1162, 0.68, '#b89758');
+    addSeg(352, 1115, 278, 1162, 0.68, '#b89758');
 
-    // 上部3レーンディバイダー
-    addSeg(148, 42, 148, 74, 0.8, '#00ff88');
-    addSeg(226, 42, 226, 74, 0.8, '#00ff88');
+    // 最上層3レーンディバイダー（聖堂の柱）
+    addSeg(148, 46, 148, 86, 0.8, '#d4af37');
+    addSeg(226, 46, 226, 86, 0.8, '#d4af37');
 
     return walls;
   }
 
   // =========================================================================
-  // 4. ゲーム状態管理
+  // 4. ゲーム状態・カメラ追従管理
   // =========================================================================
   const canvas = document.getElementById('game-canvas');
   const ctx = canvas.getContext('2d');
@@ -1228,6 +1285,13 @@
     flipperLevel: 0,
     rerollsLeft: 1,
 
+    // カメラ位置 (0 = 最上層 〜 MAX_CAM_Y(580) = 最下層)
+    cameraY: MAX_CAM_Y,
+    targetCameraY: MAX_CAM_Y,
+    manualCamDrag: false,
+    dragStartY: 0,
+    dragStartCamY: 0,
+
     // 10か所のスロット
     slots: new Array(10).fill(null),
     activeSynergies: [],
@@ -1236,9 +1300,8 @@
     pendingCard: null,
     warpFirstSlot: null,
     hoverSlotId: -1,
-    hoverPos: { x: -100, y: -100 },
 
-    // ピンボール特別ギミック状態
+    // ギミック状態
     skillShotTimer: 0,
     skillShotSlotId: 0,
     ballSaverTimer: 0,
@@ -1251,21 +1314,20 @@
     tiltPenalty: false,
     stuckTimer: 0,
 
-    // 移動ジャックポット＆R8ボスバンパー
+    // 移動ジャックポット（黄金の聖杯）＆ R8ボス（深淵の魔王核）
     jackpotDrone: {
       active: false,
       x: 187,
-      y: 95,
-      vx: 75,
-      r: 14,
-      pulse: 1
+      y: 112,
+      vx: 78,
+      r: 15
     },
     bossCore: {
       active: false,
       x: 187,
-      y: 235,
-      vx: 55,
-      r: 20,
+      y: 610,
+      vx: 60,
+      r: 22,
       hpHits: 0,
       pulse: 1,
       cooldown: 0
@@ -1274,7 +1336,7 @@
     // ボール状態
     ball: {
       x: 391,
-      y: 610,
+      y: 1185,
       vx: 0,
       vy: 0,
       inLane: true,
@@ -1289,46 +1351,75 @@
       power: 0
     },
 
-    // フリッパー
+    // 下層メインフリッパー + 上層サブフリッパー（計4基が連動して動く！）
     leftFlipper: {
       pivotX: 108,
-      pivotY: 582,
+      pivotY: 1162,
       restAngle: 0.45,
       activeAngle: -0.52,
       angle: 0.45,
       angVel: 0,
+      scale: 1.0,
       pressed: false
     },
     rightFlipper: {
       pivotX: 278,
-      pivotY: 582,
+      pivotY: 1162,
       restAngle: Math.PI - 0.45,
       activeAngle: Math.PI + 0.52,
       angle: Math.PI - 0.45,
       angVel: 0,
+      scale: 1.0,
+      pressed: false
+    },
+    upperLeftFlipper: {
+      pivotX: 56,
+      pivotY: 535,
+      restAngle: 0.48,
+      activeAngle: -0.50,
+      angle: 0.48,
+      angVel: 0,
+      scale: 0.76,
+      pressed: false
+    },
+    upperRightFlipper: {
+      pivotX: 330,
+      pivotY: 535,
+      restAngle: Math.PI - 0.48,
+      activeAngle: Math.PI + 0.50,
+      angle: Math.PI - 0.48,
+      angVel: 0,
+      scale: 0.76,
       pressed: false
     },
 
-    // 演出エフェクト・進行トークン（非同期タイマー競合防止用）
+    // 下層中央から上層へボールを跳ね上げる常設「昇天の魔導陣（アセンション・パッド）」
+    ascensionPad: {
+      x: 187,
+      y: 785,
+      r: 18,
+      cooldown: 0,
+      pulse: 1
+    },
+
+    // 演出エフェクト
     runToken: 0,
     popups: [],
     particles: [],
     shockwaves: [],
-    floatingLights: [],
     hitStopTimer: 0,
     bannerText: null,
     shakeTimer: 0,
     shakeIntensity: 0
   };
 
-  function getFlipperLength() {
-    return 66 + state.flipperLevel * 7;
+  function getFlipperLength(flipper) {
+    return (66 + state.flipperLevel * 7) * (flipper.scale || 1.0);
   }
   function getFlipperSpeed() {
-    return 17.5 + state.flipperLevel * 2.2;
+    return 18 + state.flipperLevel * 2.2;
   }
   function getComboMultiplier() {
-    // 指示書仕様: 倍率 = 1 + min(コンボ, 50) × 0.04（最大 ×3.00）
     return 1 + Math.min(state.combo, 50) * 0.04;
   }
   function getBoosterMultiplier() {
@@ -1348,14 +1439,13 @@
     state.activeSynergies = SYNERGY_DEFINITIONS.filter(def => def.check(state.slots));
     state.activeSynergies.forEach(s => {
       if (!prevIds.has(s.id) && state.phase !== 'TITLE') {
-        spawnPopup(W / 2, 220, `✨シナジー発動【${s.name}】!`, '#ffe600', 15);
+        spawnPopup(VIEW_W / 2, state.cameraY + 220, `✨契約成立【${s.name}】!`, '#ffd86b', 15);
       }
     });
   }
 
   function getNormaForRound(r) {
     if (r <= NORMAS.length) return NORMAS[r - 1];
-    // エンドレスモード (R9以降)
     return Math.round(75000 * Math.pow(1.42, r - 8));
   }
 
@@ -1380,15 +1470,14 @@
     state.particles = [];
     state.shockwaves = [];
 
-    // 初期盤面：丸バンパー2個を設置済み（スロット0, 1）
+    // 初期盤面：丸バンパー2個を設置済み（上層のスロット0とスロット1）
     placePartInSlot(0, 'bumper_circle', 1);
     placePartInSlot(1, 'bumper_circle', 1);
 
     if (startEndless) {
-      // フリーエンドレス練習開始時は追加で初期ビルドを付与
       placePartInSlot(2, 'spinner', 2);
-      placePartInSlot(5, 'kicker', 2);
-      placePartInSlot(6, 'bumper_tri', 2);
+      placePartInSlot(6, 'kicker', 2);
+      placePartInSlot(7, 'bumper_tri', 2);
       state.flipperLevel = 2;
       state.scoreBoosterCount = 3;
     }
@@ -1424,28 +1513,26 @@
     state.hoverSlotId = -1;
     state.phase = 'PLAY';
 
-    // ギミック初期化
     TOP_ROLLOVERS.forEach(r => { r.lit = false; });
     WALL_TARGETS.forEach(t => { t.lit = false; });
     state.jackpotDrone.active = false;
     state.centerPostTimer = 0;
     state.feverTimer = 0;
 
-    // R8（ボス）またはエンドレス時はボスオーバーロードコア出現
     state.bossCore.active = (roundNum >= 8);
     state.bossCore.x = 187;
-    state.bossCore.y = 212;
+    state.bossCore.y = 610;
     state.bossCore.hpHits = 0;
 
     hideAllOverlays();
     document.getElementById('place-banner').classList.remove('show');
     resetBallToPlunger();
 
-    const titleText = roundNum === 8 ? 'FINAL ROUND 8 (BOSS)' : (roundNum > 8 ? `ENDLESS ROUND ${roundNum}` : `ROUND ${roundNum}`);
+    const titleText = roundNum === 8 ? 'FINAL ROUND 8 (深淵の魔王)' : (roundNum > 8 ? `ABYSS ROUND ${roundNum}` : `ROUND ${roundNum}`);
     showCenterBanner(
       titleText,
       `目標ノルマ: ${state.norma.toLocaleString()} PTS`,
-      roundNum >= 8 ? '#ff2a85' : '#00f0ff',
+      roundNum >= 8 ? '#ff4d4d' : '#ffd86b',
       1.6
     );
     updateHUD();
@@ -1453,7 +1540,7 @@
 
   function resetBallToPlunger() {
     state.ball.x = (LANE_X + 408) / 2;
-    state.ball.y = 610;
+    state.ball.y = 1185;
     state.ball.vx = 0;
     state.ball.vy = 0;
     state.ball.inLane = true;
@@ -1471,7 +1558,8 @@
     state.leftKickbackReady = true;
     state.rightKickbackReady = true;
 
-    // スキルショット対象スロットを既存パーツからランダム選択
+    state.targetCameraY = MAX_CAM_Y;
+
     const filledIndices = state.slots.map((s, idx) => s ? idx : -1).filter(idx => idx !== -1);
     state.skillShotSlotId = filledIndices.length > 0
       ? filledIndices[Math.floor(Math.random() * filledIndices.length)]
@@ -1480,19 +1568,19 @@
     updateHUD();
   }
 
-  function spawnPopup(x, y, text, color = '#00f0ff', size = 13) {
+  function spawnPopup(x, y, text, color = '#ffd86b', size = 13) {
     state.popups.push({
-      x: Math.max(45, Math.min(W - 45, x)),
+      x: Math.max(50, Math.min(VIEW_W - 50, x)),
       y: y - 10,
       text,
       color,
       size,
       alpha: 1,
-      vy: -40
+      vy: -42
     });
   }
 
-  function spawnShockwave(x, y, color, maxRadius = 42) {
+  function spawnShockwave(x, y, color, maxRadius = 44) {
     state.shockwaves.push({
       x,
       y,
@@ -1508,7 +1596,7 @@
     state.shakeIntensity = Math.max(state.shakeIntensity, intensity);
   }
 
-  function addScore(basePoints, x, y, color = '#00f0ff', comboGain = 1, slotId = -1, labelPrefix = '') {
+  function addScore(basePoints, x, y, color = '#ffd86b', comboGain = 1, slotId = -1, labelPrefix = '') {
     if (state.phase !== 'PLAY') return;
 
     if (comboGain > 0) {
@@ -1519,12 +1607,11 @@
       }
       const newBucket = Math.floor(state.combo / 10);
       if (newBucket > prevBucket && state.combo <= 60) {
-        spawnShockwave(x, y, '#00f0ff', 72);
-        spawnPopup(W / 2, 165, `🔥 ${newBucket * 10} COMBO!! (×${getComboMultiplier().toFixed(2)})`, '#00f0ff', 15);
+        spawnShockwave(x, y, '#ffd86b', 72);
+        spawnPopup(VIEW_W / 2, state.cameraY + 165, `🔥 ${newBucket * 10} COMBO!! (×${getComboMultiplier().toFixed(2)})`, '#ffd86b', 15);
       }
     }
 
-    // パーツ個別シナジー＆レベル補正
     let modifiedBase = basePoints;
     if (slotId >= 0 && state.slots[slotId]) {
       const p = state.slots[slotId];
@@ -1539,16 +1626,20 @@
       }
     }
 
-    // スキルショット命中判定（発射後4秒以内にターゲットスロットに初ヒット）
+    // 上層（天上聖堂フロア: y < 520）でのヒットは天上ボーナス +15%！
+    if (y < 520) {
+      modifiedBase *= 1.15;
+    }
+
     let isSkillShot = false;
-      if (state.skillShotTimer > 0 && slotId === state.skillShotSlotId) {
+    if (state.skillShotTimer > 0 && slotId === state.skillShotSlotId) {
       state.skillShotTimer = 0;
       modifiedBase += 600;
       state.combo += 3;
       isSkillShot = true;
       state.hitStopTimer = 0.045;
       sfx.skillShot();
-      spawnShockwave(x, y, '#ffe600', 65);
+      spawnShockwave(x, y, '#ffd86b', 68);
     }
 
     const comboMult = getComboMultiplier();
@@ -1566,11 +1657,10 @@
     const popText = isSkillShot
       ? `🎯SKILL SHOT! +${gained.toLocaleString()}`
       : (labelPrefix ? `${labelPrefix} +${gained.toLocaleString()}` : `+${gained.toLocaleString()}`);
-    spawnPopup(x, y, popText, isSkillShot ? '#ffe600' : color, isSkillShot ? 15 : 13);
+    spawnPopup(x, y, popText, isSkillShot ? '#ffd86b' : color, isSkillShot ? 15 : 13);
 
     updateHUD();
 
-    // ノルマ達成チェック
     if (state.roundScore >= state.norma && state.phase === 'PLAY') {
       onNormaAchieved();
     }
@@ -1592,29 +1682,28 @@
     }
   }
 
-  function showCenterBanner(text, sub, color = '#00f0ff', duration = 1.5) {
+  function showCenterBanner(text, sub, color = '#ffd86b', duration = 1.5) {
     state.bannerText = { text, sub, color, timer: duration, maxTimer: duration };
   }
 
   function onNormaAchieved() {
     state.phase = 'CLEAR_ANIM';
-    state.leftFlipper.pressed = false;
-    state.rightFlipper.pressed = false;
+    setFlippersPressed(true, false);
+    setFlippersPressed(false, false);
     sfx.roundClear();
-    spawnParticles(state.ball.x, state.ball.y, '#00ff88', 30, 230);
-    spawnShockwave(state.ball.x, state.ball.y, '#00ff88', 95);
+    spawnParticles(state.ball.x, state.ball.y, '#ffd86b', 30, 230);
+    spawnShockwave(state.ball.x, state.ball.y, '#ffd86b', 95);
 
-    // 温存した残りボール数に応じて総スコアへクリアボーナス加算（早解きメリット）
     const unusedBalls = Math.max(0, state.ballsLeft - 1);
     const ballBonus = unusedBalls * (400 * state.round);
     if (ballBonus > 0) {
       state.totalScore += ballBonus;
-      spawnPopup(W / 2, 260, `BALL SAVE BONUS +${ballBonus.toLocaleString()}`, '#00ff88', 15);
+      spawnPopup(VIEW_W / 2, state.cameraY + 260, `ORB BONUS +${ballBonus.toLocaleString()}`, '#51cf66', 15);
     }
 
     const token = state.runToken;
     if (state.round === 8 && !state.endlessMode) {
-      showCenterBanner('ALL ROUNDS CLEAR!!', '見事！全8ラウンドのノルマを達成！', '#ffe600', 2.2);
+      showCenterBanner('ALL ROUNDS CLEAR!!', '見事！古城の全8ラウンドを制覇！', '#ffd86b', 2.2);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           showResultScreen(true);
@@ -1622,9 +1711,9 @@
       }, 2100);
     } else {
       const subMsg = ballBonus > 0
-        ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS！ドラフトへ`
-        : 'ノルマ達成！カードドラフトへ';
-      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#00ff88', 1.7);
+        ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS！遺物選択へ`
+        : 'ノルマ達成！遺物カード選択へ';
+      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#51cf66', 1.7);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           openDraftModal(ballBonus);
@@ -1636,17 +1725,16 @@
   function onBallLost() {
     if (state.phase !== 'PLAY') return;
 
-    // 発射直後のボールセイバー有効時は、ボール数・コンボを失わずにオート再射出！
     if (state.ballSaverTimer > 0) {
       state.ballSaverTimer = 0;
       sfx.ballSave();
-      showCenterBanner('BALL SAVED!', 'セーフティガード発動！コンボ継続で再射出', '#00ff88', 1.2);
+      showCenterBanner('SOUL SAVED!', '守護結界が発動！コンボ継続で天上へ再射出', '#51cf66', 1.2);
       state.ball.x = (LANE_X + 408) / 2;
-      state.ball.y = 590;
+      state.ball.y = 1160;
       state.ball.inLane = true;
       state.ball.waitingLaunch = false;
       state.ball.vx = 0;
-      state.ball.vy = -880;
+      state.ball.vy = -1240;
       state.ball.trail = [];
       return;
     }
@@ -1659,14 +1747,14 @@
     if (state.ballsLeft <= 0) {
       state.phase = 'CLEAR_ANIM';
       const token = state.runToken;
-      showCenterBanner('BALL LOST...', 'ノルマ未達成', '#ff2a85', 1.8);
+      showCenterBanner('ORB LOST...', 'ノルマ未達成', '#ff4d4d', 1.8);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           showResultScreen(false);
         }
       }, 1700);
     } else {
-      showCenterBanner('BALL LOST', `残りボール ${state.ballsLeft}個`, '#ff2a85', 1.1);
+      showCenterBanner('ORB LOST', `残りオーブ ${state.ballsLeft}個`, '#ff4d4d', 1.1);
       resetBallToPlunger();
     }
   }
@@ -1693,18 +1781,17 @@
     const resSub = document.getElementById('res-sub');
     if (isClear) {
       resTitle.textContent = 'GAME CLEAR!';
-      resTitle.style.color = '#00ff88';
+      resTitle.style.color = '#ffd86b';
       resSub.textContent = '全8ラウンドのノルマを達成しました！';
     } else {
-      resTitle.textContent = state.endlessMode ? `ENDLESS R${state.round} FINISH` : 'GAME OVER';
-      resTitle.style.color = state.endlessMode ? '#ffe600' : '#ff2a85';
+      resTitle.textContent = state.endlessMode ? `ABYSS R${state.round} FINISH` : 'GAME OVER';
+      resTitle.style.color = state.endlessMode ? '#ffd86b' : '#ff4d4d';
       resSub.textContent = `ROUND ${state.round} ノルマ達成率 ${Math.floor((state.roundScore / state.norma) * 100)}%`;
     }
     document.getElementById('res-total').textContent = state.totalScore.toLocaleString();
     document.getElementById('res-hiscore').textContent = hiScore.toLocaleString();
     document.getElementById('res-newrecord').style.display = isNewRecord ? 'block' : 'none';
 
-    // MVPパーツ算出
     let mvpText = 'なし';
     let bestScore = 0;
     state.slots.forEach((s, idx) => {
@@ -1730,21 +1817,18 @@
         <div class="s-val">${state.activeSynergies.length} 個</div>
       </div>
       <div class="stat-cell">
-        <div class="s-lbl">MVPパーツ</div>
-        <div class="s-val" style="color:var(--neon-cyan); font-size:11.5px;">${mvpText}</div>
+        <div class="s-lbl">MVP遺物パーツ</div>
+        <div class="s-val" style="color:var(--gold-bright); font-size:11.5px;">${mvpText}</div>
       </div>
     `;
 
-    // R8クリア時はそのままR9エンドレスへ進めるボタンを表示
-    const endlessBtn = document.getElementById('btn-endless');
-    endlessBtn.style.display = isClear ? 'block' : 'none';
-
+    document.getElementById('btn-endless').style.display = isClear ? 'block' : 'none';
     document.getElementById('ov-result').classList.add('show');
     updateTitleRecords();
   }
 
   // =========================================================================
-  // 6. ドラフト＆配置フェーズ（盤面確認・リロール・シナジー予測つき）
+  // 6. ドラフト＆配置フェーズ
   // =========================================================================
   function canCardBeUsed(card) {
     const emptyCount = state.slots.filter(s => s === null).length;
@@ -1774,7 +1858,7 @@
       const upgradable = existing.filter(s => s.level < 3).length;
       if (card.id === 'warp_gate') {
         const pairs = Math.floor(existing.length / 2);
-        return pairs > 0 ? `現在 ${pairs}組設置中（同スロット選択でLvUP）` : '空きスロット2か所に連結設置';
+        return pairs > 0 ? `現在 ${pairs}組設置中（同スロット選択でLvUP）` : '空きスロット2か所に連結設置（上層と下層を結ぶと強力！）';
       }
       return existing.length > 0
         ? `現在 ${existing.length}個設置中（${upgradable > 0 ? '重ねてLvUP可' : 'すべて最大Lv'}）`
@@ -1791,12 +1875,11 @@
       return `スコアボーナス: +${state.scoreBoosterCount * 10}% → +${(state.scoreBoosterCount + 1) * 10}%`;
     }
     if (card.id === 'flipper_up') {
-      return `フリッパー強化: Lv${state.flipperLevel} → Lv${state.flipperLevel + 1} (最大Lv3)`;
+      return `フリッパー強化: Lv${state.flipperLevel} → Lv${state.flipperLevel + 1} (上層・下層とも強化)`;
     }
     return '';
   }
 
-  // このカードを新規配置または強化した場合に新しく発動するシナジーがあるか予測
   function predictNewSynergyForCard(card) {
     if (card.category !== 'part' && card.id !== 'upgrade_chip') return null;
     const currentIds = new Set(state.activeSynergies.map(s => s.id));
@@ -1852,7 +1935,7 @@
     cards.forEach(card => {
       const item = document.createElement('div');
       item.className = `card-item ${card.category !== 'part' ? 'instant' : ''}`;
-      const badgeLabel = card.category === 'part' ? 'パーツ配置' : (card.id === 'upgrade_chip' ? 'パーツ強化' : '即時発動');
+      const badgeLabel = card.category === 'part' ? '遺物配置' : (card.id === 'upgrade_chip' ? '遺物強化' : '即時秘儀');
       const synAlert = predictNewSynergyForCard(card);
 
       item.innerHTML = `
@@ -1881,11 +1964,11 @@
     hideAllOverlays();
     const ov = document.getElementById('ov-draft');
     ov.classList.remove('peek-mode');
-    document.getElementById('btn-peek-board').textContent = '👁 盤面を確認';
+    document.getElementById('btn-peek-board').textContent = '👁 盤面を確認(上下ドラッグ)';
     document.getElementById('draft-header').textContent = `ROUND ${state.round} CLEAR!`;
     document.getElementById('draft-bonus-info').textContent = ballBonus > 0
       ? `残り球ボーナス +${ballBonus.toLocaleString()} PTS 獲得！報酬カードを1枚選択`
-      : '報酬カードを1枚選んで盤面をビルドしよう';
+      : '報酬カードを1枚選んで古城の盤面を構築しよう';
 
     renderDraftCards();
     ov.classList.add('show');
@@ -1915,6 +1998,17 @@
     state.phase = 'PLACE';
     state.pendingCard = card;
     state.warpFirstSlot = null;
+
+    // 選択可能なスロットが集中している高さへカメラを自動フォーカス
+    let focusY = 260;
+    for (let i = 0; i < SLOT_POSITIONS.length; i++) {
+      if (getSlotActionType(i) === 'upgrade') {
+        focusY = SLOT_POSITIONS[i].y - 250;
+        break;
+      }
+    }
+    state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, focusY));
+
     updatePlaceBanner();
     document.getElementById('place-banner').classList.add('show');
   }
@@ -1927,18 +2021,18 @@
 
     if (card.id === 'upgrade_chip') {
       titleEl.textContent = `【強化チップ】対象パーツを選択`;
-      subEl.textContent = `黄色枠の既存パーツをタップして Lv+1（最大Lv3）`;
+      subEl.textContent = `上下ドラッグまたは▲上層/▼下層で移動し、黄枠パーツをタップ`;
     } else if (card.id === 'warp_gate') {
       if (state.warpFirstSlot === null) {
         titleEl.textContent = `【ワープゲート】1つ目のスロットを選択`;
-        subEl.textContent = `緑枠（空き2か所必要）で新規設置、黄枠で既存ペアLvUP`;
+        subEl.textContent = `緑枠で新規設置（下層と上層をつなぐと強力！）、黄枠でLvUP`;
       } else {
         titleEl.textContent = `【ワープゲート】2つ目の空きスロットを選択`;
-        subEl.textContent = `出口の空きスロットをタップ（1つ目を再タップで解除、黄枠で既存LvUP）`;
+        subEl.textContent = `出口の空きスロットをタップ（1つ目を再タップで解除）`;
       }
     } else {
       titleEl.textContent = `【${card.name}】配置スロットを選択`;
-      subEl.textContent = `緑＝新規配置 / 黄＝同種パーツLvUP（別種スロットは上書き不可）`;
+      subEl.textContent = `緑＝新規配置 / 黄＝同種LvUP（上下ドラッグまたは▲▼で視点移動）`;
     }
   }
 
@@ -1990,7 +2084,7 @@
       }
       refreshSynergies();
       sfx.place();
-      spawnParticles(pos.x, pos.y, '#00ff88', 18, 150);
+      spawnParticles(pos.x, pos.y, '#51cf66', 18, 150);
       finishPlacementPhase();
       return;
     }
@@ -2013,14 +2107,14 @@
         }
         refreshSynergies();
         sfx.place();
-        spawnParticles(pos.x, pos.y, '#b845ff', 18, 150);
+        spawnParticles(pos.x, pos.y, '#cc5de8', 18, 150);
         finishPlacementPhase();
         return;
       }
       if (state.warpFirstSlot === null) {
         state.warpFirstSlot = slotId;
         sfx.place();
-        spawnParticles(pos.x, pos.y, '#b845ff', 12, 100);
+        spawnParticles(pos.x, pos.y, '#cc5de8', 12, 100);
         updatePlaceBanner();
         return;
       } else {
@@ -2028,7 +2122,7 @@
         placePartInSlot(firstId, 'warp_gate', 1, slotId);
         placePartInSlot(slotId, 'warp_gate', 1, firstId);
         sfx.warp();
-        spawnParticles(pos.x, pos.y, '#b845ff', 22, 170);
+        spawnParticles(pos.x, pos.y, '#cc5de8', 22, 170);
         finishPlacementPhase();
         return;
       }
@@ -2054,7 +2148,7 @@
   }
 
   // =========================================================================
-  // 7. 物理演算エンジン（サブステップ分割・ギミック・台揺らし・スタック救済）
+  // 7. 物理演算エンジン ＆ カメラ追従システム
   // =========================================================================
   function closestPointOnSegment(px, py, x1, y1, x2, y2) {
     const dx = x2 - x1;
@@ -2083,7 +2177,7 @@
 
   function collideFlipper(flipper) {
     const b = state.ball;
-    const len = getFlipperLength();
+    const len = getFlipperLength(flipper);
     const x1 = flipper.pivotX;
     const y1 = flipper.pivotY;
     const x2 = x1 + Math.cos(flipper.angle) * len;
@@ -2112,12 +2206,12 @@
       const relDot = relVx * nx + relVy * ny;
 
       if (relDot < 0) {
-        const restitution = 0.82 + state.flipperLevel * 0.06;
+        const restitution = 0.85 + state.flipperLevel * 0.06;
         b.vx -= (1 + restitution) * relDot * nx;
         b.vy -= (1 + restitution) * relDot * ny;
 
         if (Math.abs(flipper.angVel) > 0.5) {
-          const tipBoost = (0.45 + 0.78 * cp.t) * (1 + state.flipperLevel * 0.14);
+          const tipBoost = (0.52 + 0.82 * cp.t) * (1 + state.flipperLevel * 0.15);
           b.vx += fvx * tipBoost;
           b.vy += fvy * tipBoost;
         }
@@ -2130,6 +2224,10 @@
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
       if (w.oneWayLeft && b.inLane && b.vx < 0) {
+        continue;
+      }
+      // 発射レーン内を上昇中のボールは上層右ガイド斜壁(x<LANE_X)に干渉しない
+      if (b.inLane && (w.x1 < LANE_X || w.x2 < LANE_X) && w.y1 >= 470 && w.y2 <= 600) {
         continue;
       }
 
@@ -2151,17 +2249,17 @@
           if (w.isSlingshot && Math.hypot(b.vx, b.vy) > 110) {
             w.pulse = 1.0;
             sfx.bumper(state.combo);
-            addScore(35, cp.x, cp.y, '#ff2a85', 1, -1);
-            spawnParticles(cp.x, cp.y, '#ff2a85', 6, 95);
+            addScore(35, cp.x, cp.y, '#ff6b6b', 1, -1);
+            spawnParticles(cp.x, cp.y, '#ff6b6b', 6, 95);
           }
         }
       }
     }
 
-    // センターセーフティポスト（上部3レーン達成で股下に一定時間出現するガード柱）
+    // センターセーフティピラー（最上層3ルーン達成で下層メインフリッパー間に出現する守護柱）
     if (state.centerPostTimer > 0) {
       const px = 193;
-      const py = 602;
+      const py = 1182;
       const pr = 9;
       const dx = b.x - px;
       const dy = b.y - py;
@@ -2175,60 +2273,74 @@
         if (dot < 0) {
           b.vx -= 1.85 * dot * nx;
           b.vy -= 1.85 * dot * ny;
-          b.vy -= 110;
+          b.vy -= 130;
           sfx.bumper(state.combo);
-          spawnParticles(px, py, '#00ff88', 8, 110);
+          spawnParticles(px, py, '#51cf66', 8, 110);
         }
       }
     }
 
     if (b.inLane && b.x < LANE_X - BALL_R) {
       b.inLane = false;
-      // フィールド突入時にボールセイバー(4.5秒)とスキルショット受付(4.5秒)を開始
-      state.ballSaverTimer = 4.5;
-      state.skillShotTimer = 4.5;
+      state.ballSaverTimer = 5.5;
+      state.skillShotTimer = 5.5;
     }
   }
 
   function checkBoardGimmicks(subDt) {
     const b = state.ball;
 
-    // 1. 上部3レーンロールオーバー (I-D-E)
+    // 0. 下層中央の「昇天の魔導陣（アセンション・パッド）」：踏むと上層フロアへボールを一気に撃ち上げる！
+    const pad = state.ascensionPad;
+    if (pad.cooldown > 0) pad.cooldown = Math.max(0, pad.cooldown - subDt);
+    if (pad.pulse > 1) pad.pulse = Math.max(1, pad.pulse - subDt * 2.5);
+    if (Math.hypot(b.x - pad.x, b.y - pad.y) < pad.r + BALL_R && pad.cooldown <= 0) {
+      pad.cooldown = 0.65;
+      pad.pulse = 1.6;
+      b.vy = -820;
+      b.vx = (Math.random() - 0.5) * 140;
+      sfx.kicker();
+      triggerShake(0.11, 3);
+      addScore(100, pad.x, pad.y, '#cc5de8', 1, -1, '▲ASCENSION!');
+      spawnShockwave(pad.x, pad.y, '#cc5de8', 46);
+      spawnParticles(pad.x, pad.y, '#cc5de8', 14, 170);
+    }
+
+    // 1. 最上層3ルーン祭壇 (太陽・月・星)
     for (let i = 0; i < TOP_ROLLOVERS.length; i++) {
       const ro = TOP_ROLLOVERS[i];
       if (!ro.lit && Math.hypot(b.x - ro.x, b.y - ro.y) < 15) {
         ro.lit = true;
         sfx.targetLit();
-        addScore(120, ro.x, ro.y, '#00ff88', 1, -1, `LANE [${ro.label}]`);
-        spawnParticles(ro.x, ro.y, '#00ff88', 8, 100);
+        addScore(120, ro.x, ro.y, '#ffd86b', 1, -1, `RUNE [${ro.label}]`);
+        spawnParticles(ro.x, ro.y, '#ffd86b', 8, 100);
 
         if (TOP_ROLLOVERS.every(r => r.lit)) {
-          // 3レーンコンプリート特典：500点＋センターポスト15秒起動＋ジャックポットドローン出現！
           const token = state.runToken;
           setTimeout(() => {
             if (state.runToken === token) {
               TOP_ROLLOVERS.forEach(r => { r.lit = false; });
             }
           }, 450);
-          state.centerPostTimer = 15.0;
+          state.centerPostTimer = 18.0;
           state.jackpotDrone.active = true;
           sfx.skillShot();
-          addScore(500, 187, 70, '#ffe600', 2, -1, '★ALL LANES! JACKPOT READY');
-          spawnShockwave(187, 70, '#ffe600', 75);
+          addScore(500, 187, 90, '#ffd86b', 2, -1, '★TRINITY RUNE! 聖杯出現');
+          spawnShockwave(187, 90, '#ffd86b', 75);
         }
       }
     }
 
-    // 2. 左右壁の4つのネオンターゲット
+    // 2. 左右壁の4つの魔導燭台ターゲット
     for (let i = 0; i < WALL_TARGETS.length; i++) {
       const wt = WALL_TARGETS[i];
       if (Math.abs(b.x - wt.x) < BALL_R + 5 && b.y >= wt.y1 && b.y <= wt.y2) {
         if (!wt.lit) {
           wt.lit = true;
-          b.vx += wt.normalX * 135;
+          b.vx += wt.normalX * 140;
           sfx.targetLit();
-          addScore(140, wt.x + wt.normalX * 16, wt.y, '#00f0ff', 1, -1, 'TARGET');
-          spawnParticles(wt.x, wt.y, '#00f0ff', 9, 110);
+          addScore(140, wt.x + wt.normalX * 16, wt.y, '#ffa94d', 1, -1, 'TORCH LIT');
+          spawnParticles(wt.x, wt.y, '#ffa94d', 9, 110);
 
           if (WALL_TARGETS.every(t => t.lit)) {
             const token = state.runToken;
@@ -2237,17 +2349,17 @@
                 WALL_TARGETS.forEach(t => { t.lit = false; });
               }
             }, 500);
-            state.feverTimer = 10.0;
-            state.ballSaverTimer = Math.max(state.ballSaverTimer, 8.0);
+            state.feverTimer = 12.0;
+            state.ballSaverTimer = Math.max(state.ballSaverTimer, 9.0);
             sfx.jackpot();
-            addScore(800, W / 2, 260, '#ff2a85', 3, -1, '🔥FEVER 10s (×1.25)');
-            spawnShockwave(W / 2, 260, '#ff2a85', 90);
+            addScore(800, VIEW_W / 2, b.y, '#ff4d4d', 3, -1, '🔥BLOOD MOON 12s (×1.25)');
+            spawnShockwave(b.x, b.y, '#ff4d4d', 90);
           }
         }
       }
     }
 
-    // 3. 移動ジャックポットドローン
+    // 3. 移動ジャックポット（黄金の聖杯）
     if (state.jackpotDrone.active) {
       const jd = state.jackpotDrone;
       const dx = b.x - jd.x;
@@ -2258,13 +2370,13 @@
         state.hitStopTimer = 0.055;
         sfx.jackpot();
         triggerShake(0.22, 5);
-        addScore(1000, jd.x, jd.y, '#ffe600', 4, -1, '👑JACKPOT!!');
-        spawnParticles(jd.x, jd.y, '#ffe600', 26, 210);
-        spawnShockwave(jd.x, jd.y, '#ffe600', 85);
+        addScore(1000, jd.x, jd.y, '#ffd86b', 4, -1, '👑HOLY GRAIL JACKPOT!!');
+        spawnParticles(jd.x, jd.y, '#ffd86b', 26, 210);
+        spawnShockwave(jd.x, jd.y, '#ffd86b', 85);
       }
     }
 
-    // 4. R8ボス（オーバーロードコア）
+    // 4. R8ボス（深淵の魔王核）
     if (state.bossCore.active) {
       const bc = state.bossCore;
       if (bc.cooldown > 0) bc.cooldown = Math.max(0, bc.cooldown - subDt);
@@ -2282,8 +2394,8 @@
           b.vx -= 2.0 * dot * nx;
           b.vy -= 2.0 * dot * ny;
         }
-        b.vx += nx * 210;
-        b.vy += ny * 210;
+        b.vx += nx * 220;
+        b.vy += ny * 220;
 
         if (bc.cooldown <= 0) {
           bc.cooldown = 0.08;
@@ -2293,39 +2405,39 @@
           if (bc.hpHits % 5 === 0) {
             state.hitStopTimer = 0.06;
             sfx.jackpot();
-            addScore(1200, bc.x, bc.y, '#ffe600', 3, -1, '💥BOSS BREAK!');
-            spawnShockwave(bc.x, bc.y, '#ffe600', 85);
-            spawnParticles(bc.x, bc.y, '#ffe600', 24, 200);
+            addScore(1200, bc.x, bc.y, '#ffd86b', 3, -1, '💥DEMON CORE BREAK!');
+            spawnShockwave(bc.x, bc.y, '#ffd86b', 85);
+            spawnParticles(bc.x, bc.y, '#ffd86b', 24, 200);
           } else {
             sfx.bumper(state.combo);
-            addScore(350, bc.x, bc.y, '#ff2a85', 2, -1, 'BOSS HIT');
-            spawnShockwave(bc.x, bc.y, '#ff2a85', 50);
-            spawnParticles(bc.x, bc.y, '#ff2a85', 14, 150);
+            addScore(350, bc.x, bc.y, '#ff4d4d', 2, -1, 'BOSS HIT');
+            spawnShockwave(bc.x, bc.y, '#ff4d4d', 50);
+            spawnParticles(bc.x, bc.y, '#ff4d4d', 14, 150);
           }
         }
       }
     }
 
-    // 5. 左右サイドレーン・キックバック判定（スリングショット外側の通路に落ちた球を毎ボール1回ずつ強烈に上へ撃ち戻す）
-    if (state.leftKickbackReady && b.x > 12 && b.x < 45 && b.y > 505 && b.y < 535 && b.vy > 0) {
+    // 5. 左右サイドレーン・キックバック（毎ボール1回ずつ、両端アウトレーンから上層へ撃ち戻す）
+    if (state.leftKickbackReady && b.x > 12 && b.x < 45 && b.y > 1085 && b.y < 1115 && b.vy > 0) {
       state.leftKickbackReady = false;
-      b.vy = -660;
-      b.vx = 95;
+      b.vy = -860;
+      b.vx = 105;
       sfx.kicker();
       triggerShake(0.12, 3);
-      addScore(200, 29, 510, '#00f0ff', 1, -1, '⚡KICKBACK!');
-      spawnShockwave(29, 515, '#00f0ff', 42);
-      spawnParticles(29, 515, '#00f0ff', 14, 160);
+      addScore(200, 29, 1090, '#ffd86b', 1, -1, '⚡RUNE KICKBACK!');
+      spawnShockwave(29, 1095, '#ffd86b', 42);
+      spawnParticles(29, 1095, '#ffd86b', 14, 160);
     }
-    if (state.rightKickbackReady && b.x > 341 && b.x < 373 && b.y > 505 && b.y < 535 && b.vy > 0) {
+    if (state.rightKickbackReady && b.x > 341 && b.x < 373 && b.y > 1085 && b.y < 1115 && b.vy > 0) {
       state.rightKickbackReady = false;
-      b.vy = -660;
-      b.vx = -95;
+      b.vy = -860;
+      b.vx = -105;
       sfx.kicker();
       triggerShake(0.12, 3);
-      addScore(200, 357, 510, '#00f0ff', 1, -1, '⚡KICKBACK!');
-      spawnShockwave(357, 515, '#00f0ff', 42);
-      spawnParticles(357, 515, '#00f0ff', 14, 160);
+      addScore(200, 357, 1090, '#ffd86b', 1, -1, '⚡RUNE KICKBACK!');
+      spawnShockwave(357, 1095, '#ffd86b', 42);
+      spawnParticles(357, 1095, '#ffd86b', 14, 160);
     }
   }
 
@@ -2372,7 +2484,7 @@
             b.vx -= 1.9 * dot * nx;
             b.vy -= 1.9 * dot * ny;
           }
-          const impulse = 155 + part.level * 28;
+          const impulse = 160 + part.level * 28;
           b.vx += nx * impulse;
           b.vy += ny * impulse;
 
@@ -2381,10 +2493,10 @@
             part.pulse = 1.45;
             sfx.bumper(state.combo);
             triggerShake(0.08, 2.2);
-            addScore(100 * part.level, pos.x, pos.y, '#ff2a85', 1, i);
-            spawnParticles(pos.x + nx * r, pos.y + ny * r, '#ff2a85', 10, 140);
+            addScore(100 * part.level, pos.x, pos.y, '#ff6b6b', 1, i);
+            spawnParticles(pos.x + nx * r, pos.y + ny * r, '#ff6b6b', 10, 140);
             if (hasSynergy('bumper_kingdom')) {
-              spawnShockwave(pos.x, pos.y, '#ff2a85', 44);
+              spawnShockwave(pos.x, pos.y, '#ff6b6b', 44);
             }
           }
         }
@@ -2410,7 +2522,7 @@
               b.vx -= 1.95 * dot * nx;
               b.vy -= 1.95 * dot * ny;
             }
-            const impulse = 190 + part.level * 30;
+            const impulse = 195 + part.level * 30;
             b.vx += nx * impulse;
             b.vy += ny * impulse;
 
@@ -2419,10 +2531,10 @@
               part.pulse = 1.45;
               sfx.bumper(state.combo);
               triggerShake(0.09, 2.5);
-              addScore(150 * part.level, pos.x, pos.y, '#ff9100', comboGainReflect, i);
-              spawnParticles(cp.x, cp.y, '#ff9100', 11, 155);
+              addScore(150 * part.level, pos.x, pos.y, '#ffa94d', comboGainReflect, i);
+              spawnParticles(cp.x, cp.y, '#ffa94d', 11, 155);
               if (hasSynergy('bumper_kingdom')) {
-                spawnShockwave(pos.x, pos.y, '#ff9100', 46);
+                spawnShockwave(pos.x, pos.y, '#ffa94d', 46);
               }
             }
             break;
@@ -2430,7 +2542,7 @@
         }
       }
 
-      // 3. キッカー
+      // 3. キッカー（下層から上層まで届くよう強力な上昇力を付与）
       else if (part.type === 'kicker') {
         const r = 17;
         const minDist = r + BALL_R;
@@ -2440,18 +2552,18 @@
           b.x = pos.x + nx * minDist;
           b.y = pos.y + ny * minDist;
 
-          const kickVy = -(525 + part.level * 55 + (hasSynergy('perpetual_engine') ? 45 : 0));
+          const kickVy = -(680 + part.level * 70 + (hasSynergy('perpetual_engine') ? 65 : 0));
           b.vy = Math.min(b.vy, kickVy);
-          b.vx = b.vx * 0.6 + nx * 170;
+          b.vx = b.vx * 0.6 + nx * 175;
 
           if (part.cooldown <= 0) {
             part.cooldown = 0.09;
             part.pulse = 1.5;
             sfx.kicker();
             triggerShake(0.1, 2.8);
-            addScore(150 * part.level, pos.x, pos.y, '#00ff88', 1, i);
-            spawnParticles(pos.x, pos.y - 10, '#00ff88', 14, 180);
-            spawnShockwave(pos.x, pos.y, '#00ff88', 42);
+            addScore(150 * part.level, pos.x, pos.y, '#51cf66', 1, i);
+            spawnParticles(pos.x, pos.y - 10, '#51cf66', 14, 180);
+            spawnShockwave(pos.x, pos.y, '#51cf66', 44);
           }
         }
       }
@@ -2464,17 +2576,17 @@
           part.spinVel = 30;
           part.pulse = 1.25;
           const spd = Math.hypot(b.vx, b.vy);
-          const accelBoost = hasSynergy('perpetual_engine') ? 1.11 : 1.07;
+          const accelBoost = hasSynergy('perpetual_engine') ? 1.12 : 1.08;
           if (spd > 15) {
-            const newSpd = Math.min(840, spd * accelBoost + 30);
+            const newSpd = Math.min(920, spd * accelBoost + 32);
             b.vx = (b.vx / spd) * newSpd;
             b.vy = (b.vy / spd) * newSpd;
           } else {
-            b.vy -= 95;
+            b.vy -= 110;
           }
           sfx.spinner();
-          addScore(30 * part.level, pos.x, pos.y, '#00f0ff', 1, i);
-          spawnParticles(b.x, b.y, '#00f0ff', 5, 85);
+          addScore(30 * part.level, pos.x, pos.y, '#ffd86b', 1, i);
+          spawnParticles(b.x, b.y, '#ffd86b', 5, 85);
         }
       }
 
@@ -2503,17 +2615,16 @@
             b.vx -= 1.85 * dot * nx;
             b.vy -= 1.85 * dot * ny;
           }
-          const pushPower = 95 + part.level * 18;
+          const pushPower = 100 + part.level * 18;
           b.vx += nx * pushPower;
-          // 下側から当たった際にも下方向（アウトホール側）へ過剰加速させず、横〜上方向へ弾く
-          b.vy += (ny < 0 ? ny * pushPower : ny * pushPower * 0.2 - 35);
+          b.vy += (ny < 0 ? ny * pushPower : ny * pushPower * 0.2 - 40);
 
           if (part.cooldown <= 0) {
             part.cooldown = 0.07;
             part.pulse = 1.4;
             sfx.bumper(state.combo);
-            addScore(50 * part.level, pos.x, pos.y, '#ffe600', comboGainReflect, i);
-            spawnParticles(cp.x, cp.y, '#ffe600', 8, 120);
+            addScore(50 * part.level, pos.x, pos.y, '#ffd86b', comboGainReflect, i);
+            spawnParticles(cp.x, cp.y, '#ffd86b', 8, 120);
           }
         }
       }
@@ -2528,10 +2639,10 @@
             b.x = destPos.x;
             b.y = destPos.y;
             const spd = Math.hypot(b.vx, b.vy);
-            if (spd < 190) {
+            if (spd < 200) {
               const a = Math.atan2(b.vy || -1, b.vx || 0.2);
-              b.vx = Math.cos(a) * 250;
-              b.vy = Math.sin(a) * 250;
+              b.vx = Math.cos(a) * 260;
+              b.vy = Math.sin(a) * 260;
             }
             b.warpCooldown = 0.45;
             b.trail = [];
@@ -2544,11 +2655,11 @@
               warpCombo = 3;
               state.warpAuraTimer = 3.0;
             }
-            addScore(300 * part.level, destPos.x, destPos.y, '#b845ff', warpCombo, i, '🪐WARP');
-            spawnShockwave(pos.x, pos.y, '#b845ff', 48);
-            spawnShockwave(destPos.x, destPos.y, '#00f0ff', 58);
-            spawnParticles(pos.x, pos.y, '#b845ff', 14, 150);
-            spawnParticles(destPos.x, destPos.y, '#00f0ff', 18, 190);
+            addScore(300 * part.level, destPos.x, destPos.y, '#cc5de8', warpCombo, i, '🔮ABYSS WARP');
+            spawnShockwave(pos.x, pos.y, '#cc5de8', 48);
+            spawnShockwave(destPos.x, destPos.y, '#ffd86b', 58);
+            spawnParticles(pos.x, pos.y, '#cc5de8', 14, 150);
+            spawnParticles(destPos.x, destPos.y, '#ffd86b', 18, 190);
             break;
           }
         }
@@ -2556,41 +2667,58 @@
     }
   }
 
-  // 台揺らし（ナッジ）機能：スタック回避やギリギリの軌道修正が可能、連続使用しすぎるとTILT警告
   function triggerNudge(dirX = 0) {
     if (state.phase !== 'PLAY' || state.ball.waitingLaunch || state.ball.inLane || state.tiltPenalty) return;
     state.nudgeHeat += 0.42;
-    const vxAdd = (dirX !== 0 ? dirX : (Math.random() < 0.5 ? -1 : 1)) * 125;
+    const vxAdd = (dirX !== 0 ? dirX : (Math.random() < 0.5 ? -1 : 1)) * 130;
     state.ball.vx += vxAdd;
-    state.ball.vy -= 85;
+    state.ball.vy -= 95;
     triggerShake(0.15, 4.5);
     sfx.nudge();
 
     if (state.nudgeHeat >= 1.0) {
       state.tiltPenalty = true;
-      state.leftFlipper.pressed = false;
-      state.rightFlipper.pressed = false;
+      setFlippersPressed(true, false);
+      setFlippersPressed(false, false);
       sfx.tilt();
-      showCenterBanner('TILT!!', '揺らしすぎ警告！フリッパーが一時ロック', '#ff2a85', 1.4);
+      showCenterBanner('CURSED TILT!!', '揺らしすぎ警告！大剣フリッパーが一時封印', '#ff4d4d', 1.4);
       updateHUD();
     } else if (state.nudgeHeat >= 0.7) {
-      spawnPopup(state.ball.x, state.ball.y, '⚠ DANGER (TILT注意)', '#ffe600', 12);
+      spawnPopup(state.ball.x, state.ball.y, '⚠ DANGER (封印注意)', '#ffd86b', 12);
     }
   }
 
+  function updateCamera(dt) {
+    if (state.phase === 'PLAY') {
+      if (state.ball.waitingLaunch) {
+        // 発射チャージ中はパワーに応じてカメラが少しずつ上へパンし、広大なステージを見せる
+        state.targetCameraY = MAX_CAM_Y - state.plunger.power * 210;
+      } else {
+        // ボールのY座標＋速度先読みで滑らかに追従
+        const lookAheadY = state.ball.y + state.ball.vy * 0.14 - VIEW_H * 0.46;
+        state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, lookAheadY));
+      }
+    } else if (state.phase === 'TITLE') {
+      // タイトル画面では古城の上層〜下層をゆっくりパノラマ往復
+      state.targetCameraY = (Math.sin(performance.now() * 0.00045) * 0.5 + 0.5) * MAX_CAM_Y;
+    }
+
+    const lerpSpeed = (state.phase === 'PLACE' || state.phase === 'DRAFT') ? 10 : 8.5;
+    state.cameraY += (state.targetCameraY - state.cameraY) * Math.min(1, dt * lerpSpeed);
+  }
+
   function stepPhysics(dt) {
-    // ヒットストップ（大技命中時の瞬間的な手応え演出）
+    updateCamera(dt);
+
     if (state.hitStopTimer > 0) {
       state.hitStopTimer = Math.max(0, state.hitStopTimer - dt);
       return;
     }
 
-    // 画面シェイク減衰
     if (state.shakeTimer > 0) {
       state.shakeTimer = Math.max(0, state.shakeTimer - dt);
     }
 
-    // 各種タイマー更新
     if (state.skillShotTimer > 0) state.skillShotTimer = Math.max(0, state.skillShotTimer - dt);
     if (state.ballSaverTimer > 0) state.ballSaverTimer = Math.max(0, state.ballSaverTimer - dt);
     if (state.centerPostTimer > 0) state.centerPostTimer = Math.max(0, state.centerPostTimer - dt);
@@ -2603,7 +2731,6 @@
       state.nudgeHeat = Math.max(0, state.nudgeHeat - dt * 0.25);
     }
 
-    // 移動ジャックポットドローン更新
     if (state.jackpotDrone.active) {
       const jd = state.jackpotDrone;
       jd.x += jd.vx * dt;
@@ -2611,24 +2738,21 @@
       if (jd.x > 298) { jd.x = 298; jd.vx = -Math.abs(jd.vx); }
     }
 
-    // R8ボスコア移動更新
     if (state.bossCore.active) {
       const bc = state.bossCore;
       bc.x += bc.vx * dt;
-      if (bc.x < 125) { bc.x = 125; bc.vx = Math.abs(bc.vx); }
-      if (bc.x > 248) { bc.x = 248; bc.vx = -Math.abs(bc.vx); }
+      if (bc.x < 115) { bc.x = 115; bc.vx = Math.abs(bc.vx); }
+      if (bc.x > 258) { bc.x = 258; bc.vx = -Math.abs(bc.vx); }
       if (bc.pulse > 1) bc.pulse = Math.max(1, bc.pulse - dt * 2.5);
     }
 
-    // プランジャーチャージ更新
     if (state.phase === 'PLAY' && state.ball.waitingLaunch) {
       if (state.plunger.charging) {
         state.plunger.power = Math.min(1, state.plunger.power + dt * 1.15);
-        state.ball.y = 610 + state.plunger.power * 14;
+        state.ball.y = 1185 + state.plunger.power * 16;
       }
     }
 
-    // パーツ・壁アニメーション減衰
     for (let i = 0; i < state.slots.length; i++) {
       const p = state.slots[i];
       if (!p) continue;
@@ -2637,14 +2761,13 @@
         p.angle += p.spinVel * dt;
         p.spinVel = Math.max(0, p.spinVel - dt * 18);
       } else if (p.type === 'warp_gate') {
-        p.angle += dt * 2.4;
+        p.angle += dt * 2.2;
       }
     }
     for (let i = 0; i < walls.length; i++) {
       if (walls[i].pulse > 0) walls[i].pulse = Math.max(0, walls[i].pulse - dt * 4);
     }
 
-    // パーティクル・ショックウェーブ・ポップアップ更新
     for (let i = state.particles.length - 1; i >= 0; i--) {
       const pt = state.particles[i];
       pt.x += pt.vx * dt;
@@ -2671,39 +2794,42 @@
 
     if (state.phase !== 'PLAY') return;
 
+    const allFlippers = [
+      state.leftFlipper,
+      state.rightFlipper,
+      state.upperLeftFlipper,
+      state.upperRightFlipper
+    ];
+
     if (state.ball.waitingLaunch) {
-      updateFlipper(state.leftFlipper, dt);
-      updateFlipper(state.rightFlipper, dt);
+      allFlippers.forEach(f => updateFlipper(f, dt));
       return;
     }
 
-    // 万が一のボールスタック自動救済センサー（フィールド内で3秒以上ほぼ静止していたら自動インパルス）
     const b = state.ball;
     const speed = Math.hypot(b.vx, b.vy);
     if (!b.inLane && speed < 18) {
       state.stuckTimer += dt;
       if (state.stuckTimer > 2.5) {
         state.stuckTimer = 0;
-        b.vx = (Math.random() < 0.5 ? -1 : 1) * 180;
-        b.vy = -220;
-        spawnPopup(b.x, b.y, 'AUTO RELEASE', '#00f0ff', 11);
+        b.vx = (Math.random() < 0.5 ? -1 : 1) * 190;
+        b.vy = -260;
+        spawnPopup(b.x, b.y, 'AUTO RELEASE', '#ffd86b', 11);
       }
     } else {
       state.stuckTimer = 0;
     }
 
-    // サブステップ分割判定（高速移動時のすり抜け防止）
-    const subSteps = Math.max(6, Math.min(20, Math.ceil((speed * dt) / (BALL_R * 0.35))));
+    const subSteps = Math.max(6, Math.min(22, Math.ceil((speed * dt) / (BALL_R * 0.35))));
     const subDt = dt / subSteps;
 
     for (let s = 0; s < subSteps; s++) {
-      updateFlipper(state.leftFlipper, subDt);
-      updateFlipper(state.rightFlipper, subDt);
+      allFlippers.forEach(f => updateFlipper(f, subDt));
 
       b.vy += GRAVITY * subDt;
 
       const curSpd = Math.hypot(b.vx, b.vy);
-      const maxSpd = 980;
+      const maxSpd = 1280;
       if (curSpd > maxSpd) {
         b.vx = (b.vx / curSpd) * maxSpd;
         b.vy = (b.vy / curSpd) * maxSpd;
@@ -2712,15 +2838,14 @@
       b.x += b.vx * subDt;
       b.y += b.vy * subDt;
 
-      collideFlipper(state.leftFlipper);
-      collideFlipper(state.rightFlipper);
+      allFlippers.forEach(f => collideFlipper(f));
       collideWalls();
       checkBoardGimmicks(subDt);
       collideParts(subDt);
 
       // 発射レーンの底に戻った場合
-      if (b.inLane && b.y > 612 && b.vy >= 0) {
-        b.y = 610;
+      if (b.inLane && b.y > 1188 && b.vy >= 0) {
+        b.y = 1185;
         b.vx = 0;
         b.vy = 0;
         b.waitingLaunch = true;
@@ -2730,80 +2855,37 @@
     }
 
     b.trail.push({ x: b.x, y: b.y });
-    if (b.trail.length > 11) b.trail.shift();
+    if (b.trail.length > 13) b.trail.shift();
 
-    if (!b.inLane && b.y > H + BALL_R * 2) {
+    if (!b.inLane && b.y > WORLD_H + BALL_R * 2) {
       onBallLost();
     }
   }
 
   // =========================================================================
-  // 8. Canvas 描画処理
+  // 8. Canvas 描画処理（ダークファンタジー古城・カメラ変換・ミニマップ）
   // =========================================================================
   function drawBoard() {
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, VIEW_W, VIEW_H);
 
     ctx.save();
-    // ヒット時のマイクロ画面シェイク
+    // 画面シェイク
     if (state.shakeTimer > 0) {
       const mag = state.shakeIntensity * (state.shakeTimer / 0.16);
       ctx.translate((Math.random() - 0.5) * mag * 2, (Math.random() - 0.5) * mag * 2);
     }
 
-    // 背景グリッド装飾（フィーバー時はネオンピンクが脈動）
+    // --- ワールド座標系 (カメラオフセット適用) ---
     ctx.save();
-    ctx.strokeStyle = state.feverTimer > 0 ? 'rgba(255, 42, 133, 0.09)' : 'rgba(0, 240, 255, 0.045)';
-    ctx.lineWidth = 1;
-    for (let x = 30; x < W; x += 30) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
-      ctx.stroke();
-    }
-    for (let y = 30; y < H; y += 30) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
+    ctx.translate(0, -state.cameraY);
 
-    // 盤面アンビエント・ラジアルライト（盤面中央をほんのり照らすアーケード照明）
-    const grad = ctx.createRadialGradient(192, 290, 20, 192, 290, 240);
-    if (state.feverTimer > 0) {
-      grad.addColorStop(0, 'rgba(255, 42, 133, 0.11)');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    } else {
-      grad.addColorStop(0, 'rgba(0, 240, 255, 0.06)');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    }
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-    ctx.restore();
-
-    // 盤面中央のウォーターマーク情報（コンボ倍率やオーラ状態）
-    ctx.save();
-    ctx.textAlign = 'center';
-    ctx.fillStyle = state.feverTimer > 0 ? 'rgba(255, 42, 133, 0.14)' : 'rgba(0, 240, 255, 0.06)';
-    ctx.font = '900 32px sans-serif';
-    ctx.fillText(`×${getComboMultiplier().toFixed(2)}`, 192, 470);
-    if (state.feverTimer > 0) {
-      ctx.font = '800 13px sans-serif';
-      ctx.fillStyle = 'rgba(255, 230, 0, 0.45)';
-      ctx.fillText(`FEVER TIME ${state.feverTimer.toFixed(1)}s`, 192, 492);
-    } else if (state.warpAuraTimer > 0) {
-      ctx.font = '800 12px sans-serif';
-      ctx.fillStyle = 'rgba(184, 69, 255, 0.5)';
-      ctx.fillText(`WARP AURA ×1.25 (${state.warpAuraTimer.toFixed(1)}s)`, 192, 492);
-    }
-    ctx.restore();
-
-    // 上部3レーンロールオーバー＆壁ターゲット＆ボールセイバー描画
+    drawDarkFantasyBackground();
     drawPinballGimmicks();
 
-    // ワープゲートのペア連結ライン（複数組設置時はペアごとに色分け表示）
+    // ワープゲートのペア連結ライン
     ctx.save();
     let warpPairIndex = 0;
-    const warpPairColors = ['rgba(184, 69, 255, 0.45)', 'rgba(0, 240, 255, 0.45)', 'rgba(255, 230, 0, 0.45)'];
+    const warpPairColors = ['rgba(204, 93, 232, 0.5)', 'rgba(255, 216, 107, 0.5)', 'rgba(81, 207, 102, 0.5)'];
     for (let i = 0; i < state.slots.length; i++) {
       const p = state.slots[i];
       if (p && p.type === 'warp_gate' && p.pairSlotId !== null && i < p.pairSlotId) {
@@ -2811,8 +2893,8 @@
         const p2 = SLOT_POSITIONS[p.pairSlotId];
         ctx.strokeStyle = warpPairColors[warpPairIndex % warpPairColors.length];
         warpPairIndex++;
-        ctx.lineWidth = 2.2;
-        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([6, 6]);
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);
@@ -2821,10 +2903,9 @@
     }
     ctx.restore();
 
-    // 10か所のスロットとパーツ描画
     drawSlotsAndParts();
 
-    // ショックウェーブリング描画
+    // ショックウェーブリング
     ctx.save();
     for (let i = 0; i < state.shockwaves.length; i++) {
       const sw = state.shockwaves[i];
@@ -2839,17 +2920,17 @@
     }
     ctx.restore();
 
-    // 壁の描画
+    // 古城の石壁・真鍮フレーム描画
     ctx.save();
     ctx.lineCap = 'round';
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
-      ctx.strokeStyle = w.pulse > 0 ? '#ffffff' : w.color;
-      ctx.lineWidth = w.oneWayLeft ? 2 : (3 + w.pulse * 2.5);
-      ctx.shadowColor = w.color;
-      ctx.shadowBlur = 8 + w.pulse * 10;
+      ctx.strokeStyle = w.pulse > 0 ? '#fff3bf' : w.color;
+      ctx.lineWidth = w.oneWayLeft ? 2.5 : (4 + w.pulse * 2.5);
+      ctx.shadowColor = w.isSlingshot ? '#e03131' : '#000000';
+      ctx.shadowBlur = w.isSlingshot ? 12 : 6;
       if (w.oneWayLeft) {
-        ctx.setLineDash([4, 4]);
+        ctx.setLineDash([5, 4]);
       } else {
         ctx.setLineDash([]);
       }
@@ -2860,18 +2941,18 @@
     }
     ctx.restore();
 
-    // プランジャーバネ＆発射軌道予測ガイド描画
     drawPlunger();
     drawLaunchPreview();
 
-    // 左右フリッパー描画
+    // 下層メインフリッパー＆上層サブフリッパー描画
     drawFlipper(state.leftFlipper);
     drawFlipper(state.rightFlipper);
+    drawFlipper(state.upperLeftFlipper);
+    drawFlipper(state.upperRightFlipper);
 
-    // ボール描画
     drawBall();
 
-    // パーティクル描画
+    // パーティクル
     ctx.save();
     for (let i = 0; i < state.particles.length; i++) {
       const pt = state.particles[i];
@@ -2881,12 +2962,12 @@
       ctx.shadowColor = pt.color;
       ctx.shadowBlur = 8;
       ctx.beginPath();
-      ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2);
+      ctx.arc(pt.x, pt.y, 2.6, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
 
-    // スコアポップ描画
+    // スコアポップ
     ctx.save();
     ctx.textAlign = 'center';
     for (let i = 0; i < state.popups.length; i++) {
@@ -2895,71 +2976,206 @@
       ctx.globalAlpha = Math.max(0, pp.alpha);
       ctx.fillStyle = pp.color;
       ctx.shadowColor = '#000';
-      ctx.shadowBlur = 4;
+      ctx.shadowBlur = 5;
       ctx.fillText(pp.text, pp.x, pp.y);
     }
     ctx.restore();
 
-    // ホバー中のパーツツールチップ描画（プレイ中または配置中にスロット上にポインタがあるとき）
     drawSlotTooltip();
 
-    // センター演出バナー
+    ctx.restore(); // --- ワールド座標系ここまで ---
+
+    // --- スクリーン固定UI（右端の高さミニマップ＆フロア表示＆センターバナー） ---
+    drawAltitudeMinimap();
+
     if (state.bannerText) {
       const bt = state.bannerText;
       const alpha = Math.min(1, bt.timer * 3);
       ctx.save();
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = 'rgba(7, 9, 22, 0.88)';
+      ctx.fillStyle = 'rgba(20, 14, 10, 0.92)';
       ctx.strokeStyle = bt.color;
       ctx.lineWidth = 2;
-      ctx.shadowColor = bt.color;
-      ctx.shadowBlur = 16;
-      ctx.fillRect(26, 275, W - 52, 82);
-      ctx.strokeRect(26, 275, W - 52, 82);
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 18;
+      ctx.fillRect(26, 275, VIEW_W - 52, 82);
+      ctx.strokeRect(26, 275, VIEW_W - 52, 82);
 
-      ctx.shadowBlur = 10;
       ctx.fillStyle = bt.color;
-      ctx.font = '900 21px sans-serif';
+      ctx.font = '900 20px serif';
       ctx.textAlign = 'center';
-      ctx.fillText(bt.text, W / 2, 311);
+      ctx.fillText(bt.text, VIEW_W / 2, 311);
 
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#eef4ff';
+      ctx.fillStyle = '#f3ead8';
       ctx.font = '700 12.5px sans-serif';
-      ctx.fillText(bt.sub, W / 2, 338);
+      ctx.fillText(bt.sub, VIEW_W / 2, 338);
       ctx.restore();
     }
 
-    ctx.restore(); // end shake
+    ctx.restore();
+  }
+
+  function drawDarkFantasyBackground() {
+    ctx.save();
+
+    // 石畳の目地パターン
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.045)';
+    ctx.lineWidth = 1;
+    const brickH = 40;
+    const brickW = 60;
+    const startRow = Math.max(0, Math.floor(state.cameraY / brickH) - 1);
+    const endRow = Math.min(Math.ceil(WORLD_H / brickH), Math.ceil((state.cameraY + VIEW_H) / brickH) + 1);
+
+    for (let r = startRow; r < endRow; r++) {
+      const y = r * brickH;
+      ctx.beginPath();
+      ctx.moveTo(12, y);
+      ctx.lineTo(LANE_X, y);
+      ctx.stroke();
+
+      const offset = (r % 2) * (brickW / 2);
+      for (let x = 12 + offset; x < LANE_X; x += brickW) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, y + brickH);
+        ctx.stroke();
+      }
+    }
+
+    // 上層（天上聖堂: y=260）と下層（深淵祭壇: y=860）の大型魔導陣（ルーンサークル）装飾
+    const drawMagicCircle = (cx, cy, radius, color, label) => {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 0.78, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 六芒星幾何学ライン
+      for (let k = 0; k < 2; k++) {
+        ctx.beginPath();
+        for (let i = 0; i < 3; i++) {
+          const a = (i * 2 * Math.PI) / 3 + (k * Math.PI) / 3 - Math.PI / 2;
+          const px = Math.cos(a) * radius * 0.78;
+          const py = Math.sin(a) * radius * 0.78;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = color;
+      ctx.font = '700 11px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, 0, radius + 16);
+      ctx.restore();
+    };
+
+    drawMagicCircle(192, 270, 115, 'rgba(212, 175, 55, 0.09)', '― UPPER SANCTUM (天上聖堂 スコア+15%) ―');
+    drawMagicCircle(192, 870, 115, 'rgba(201, 42, 42, 0.09)', '― LOWER ALTAR (深淵の祭壇) ―');
+
+    // 上層と下層の境界アーチライン (y=560)
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.16)';
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.moveTo(56, 535);
+    ctx.lineTo(330, 535);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 松明（トーチ）の揺らめく炎と暖色ライト
+    const now = performance.now() * 0.006;
+    TORCH_POSITIONS.forEach((t, idx) => {
+      const flicker = Math.sin(now + idx * 1.7) * 6;
+      const grad = ctx.createRadialGradient(t.x, t.y, 4, t.x, t.y, 72 + flicker);
+      grad.addColorStop(0, 'rgba(255, 160, 40, 0.22)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 72 + flicker, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 燭台と炎
+      ctx.fillStyle = '#5c4938';
+      ctx.fillRect(t.x - 3, t.y, 6, 11);
+      ctx.fillStyle = '#ffa94d';
+      ctx.beginPath();
+      ctx.arc(t.x, t.y - 3, 4 + Math.sin(now * 2 + idx) * 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // コンボ倍率ウォーターマーク
+    ctx.textAlign = 'center';
+    ctx.fillStyle = state.feverTimer > 0 ? 'rgba(255, 77, 77, 0.18)' : 'rgba(212, 175, 55, 0.1)';
+    ctx.font = '900 30px serif';
+    ctx.fillText(`×${getComboMultiplier().toFixed(2)}`, 192, 1020);
+    if (state.feverTimer > 0) {
+      ctx.font = '800 13px serif';
+      ctx.fillStyle = 'rgba(255, 216, 107, 0.55)';
+      ctx.fillText(`BLOOD MOON FEVER ${state.feverTimer.toFixed(1)}s`, 192, 1042);
+    } else if (state.warpAuraTimer > 0) {
+      ctx.font = '800 12px serif';
+      ctx.fillStyle = 'rgba(204, 93, 232, 0.55)';
+      ctx.fillText(`ABYSS AURA ×1.25 (${state.warpAuraTimer.toFixed(1)}s)`, 192, 1042);
+    }
+
+    ctx.restore();
   }
 
   function drawPinballGimmicks() {
     ctx.save();
 
-    // 1. 上部3レーンロールオーバー (I-D-E)
+    // 0. 下層中央「昇天の魔導陣（アセンション・パッド）」
+    const pad = state.ascensionPad;
+    ctx.save();
+    ctx.translate(pad.x, pad.y);
+    ctx.scale(pad.pulse, pad.pulse);
+    ctx.fillStyle = 'rgba(156, 54, 181, 0.24)';
+    ctx.strokeStyle = '#cc5de8';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#cc5de8';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(0, 0, pad.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#f3d9fa';
+    ctx.font = '800 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('▲昇天', 0, 0);
+    ctx.restore();
+
+    // 1. 最上層3ルーン祭壇
     TOP_ROLLOVERS.forEach(ro => {
-      ctx.strokeStyle = ro.lit ? '#00ff88' : 'rgba(0, 255, 136, 0.28)';
-      ctx.fillStyle = ro.lit ? 'rgba(0, 255, 136, 0.25)' : 'rgba(0, 0, 0, 0.3)';
+      ctx.strokeStyle = ro.lit ? '#ffd86b' : 'rgba(212, 175, 55, 0.35)';
+      ctx.fillStyle = ro.lit ? 'rgba(212, 175, 55, 0.3)' : 'rgba(15, 11, 8, 0.6)';
       ctx.lineWidth = 2;
-      ctx.shadowColor = '#00ff88';
-      ctx.shadowBlur = ro.lit ? 10 : 0;
+      ctx.shadowColor = '#ffd86b';
+      ctx.shadowBlur = ro.lit ? 12 : 0;
       ctx.beginPath();
-      ctx.arc(ro.x, ro.y, 10, 0, Math.PI * 2);
+      ctx.arc(ro.x, ro.y, 12, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = ro.lit ? '#ffffff' : 'rgba(0, 255, 136, 0.5)';
-      ctx.font = '800 10px sans-serif';
+      ctx.fillStyle = ro.lit ? '#ffffff' : 'rgba(212, 175, 55, 0.65)';
+      ctx.font = '800 12px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(ro.label, ro.x, ro.y);
+      ctx.fillText(ro.rune, ro.x, ro.y);
     });
 
-    // 2. 左右壁のネオンターゲット
+    // 2. 左右壁の4つの魔導燭台ターゲット
     WALL_TARGETS.forEach(wt => {
-      ctx.strokeStyle = wt.lit ? '#ffe600' : 'rgba(0, 240, 255, 0.35)';
+      ctx.strokeStyle = wt.lit ? '#ffd86b' : 'rgba(212, 175, 55, 0.35)';
       ctx.lineWidth = wt.lit ? 5 : 3;
-      ctx.shadowColor = wt.lit ? '#ffe600' : '#00f0ff';
+      ctx.shadowColor = wt.lit ? '#ffd86b' : '#ffa94d';
       ctx.shadowBlur = wt.lit ? 12 : 4;
       ctx.beginPath();
       ctx.moveTo(wt.x, wt.y1);
@@ -2967,39 +3183,39 @@
       ctx.stroke();
     });
 
-    // 3. 移動ジャックポットドローン
+    // 3. 移動ジャックポット（黄金の聖杯）
     if (state.jackpotDrone.active) {
       const jd = state.jackpotDrone;
       ctx.save();
       ctx.translate(jd.x, jd.y);
-      ctx.strokeStyle = '#ffe600';
-      ctx.fillStyle = 'rgba(255, 230, 0, 0.22)';
+      ctx.strokeStyle = '#ffd86b';
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.28)';
       ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#ffe600';
+      ctx.shadowColor = '#ffd86b';
       ctx.shadowBlur = 14;
       ctx.beginPath();
       ctx.arc(0, 0, jd.r, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = '#fff';
-      ctx.font = '900 9px sans-serif';
+      ctx.fillStyle = '#fff6e0';
+      ctx.font = '900 9px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('JACKPOT', 0, 0);
+      ctx.fillText('🏆聖杯', 0, 0);
       ctx.restore();
     }
 
-    // 4. R8ボス（オーバーロードコア）
+    // 4. R8ボス（深淵の魔王核）
     if (state.bossCore.active) {
       const bc = state.bossCore;
       ctx.save();
       ctx.translate(bc.x, bc.y);
       ctx.scale(bc.pulse, bc.pulse);
-      ctx.strokeStyle = '#ff2a85';
-      ctx.fillStyle = 'rgba(255, 42, 133, 0.28)';
+      ctx.strokeStyle = '#ff4d4d';
+      ctx.fillStyle = 'rgba(201, 42, 42, 0.32)';
       ctx.lineWidth = 3;
-      ctx.shadowColor = '#ff2a85';
+      ctx.shadowColor = '#ff4d4d';
       ctx.shadowBlur = 16;
       ctx.beginPath();
       ctx.arc(0, 0, bc.r, 0, Math.PI * 2);
@@ -3007,90 +3223,88 @@
       ctx.stroke();
 
       ctx.fillStyle = '#fff';
-      ctx.font = '900 9px sans-serif';
+      ctx.font = '900 9px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`BOSS ${5 - (bc.hpHits % 5)}`, 0, 0);
+      ctx.fillText(`魔王 ${5 - (bc.hpHits % 5)}`, 0, 0);
       ctx.restore();
     }
 
-    // 5. ボールセイバーレーザー（発射直後の股下セーフティバリア表示）
+    // 5. 守護結界（ボールセイバー）
     if (state.ballSaverTimer > 0) {
       const blink = state.ballSaverTimer < 1.5 ? (Math.sin(performance.now() * 0.025) > 0) : true;
       if (blink) {
-        ctx.strokeStyle = 'rgba(0, 255, 136, 0.7)';
+        ctx.strokeStyle = 'rgba(81, 207, 102, 0.78)';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#00ff88';
+        ctx.shadowColor = '#51cf66';
         ctx.shadowBlur = 10;
         ctx.setLineDash([6, 4]);
         ctx.beginPath();
-        ctx.moveTo(118, 622);
-        ctx.lineTo(268, 622);
+        ctx.moveTo(118, 1202);
+        ctx.lineTo(268, 1202);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = '#00ff88';
-        ctx.font = '800 10px sans-serif';
+        ctx.fillStyle = '#51cf66';
+        ctx.font = '800 10px serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`BALL SAVE ${state.ballSaverTimer.toFixed(1)}s`, 193, 636);
+        ctx.fillText(`✦ SOUL GUARD ${state.ballSaverTimer.toFixed(1)}s ✦`, 193, 1218);
       }
     }
 
-    // 6. センターセーフティポスト（上部3レーン達成で股下に出現する柱）
+    // 6. センターセーフティピラー（守護の石柱）
     if (state.centerPostTimer > 0) {
-      ctx.fillStyle = 'rgba(0, 255, 136, 0.35)';
-      ctx.strokeStyle = '#00ff88';
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.38)';
+      ctx.strokeStyle = '#ffd86b';
       ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#00ff88';
+      ctx.shadowColor = '#ffd86b';
       ctx.shadowBlur = 12;
       ctx.beginPath();
-      ctx.arc(193, 602, 9, 0, Math.PI * 2);
+      ctx.arc(193, 1182, 9, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
     }
 
-    // 7. アウトレーン/インレーン（サイドバンパー）のネオンバンパー表示
-    ctx.strokeStyle = 'rgba(255, 42, 133, 0.55)';
-    ctx.fillStyle = 'rgba(255, 42, 133, 0.12)';
-    ctx.lineWidth = 1.5;
+    // 7. スリングショット内部の紅蓮装飾
+    ctx.fillStyle = 'rgba(201, 42, 42, 0.16)';
     ctx.beginPath();
-    ctx.moveTo(46, 445);
-    ctx.lineTo(46, 512);
-    ctx.lineTo(92, 542);
+    ctx.moveTo(46, 1025);
+    ctx.lineTo(46, 1092);
+    ctx.lineTo(92, 1122);
     ctx.closePath();
     ctx.fill();
 
     ctx.beginPath();
-    ctx.moveTo(340, 445);
-    ctx.lineTo(340, 512);
-    ctx.lineTo(294, 542);
+    ctx.moveTo(340, 1025);
+    ctx.lineTo(340, 1092);
+    ctx.lineTo(294, 1122);
     ctx.closePath();
     ctx.fill();
 
-    // 8. サイドアウトレーン・キックバック（毎ボール1回ずつ、左右の端へ落ちたボールを自動で撃ち戻す救済レーザー）
+    // 8. サイドアウトレーン・ルーンキックバック
     if (state.leftKickbackReady) {
-      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeStyle = '#ffd86b';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(14, 515);
-      ctx.lineTo(44, 515);
+      ctx.moveTo(14, 1095);
+      ctx.lineTo(44, 1095);
       ctx.stroke();
-      ctx.fillStyle = '#00f0ff';
+      ctx.fillStyle = '#ffd86b';
       ctx.font = '800 8px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('KICK', 29, 509);
+      ctx.fillText('RUNE', 29, 1089);
     }
     if (state.rightKickbackReady) {
-      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeStyle = '#ffd86b';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(342, 515);
-      ctx.lineTo(372, 515);
+      ctx.moveTo(342, 1095);
+      ctx.lineTo(372, 1095);
       ctx.stroke();
-      ctx.fillStyle = '#00f0ff';
+      ctx.fillStyle = '#ffd86b';
       ctx.font = '800 8px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('KICK', 357, 509);
+      ctx.fillText('RUNE', 357, 1089);
     }
 
     ctx.restore();
@@ -3108,49 +3322,47 @@
       ctx.save();
       ctx.translate(pos.x, pos.y);
 
-      // スキルショットターゲットリング
       if (showSkillTarget && i === state.skillShotSlotId && part) {
         const pulseR = 26 + Math.sin(performance.now() * 0.012) * 3;
-        ctx.strokeStyle = '#ffe600';
+        ctx.strokeStyle = '#ffd86b';
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 3]);
-        ctx.shadowColor = '#ffe600';
+        ctx.shadowColor = '#ffd86b';
         ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(0, 0, pulseR, 0, Math.PI * 2);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = '#ffe600';
+        ctx.fillStyle = '#ffd86b';
         ctx.font = '800 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('🎯SKILL', 0, -28);
       }
 
-      // 配置フェーズ時のハイライトリング
       if (isPlacePhase) {
         if (state.warpFirstSlot === i) {
-          ctx.strokeStyle = '#b845ff';
+          ctx.strokeStyle = '#cc5de8';
           ctx.lineWidth = 3;
-          ctx.shadowColor = '#b845ff';
+          ctx.shadowColor = '#cc5de8';
           ctx.shadowBlur = 14;
           ctx.beginPath();
           ctx.arc(0, 0, 28, 0, Math.PI * 2);
           ctx.stroke();
         } else if (action === 'new') {
-          ctx.strokeStyle = '#00ff88';
-          ctx.fillStyle = 'rgba(0, 255, 136, 0.14)';
+          ctx.strokeStyle = '#51cf66';
+          ctx.fillStyle = 'rgba(81, 207, 102, 0.16)';
           ctx.lineWidth = 2.5;
-          ctx.shadowColor = '#00ff88';
+          ctx.shadowColor = '#51cf66';
           ctx.shadowBlur = 12;
           ctx.beginPath();
           ctx.arc(0, 0, 25, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
         } else if (action === 'upgrade') {
-          ctx.strokeStyle = '#ffe600';
+          ctx.strokeStyle = '#ffd86b';
           ctx.lineWidth = 3;
-          ctx.shadowColor = '#ffe600';
+          ctx.shadowColor = '#ffd86b';
           ctx.shadowBlur = 15;
           ctx.beginPath();
           ctx.arc(0, 0, 28, 0, Math.PI * 2);
@@ -3160,9 +3372,9 @@
         }
       }
 
-      // 空きスロットの描画
+      // 空きスロット（古代の魔法陣台座）
       if (!part) {
-        ctx.strokeStyle = isPlacePhase && action === 'new' ? '#00ff88' : 'rgba(138, 155, 194, 0.24)';
+        ctx.strokeStyle = isPlacePhase && action === 'new' ? '#51cf66' : 'rgba(212, 175, 55, 0.28)';
         ctx.lineWidth = 1.5;
         ctx.setLineDash([4, 4]);
         ctx.beginPath();
@@ -3170,40 +3382,41 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        ctx.fillStyle = isPlacePhase && action === 'new' ? '#00ff88' : 'rgba(138, 155, 194, 0.35)';
-        ctx.font = '700 10px sans-serif';
+        ctx.fillStyle = isPlacePhase && action === 'new' ? '#51cf66' : 'rgba(212, 175, 55, 0.45)';
+        ctx.font = '700 10px serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(isPlacePhase && action === 'new' ? '＋配置' : `${i + 1}`, 0, 0);
+        ctx.fillText(isPlacePhase && action === 'new' ? '＋刻印' : `#${i + 1}`, 0, 0);
         ctx.restore();
         continue;
       }
 
-      // パーツ本体の描画
       const scale = part.pulse || 1;
       ctx.scale(scale, scale);
 
       if (part.type === 'bumper_circle') {
-        ctx.fillStyle = 'rgba(255, 42, 133, 0.22)';
-        ctx.strokeStyle = '#ff2a85';
+        ctx.fillStyle = 'rgba(201, 42, 42, 0.28)';
+        ctx.strokeStyle = '#ff6b6b';
         ctx.lineWidth = 3;
-        ctx.shadowColor = '#ff2a85';
+        ctx.shadowColor = '#e03131';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(0, 0, 18, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
+        ctx.strokeStyle = '#ffd86b';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.arc(0, 0, 11, 0, Math.PI * 2);
         ctx.stroke();
       }
       else if (part.type === 'bumper_tri') {
         const verts = getTriangleVertices(0, 0, 21, part.dir);
-        ctx.fillStyle = 'rgba(255, 145, 0, 0.22)';
-        ctx.strokeStyle = '#ff9100';
+        ctx.fillStyle = 'rgba(240, 140, 0, 0.26)';
+        ctx.strokeStyle = '#ffa94d';
         ctx.lineWidth = 3;
-        ctx.shadowColor = '#ff9100';
+        ctx.shadowColor = '#f08c00';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.moveTo(verts[0].x, verts[0].y);
@@ -3214,10 +3427,10 @@
         ctx.stroke();
       }
       else if (part.type === 'kicker') {
-        ctx.fillStyle = 'rgba(0, 255, 136, 0.2)';
-        ctx.strokeStyle = '#00ff88';
+        ctx.fillStyle = 'rgba(47, 158, 68, 0.25)';
+        ctx.strokeStyle = '#51cf66';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#00ff88';
+        ctx.shadowColor = '#2f9e44';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(0, 0, 17, 0, Math.PI * 2);
@@ -3236,9 +3449,9 @@
       else if (part.type === 'spinner') {
         ctx.save();
         ctx.rotate(part.angle);
-        ctx.strokeStyle = '#00f0ff';
+        ctx.strokeStyle = '#ffd86b';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#00f0ff';
+        ctx.shadowColor = '#d4af37';
         ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.moveTo(-17, 0);
@@ -3248,7 +3461,7 @@
         ctx.stroke();
         ctx.beginPath();
         ctx.arc(0, 0, 7, 0, Math.PI * 2);
-        ctx.fillStyle = '#070812';
+        ctx.fillStyle = '#1a120b';
         ctx.fill();
         ctx.stroke();
         ctx.restore();
@@ -3256,10 +3469,10 @@
       else if (part.type === 'rebound_wall') {
         const angle = part.dir > 0 ? 0.52 : -0.52;
         const halfLen = 23;
-        ctx.strokeStyle = '#ffe600';
+        ctx.strokeStyle = '#ffd86b';
         ctx.lineWidth = 6;
         ctx.lineCap = 'round';
-        ctx.shadowColor = '#ffe600';
+        ctx.shadowColor = '#d4af37';
         ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.moveTo(-Math.cos(angle) * halfLen, -Math.sin(angle) * halfLen);
@@ -3269,27 +3482,26 @@
       else if (part.type === 'warp_gate') {
         ctx.save();
         ctx.rotate(part.angle);
-        ctx.strokeStyle = '#b845ff';
-        ctx.fillStyle = 'rgba(184, 69, 255, 0.25)';
+        ctx.strokeStyle = '#cc5de8';
+        ctx.fillStyle = 'rgba(156, 54, 181, 0.28)';
         ctx.lineWidth = 2.5;
-        ctx.shadowColor = '#b845ff';
+        ctx.shadowColor = '#9c36b5';
         ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(0, 0, 16, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
-        ctx.strokeStyle = '#00f0ff';
+        ctx.strokeStyle = '#ffd86b';
         ctx.beginPath();
         ctx.arc(0, 0, 9, 0, Math.PI * 1.3);
         ctx.stroke();
         ctx.restore();
       }
 
-      // レベル表記バッジとレベルオーラ
       ctx.scale(1 / scale, 1 / scale);
       if (part.level >= 2) {
-        ctx.strokeStyle = part.level === 3 ? 'rgba(255, 230, 0, 0.55)' : 'rgba(0, 240, 255, 0.35)';
+        ctx.strokeStyle = part.level === 3 ? 'rgba(255, 216, 107, 0.65)' : 'rgba(81, 207, 102, 0.45)';
         ctx.lineWidth = part.level === 3 ? 2 : 1.2;
         ctx.beginPath();
         ctx.arc(0, 0, 22, 0, Math.PI * 2);
@@ -3297,14 +3509,14 @@
       }
       ctx.shadowBlur = 4;
       ctx.shadowColor = '#000';
-      ctx.fillStyle = part.level === 3 ? '#ffe600' : (part.level === 2 ? '#00f0ff' : '#ffffff');
+      ctx.fillStyle = part.level === 3 ? '#ffd86b' : (part.level === 2 ? '#51cf66' : '#f3ead8');
       ctx.font = '900 10px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(part.level === 3 ? '★MAX' : `Lv${part.level}`, 0, 25);
 
       if (isPlacePhase && action === 'upgrade') {
-        ctx.fillStyle = '#ffe600';
+        ctx.fillStyle = '#ffd86b';
         ctx.font = '800 10px sans-serif';
         ctx.fillText('▲LvUP!', 0, -25);
       }
@@ -3321,21 +3533,21 @@
     if (!card) return;
     const pos = SLOT_POSITIONS[state.hoverSlotId];
 
-    const tx = Math.max(85, Math.min(W - 85, pos.x));
-    const ty = pos.y > 110 ? pos.y - 44 : pos.y + 42;
+    const tx = Math.max(85, Math.min(VIEW_W - 85, pos.x));
+    const ty = pos.y - 44;
 
     ctx.save();
-    ctx.fillStyle = 'rgba(8, 12, 28, 0.92)';
+    ctx.fillStyle = 'rgba(20, 14, 10, 0.94)';
     ctx.strokeStyle = card.color;
     ctx.lineWidth = 1.5;
-    ctx.fillRect(tx - 80, ty - 18, 160, 34);
-    ctx.strokeRect(tx - 80, ty - 18, 160, 34);
+    ctx.fillRect(tx - 82, ty - 18, 164, 34);
+    ctx.strokeRect(tx - 82, ty - 18, 164, 34);
 
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#fff6e0';
     ctx.font = '800 11px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${card.name} Lv${part.level} (${card.basePt * part.level}pt)`, tx, ty - 4);
-    ctx.fillStyle = '#8a9bc2';
+    ctx.fillStyle = '#a89984';
     ctx.font = '600 9.5px sans-serif';
     ctx.fillText(`累計獲得: ${part.totalEarned.toLocaleString()} PTS (${part.hits}回)`, tx, ty + 10);
     ctx.restore();
@@ -3345,19 +3557,17 @@
     if (state.phase !== 'PLAY' || !state.ball.waitingLaunch) return;
 
     const p = Math.max(0.18, state.plunger.power);
-    // チャージ強さに応じて上部アーチをどの位置まで回り込むか予測軌道を点線描画
     ctx.save();
-    ctx.strokeStyle = state.plunger.charging ? 'rgba(255, 230, 0, 0.55)' : 'rgba(0, 240, 255, 0.22)';
+    ctx.strokeStyle = state.plunger.charging ? 'rgba(255, 216, 107, 0.6)' : 'rgba(212, 175, 55, 0.25)';
     ctx.lineWidth = state.plunger.charging ? 2.5 : 1.5;
-    ctx.setLineDash([5, 5]);
-    ctx.shadowColor = state.plunger.charging ? '#ffe600' : '#00f0ff';
+    ctx.setLineDash([6, 5]);
+    ctx.shadowColor = '#ffd86b';
     ctx.shadowBlur = 8;
 
     ctx.beginPath();
-    ctx.moveTo(391, 600);
-    ctx.lineTo(391, 115);
+    ctx.moveTo(391, 1175);
+    ctx.lineTo(391, 120);
 
-    // パワー(0.18..1.0)に応じて上部アーチを左へ進む距離を変化
     const archSteps = Math.floor(2 + p * 6);
     const previewPts = [
       [391, 75],
@@ -3374,13 +3584,12 @@
     }
     ctx.stroke();
 
-    // 予測着地ポイントマーカー
     const lastPt = previewPts[Math.min(archSteps, previewPts.length) - 1];
     if (lastPt && state.plunger.charging) {
       ctx.setLineDash([]);
-      ctx.fillStyle = '#ffe600';
+      ctx.fillStyle = '#ffd86b';
       ctx.beginPath();
-      ctx.arc(lastPt[0], lastPt[1], 4, 0, Math.PI * 2);
+      ctx.arc(lastPt[0], lastPt[1], 4.5, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -3388,11 +3597,11 @@
 
   function drawPlunger() {
     const cx = (LANE_X + 408) / 2;
-    const topY = 619 + state.plunger.power * 14;
-    const botY = 632;
+    const topY = 1194 + state.plunger.power * 16;
+    const botY = 1212;
 
     ctx.save();
-    ctx.strokeStyle = state.plunger.charging ? '#ffe600' : '#ff2a85';
+    ctx.strokeStyle = state.plunger.charging ? '#ffd86b' : '#c92a2a';
     ctx.lineWidth = 3;
     ctx.shadowColor = ctx.strokeStyle;
     ctx.shadowBlur = 8;
@@ -3408,33 +3617,33 @@
     ctx.stroke();
 
     if (state.ball.waitingLaunch && state.plunger.power > 0.01) {
-      const h = 75 * state.plunger.power;
-      ctx.fillStyle = 'rgba(255, 230, 0, 0.35)';
-      ctx.fillRect(LANE_X + 3, 610 - h, 408 - LANE_X - 6, h);
+      const h = 110 * state.plunger.power;
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.35)';
+      ctx.fillRect(LANE_X + 3, 1185 - h, 408 - LANE_X - 6, h);
     }
     ctx.restore();
   }
 
   function drawFlipper(flipper) {
-    const len = getFlipperLength();
+    const len = getFlipperLength(flipper);
     const x1 = flipper.pivotX;
     const y1 = flipper.pivotY;
     const x2 = x1 + Math.cos(flipper.angle) * len;
     const y2 = y1 + Math.sin(flipper.angle) * len;
 
-    const color = state.tiltPenalty ? '#ff2a85' : (state.flipperLevel > 0 ? '#00ff88' : '#00f0ff');
+    const color = state.tiltPenalty ? '#c92a2a' : (state.flipperLevel > 0 ? '#ffd86b' : '#d4af37');
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 11;
+    ctx.lineWidth = (flipper.scale || 1) < 1 ? 9 : 11;
     ctx.lineCap = 'round';
     ctx.shadowColor = color;
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 10;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
 
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#fff6e0';
     ctx.beginPath();
     ctx.arc(x1, y1, 3.5, 0, Math.PI * 2);
     ctx.fill();
@@ -3445,21 +3654,65 @@
     const b = state.ball;
     ctx.save();
 
-    const trailColor = state.feverTimer > 0 ? '255, 42, 133' : (state.warpAuraTimer > 0 ? '184, 69, 255' : '0, 240, 255');
+    const trailColor = state.feverTimer > 0 ? '255, 77, 77' : (state.warpAuraTimer > 0 ? '204, 93, 232' : '212, 175, 55');
     for (let i = 0; i < b.trail.length; i++) {
       const t = b.trail[i];
       const ratio = (i + 1) / b.trail.length;
-      ctx.fillStyle = `rgba(${trailColor}, ${ratio * 0.28})`;
+      ctx.fillStyle = `rgba(${trailColor}, ${ratio * 0.32})`;
       ctx.beginPath();
       ctx.arc(t.x, t.y, BALL_R * ratio * 0.88, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = state.feverTimer > 0 ? '#ff2a85' : '#00f0ff';
-    ctx.shadowBlur = 14;
+    // 重厚な白銀の魔導オーブ
+    const grad = ctx.createRadialGradient(b.x - 3, b.y - 3, 1, b.x, b.y, BALL_R);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.7, '#e9ecef');
+    grad.addColorStop(1, '#adb5bd');
+    ctx.fillStyle = grad;
+    ctx.shadowColor = state.feverTimer > 0 ? '#ff4d4d' : '#ffd86b';
+    ctx.shadowBlur = 12;
     ctx.beginPath();
     ctx.arc(b.x, b.y, BALL_R, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 右端に全体マップと現在のカメラ位置・ボール高度・スロット配置を表示するミニゲージ
+  function drawAltitudeMinimap() {
+    const mapX = 411;
+    const mapY = 14;
+    const mapW = 6;
+    const mapH = 130;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(15, 11, 8, 0.75)';
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.fillRect(mapX, mapY, mapW, mapH);
+    ctx.strokeRect(mapX, mapY, mapW, mapH);
+
+    // カメラ視野枠
+    const camTopRatio = state.cameraY / WORLD_H;
+    const camHeightRatio = VIEW_H / WORLD_H;
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.25)';
+    ctx.strokeStyle = '#ffd86b';
+    ctx.fillRect(mapX, mapY + camTopRatio * mapH, mapW, camHeightRatio * mapH);
+    ctx.strokeRect(mapX, mapY + camTopRatio * mapH, mapW, camHeightRatio * mapH);
+
+    // 設置済みスロットのドット
+    for (let i = 0; i < state.slots.length; i++) {
+      if (!state.slots[i]) continue;
+      const sy = mapY + (SLOT_POSITIONS[i].y / WORLD_H) * mapH;
+      ctx.fillStyle = '#51cf66';
+      ctx.fillRect(mapX + 1, sy - 1, mapW - 2, 2);
+    }
+
+    // ボール現在位置ドット
+    const by = mapY + (Math.max(0, Math.min(WORLD_H, state.ball.y)) / WORLD_H) * mapH;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(mapX + mapW / 2, by, 2.8, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -3470,15 +3723,14 @@
   function updateHUD() {
     const rBadge = document.getElementById('round-badge');
     if (state.round === 8 && !state.endlessMode) {
-      rBadge.textContent = 'ROUND 8 (BOSS)';
+      rBadge.textContent = 'ROUND 8 (魔王)';
     } else if (state.round > 8 || state.endlessMode) {
-      rBadge.textContent = `ENDLESS R${state.round}`;
+      rBadge.textContent = `ABYSS R${state.round}`;
     } else {
       rBadge.textContent = `ROUND ${state.round} / 8`;
     }
     rBadge.classList.toggle('boss', state.round >= 8);
 
-    // 8ラウンド進行ステッパーバー更新
     const stepperEl = document.getElementById('round-stepper');
     if (stepperEl) {
       stepperEl.innerHTML = '';
@@ -3507,11 +3759,10 @@
     cBadge.textContent = `${state.combo} HIT (×${mult.toFixed(2)})`;
     cBadge.classList.toggle('fever', state.feverTimer > 0);
 
-    // シナジーバッジ
     const synTag = document.getElementById('synergy-tag');
     if (state.activeSynergies.length > 0) {
       synTag.style.display = 'inline-block';
-      synTag.textContent = `✨シナジー×${state.activeSynergies.length}`;
+      synTag.textContent = `✨契約×${state.activeSynergies.length}`;
     } else {
       synTag.style.display = 'none';
     }
@@ -3542,8 +3793,8 @@
   function updateTitleRecords() {
     document.getElementById('title-hiscore').textContent = hiScore.toLocaleString();
     const clEl = document.getElementById('title-cleared');
-    clEl.textContent = hasClearedEver ? '★ ALL CLEAR済' : '未クリア';
-    clEl.style.color = hasClearedEver ? '#00ff88' : '#8a9bc2';
+    clEl.textContent = hasClearedEver ? '★ 試練突破済' : '未クリア';
+    clEl.style.color = hasClearedEver ? '#51cf66' : '#a89984';
     document.getElementById('btn-practice').style.display = hasClearedEver ? 'block' : 'none';
   }
 
@@ -3551,18 +3802,33 @@
     document.querySelectorAll('.overlay').forEach(el => el.classList.remove('show'));
   }
 
-  function setLeftFlipper(pressed) {
-    if (state.phase !== 'PLAY' || state.tiltPenalty) return;
-    if (pressed && !state.leftFlipper.pressed) sfx.flipper();
-    state.leftFlipper.pressed = pressed;
-    document.getElementById('ctrl-left').classList.toggle('pressed', pressed);
-  }
-
-  function setRightFlipper(pressed) {
-    if (state.phase !== 'PLAY' || state.tiltPenalty) return;
-    if (pressed && !state.rightFlipper.pressed) sfx.flipper();
-    state.rightFlipper.pressed = pressed;
-    document.getElementById('ctrl-right').classList.toggle('pressed', pressed);
+  // 下層と上層の左右フリッパーを同時制御
+  function setFlippersPressed(isLeft, pressed) {
+    if (state.phase !== 'PLAY' || state.tiltPenalty) {
+      if (!pressed) {
+        if (isLeft) {
+          state.leftFlipper.pressed = false;
+          state.upperLeftFlipper.pressed = false;
+          document.getElementById('ctrl-left').classList.remove('pressed');
+        } else {
+          state.rightFlipper.pressed = false;
+          state.upperRightFlipper.pressed = false;
+          document.getElementById('ctrl-right').classList.remove('pressed');
+        }
+      }
+      return;
+    }
+    if (isLeft) {
+      if (pressed && !state.leftFlipper.pressed) sfx.flipper();
+      state.leftFlipper.pressed = pressed;
+      state.upperLeftFlipper.pressed = pressed;
+      document.getElementById('ctrl-left').classList.toggle('pressed', pressed);
+    } else {
+      if (pressed && !state.rightFlipper.pressed) sfx.flipper();
+      state.rightFlipper.pressed = pressed;
+      state.upperRightFlipper.pressed = pressed;
+      document.getElementById('ctrl-right').classList.toggle('pressed', pressed);
+    }
   }
 
   function startPlungerCharge() {
@@ -3577,31 +3843,35 @@
     document.getElementById('ctrl-launch').classList.remove('charging');
     if (state.phase !== 'PLAY' || !state.ball.waitingLaunch) return;
 
-    const p = Math.max(0.18, state.plunger.power);
+    const p = Math.max(0.2, state.plunger.power);
     state.plunger.power = 0;
     state.ball.waitingLaunch = false;
-    state.ball.y = 606;
-    state.ball.vy = -(560 + p * 435 + (Math.random() * 22 - 11));
+    state.ball.y = 1180;
+    // 1240pxのロングレーンを最上層アーチまで一気に駆け上がる初速
+    state.ball.vy = -(1060 + p * 380 + (Math.random() * 24 - 12));
     state.ball.vx = 0;
     sfx.launch(p);
     updateHUD();
   }
 
-  // キーボードイベント
   window.addEventListener('keydown', (e) => {
     if (e.repeat) return;
     if (e.code === 'ArrowLeft' || e.code === 'KeyZ' || e.code === 'KeyA') {
       e.preventDefault();
-      setLeftFlipper(true);
+      setFlippersPressed(true, true);
     } else if (e.code === 'ArrowRight' || e.code === 'Slash' || e.code === 'KeyD') {
       e.preventDefault();
-      setRightFlipper(true);
+      setFlippersPressed(false, true);
     } else if (e.code === 'Space' || e.code === 'ArrowDown') {
       e.preventDefault();
       startPlungerCharge();
     } else if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyX' || e.code === 'ArrowUp') {
       e.preventDefault();
-      triggerNudge(e.code === 'ShiftLeft' ? 1 : (e.code === 'ShiftRight' ? -1 : 0));
+      if (state.phase === 'PLACE' || state.phase === 'DRAFT') {
+        state.targetCameraY = Math.max(0, state.targetCameraY - 220);
+      } else {
+        triggerNudge(e.code === 'ShiftLeft' ? 1 : (e.code === 'ShiftRight' ? -1 : 0));
+      }
     } else if (e.code === 'KeyP' || e.code === 'Escape') {
       togglePause();
     }
@@ -3609,12 +3879,28 @@
 
   window.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowLeft' || e.code === 'KeyZ' || e.code === 'KeyA') {
-      setLeftFlipper(false);
+      setFlippersPressed(true, false);
     } else if (e.code === 'ArrowRight' || e.code === 'Slash' || e.code === 'KeyD') {
-      setRightFlipper(false);
+      setFlippersPressed(false, false);
     } else if (e.code === 'Space' || e.code === 'ArrowDown') {
       releasePlunger();
     }
+  });
+
+  // マウスホイールでのカメラ上下スクロール（配置フェーズ・盤面確認中）
+  canvas.addEventListener('wheel', (e) => {
+    if (state.phase === 'PLACE' || state.phase === 'DRAFT') {
+      e.preventDefault();
+      state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, state.targetCameraY + e.deltaY * 0.7));
+    }
+  }, { passive: false });
+
+  // 配置フェーズの上層・下層カメラ切替ボタン
+  document.getElementById('btn-cam-up').addEventListener('click', () => {
+    state.targetCameraY = 0;
+  });
+  document.getElementById('btn-cam-down').addEventListener('click', () => {
+    state.targetCameraY = MAX_CAM_Y;
   });
 
   function bindHoldButton(el, onDown, onUp) {
@@ -3633,26 +3919,41 @@
     });
   }
 
-  bindHoldButton(document.getElementById('ctrl-left'), () => setLeftFlipper(true), () => setLeftFlipper(false));
-  bindHoldButton(document.getElementById('ctrl-right'), () => setRightFlipper(true), () => setRightFlipper(false));
+  bindHoldButton(document.getElementById('ctrl-left'), () => setFlippersPressed(true, true), () => setFlippersPressed(true, false));
+  bindHoldButton(document.getElementById('ctrl-right'), () => setFlippersPressed(false, true), () => setFlippersPressed(false, false));
   bindHoldButton(document.getElementById('ctrl-launch'), () => startPlungerCharge(), () => releasePlunger());
 
   document.getElementById('btn-nudge').addEventListener('click', () => triggerNudge(0));
 
   const activeCanvasTouches = new Map();
 
-  function getCanvasCoords(clientX, clientY) {
+  // スクリーン座標をワールド座標（カメラオフセット込み）に変換
+  function getWorldCoords(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
+    const viewX = ((clientX - rect.left) / rect.width) * VIEW_W;
+    const viewY = ((clientY - rect.top) / rect.height) * VIEW_H;
     return {
-      x: ((clientX - rect.left) / rect.width) * W,
-      y: ((clientY - rect.top) / rect.height) * H
+      x: viewX,
+      y: viewY + state.cameraY,
+      viewY
     };
   }
 
   canvas.addEventListener('pointermove', (e) => {
-    const pt = getCanvasCoords(e.clientX, e.clientY);
+    const pt = getWorldCoords(e.clientX, e.clientY);
+
+    // 配置フェーズ・ドラフト盤面確認中はドラッグで上下にカメラをスクロール可能
+    if (state.manualCamDrag && (state.phase === 'PLACE' || state.phase === 'DRAFT')) {
+      const dy = pt.viewY - state.dragStartY;
+      if (Math.abs(dy) > 6) {
+        state.movedDuringDrag = true;
+      }
+      state.targetCameraY = Math.max(0, Math.min(MAX_CAM_Y, state.dragStartCamY - dy * 1.4));
+      return;
+    }
+
     let bestId = -1;
-    let bestDist = 26;
+    let bestDist = 28;
     for (let i = 0; i < SLOT_POSITIONS.length; i++) {
       const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
       if (d < bestDist) {
@@ -3665,12 +3966,21 @@
 
   canvas.addEventListener('pointerleave', () => {
     state.hoverSlotId = -1;
+    state.manualCamDrag = false;
   });
 
   canvas.addEventListener('pointerdown', (e) => {
-    const pt = getCanvasCoords(e.clientX, e.clientY);
+    const pt = getWorldCoords(e.clientX, e.clientY);
 
-    // 最寄りスロットの特定（タッチでのツールチップ表示や配置選択に利用）
+    if (state.phase === 'PLACE' || state.phase === 'DRAFT') {
+      state.manualCamDrag = true;
+      state.movedDuringDrag = false;
+      state.dragStartY = pt.viewY;
+      state.dragStartCamY = state.targetCameraY;
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    }
+
     let nearestSlotId = -1;
     let nearestDist = 36;
     for (let i = 0; i < SLOT_POSITIONS.length; i++) {
@@ -3681,52 +3991,61 @@
       }
     }
 
-    if (state.phase === 'PLACE') {
-      if (nearestSlotId !== -1) {
-        state.hoverSlotId = nearestSlotId;
-        handleSlotClick(nearestSlotId);
-      }
-      return;
-    }
-
-    if (state.phase === 'DRAFT') {
-      state.hoverSlotId = nearestSlotId;
-      return;
-    }
-
     if (state.phase === 'PLAY') {
       if (nearestSlotId !== -1 && state.slots[nearestSlotId]) {
         state.hoverSlotId = nearestSlotId;
       }
-      if (state.ball.waitingLaunch && pt.x > LANE_X - 20 && pt.y > 480) {
+      if (state.ball.waitingLaunch && pt.x > LANE_X - 20 && pt.viewY > 450) {
         activeCanvasTouches.set(e.pointerId, 'launch');
         startPlungerCharge();
-      } else if (pt.x < W / 2) {
+      } else if (pt.x < VIEW_W / 2) {
         activeCanvasTouches.set(e.pointerId, 'left');
-        setLeftFlipper(true);
+        setFlippersPressed(true, true);
       } else {
         activeCanvasTouches.set(e.pointerId, 'right');
-        setRightFlipper(true);
+        setFlippersPressed(false, true);
       }
     }
   });
 
   function endCanvasPointer(e) {
+    if (state.manualCamDrag) {
+      state.manualCamDrag = false;
+      if (!state.movedDuringDrag) {
+        const pt = getWorldCoords(e.clientX, e.clientY);
+        let nearestSlotId = -1;
+        let nearestDist = 36;
+        for (let i = 0; i < SLOT_POSITIONS.length; i++) {
+          const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
+          if (d < nearestDist) {
+            nearestDist = d;
+            nearestSlotId = i;
+          }
+        }
+        if (nearestSlotId !== -1) {
+          state.hoverSlotId = nearestSlotId;
+          if (state.phase === 'PLACE') {
+            handleSlotClick(nearestSlotId);
+          }
+        }
+      }
+      return;
+    }
+
     const role = activeCanvasTouches.get(e.pointerId);
     if (!role) return;
     activeCanvasTouches.delete(e.pointerId);
     if (role === 'launch') releasePlunger();
-    if (role === 'left') setLeftFlipper(false);
-    if (role === 'right') setRightFlipper(false);
+    if (role === 'left') setFlippersPressed(true, false);
+    if (role === 'right') setFlippersPressed(false, false);
   }
   canvas.addEventListener('pointerup', endCanvasPointer);
   canvas.addEventListener('pointercancel', endCanvasPointer);
 
-  // ドラフト時の盤面確認＆リロール
   document.getElementById('btn-peek-board').addEventListener('click', () => {
     const ov = document.getElementById('ov-draft');
     const isPeek = ov.classList.toggle('peek-mode');
-    document.getElementById('btn-peek-board').textContent = isPeek ? '🃏 カード選択に戻る' : '👁 盤面を確認';
+    document.getElementById('btn-peek-board').textContent = isPeek ? '🃏 カード選択に戻る' : '👁 盤面を確認(上下ドラッグ)';
   });
 
   document.getElementById('btn-reroll').addEventListener('click', () => {
@@ -3756,23 +4075,23 @@
 
       const synHtml = state.activeSynergies.length > 0
         ? state.activeSynergies.map(s => `・<span class="syn-hl">【${s.name}】</span>: ${s.effectText}`).join('<br>')
-        : '・現在発動中のシナジーはありません（パーツを追加して組み合わせよう）';
+        : '・現在発動中の契約シナジーはありません（遺物パーツを組み合わせよう）';
 
       const partsHtml = state.slots
         .map((s, idx) => {
           if (!s) return null;
           const c = CARD_CATALOG.find(item => item.id === s.type);
-          return `#${idx + 1}: <b>${c ? c.name : s.type} Lv${s.level}</b> (累計 ${s.totalEarned.toLocaleString()}pt)`;
+          return `#${idx + 1}(${SLOT_POSITIONS[idx].label}): <b>${c ? c.name : s.type} Lv${s.level}</b> (${s.totalEarned.toLocaleString()}pt)`;
         })
         .filter(Boolean)
-        .join(' / ');
+        .join('<br>');
 
       document.getElementById('pause-stats').innerHTML = `
         <b>現在ラウンド</b>: ROUND ${state.round} / <b>総スコア</b>: ${state.totalScore.toLocaleString()} PTS<br>
-        <b>スコアブースター</b>: +${state.scoreBoosterCount * 10}% / <b>フリッパー強化</b>: Lv${state.flipperLevel}<br><br>
+        <b>王家の祝福(スコアブースト)</b>: +${state.scoreBoosterCount * 10}% / <b>大剣フリッパー強化</b>: Lv${state.flipperLevel}<br><br>
         <b>【発動中シナジー (${state.activeSynergies.length}個)】</b><br>
         ${synHtml}<br><br>
-        <b>【設置パーツ一覧】</b><br>
+        <b>【設置パーツ一覧 (全10スロット)】</b><br>
         ${partsHtml || 'なし'}
       `;
       document.getElementById('ov-pause').classList.add('show');
