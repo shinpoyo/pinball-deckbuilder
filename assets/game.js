@@ -4585,18 +4585,21 @@
   }
 
   window.addEventListener('keydown', (e) => {
+    const isGameKey = (
+      e.code === 'ArrowLeft' || e.code === 'KeyZ' || e.code === 'KeyA' ||
+      e.code === 'ArrowRight' || e.code === 'Slash' || e.code === 'KeyD' ||
+      e.code === 'Space' || e.code === 'ArrowDown' ||
+      e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyX' || e.code === 'ArrowUp'
+    );
+    if (isGameKey) e.preventDefault();
     if (e.repeat) return;
     if (e.code === 'ArrowLeft' || e.code === 'KeyZ' || e.code === 'KeyA') {
-      e.preventDefault();
       setFlippersPressed(true, true);
     } else if (e.code === 'ArrowRight' || e.code === 'Slash' || e.code === 'KeyD') {
-      e.preventDefault();
       setFlippersPressed(false, true);
     } else if (e.code === 'Space' || e.code === 'ArrowDown') {
-      e.preventDefault();
       startPlungerCharge();
     } else if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyX' || e.code === 'ArrowUp') {
-      e.preventDefault();
       triggerNudge(e.code === 'ShiftLeft' ? 1 : (e.code === 'ShiftRight' ? -1 : 0));
     } else if (e.code === 'KeyP' || e.code === 'Escape') {
       togglePause();
