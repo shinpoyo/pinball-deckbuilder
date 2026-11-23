@@ -1,8 +1,8 @@
 # 弾む思いつき (Hazumu Omoitsuki)
 
-**物理ピンボール × デッキ構築（シナジービルド）ブラウザゲーム**
+**深海物理ピンボール × デッキ構築（シナジービルド）ブラウザゲーム**
 
-単一HTMLファイル（`index.html`）1本で動作し、外部ライブラリ・外部画像・外部音声ファイルを一切使用せず、素の JavaScript + Canvas 2D + Web Audio API シンセサイザーで実装された物理ピンボールゲームです。
+外部ライブラリ・外部音声ファイルを使用せず、素の HTML / CSS / JavaScript + Canvas 2D + Web Audio API シンセサイザーで実装された物理ピンボールゲームです（`index.html`、`assets/style.css`、`assets/game.js`、`assets/img/*.webp` の静的ファイル構成でビルド不要）。
 
 ## 遊び方
 
