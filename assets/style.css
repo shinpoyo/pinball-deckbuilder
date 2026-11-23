@@ -762,3 +762,69 @@ canvas {
   color: var(--vent-green);
   font-weight: 700;
 }
+
+/* Overkill Bar (ノルマ達成後の欲張りタイム) */
+#overkill-bar {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  z-index: 16;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(45, 22, 5, 0.94), rgba(20, 10, 38, 0.94));
+  border: 1.5px solid #ffd97d;
+  box-shadow: 0 0 18px rgba(255, 217, 125, 0.35);
+}
+#overkill-bar.show {
+  display: flex;
+}
+.overkill-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.overkill-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #ffd97d;
+  letter-spacing: 0.03em;
+}
+.overkill-sub {
+  font-size: 9.8px;
+  color: #e6f6ff;
+  font-weight: 600;
+}
+.overkill-next-btn {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid #ffd97d;
+  background: rgba(255, 217, 125, 0.2);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.overkill-next-btn:active {
+  transform: scale(0.95);
+}
+
+/* Draft card fusion highlight */
+.card-fusion-alert {
+  margin-top: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #f472b6;
+  background: rgba(244, 114, 182, 0.14);
+  border: 1px solid rgba(244, 114, 182, 0.45);
+  border-radius: 5px;
+  padding: 2px 6px;
+  display: inline-block;
+}
+
