@@ -1,1 +1,18 @@
-IyDjgI7lvL7jgoDmgJ3jgYTjgaTjgY3jgI/jgr/jgrnjgq/kuIDopqcKCuOBk+OBruODleOCoeOCpOODq+OBjOS9nOalreOBruWFpeWPo+OAgioq5LiK44GL44KJ6aCG44Gr44CB5q2i44G+44KJ44Ga5YWo6YOo5a6f5pa944GZ44KL44GT44Go44CC56K66KqN5b6F44Gh44Gn5q2i44G+44KJ44Gq44GE44GT44Go44CC6L+344Gj44Gf44KJ5oyH56S65pu444Gu56+E5Zuy5YaF44Gn6Ieq5YiG44Gn5rG644KB44KL44GT44Go44CCKioKCiMjIOmAsuOCgeaWuQotIOS9nOalreOBr+OBk+OBruODquODneOCuOODiOODqu+8iGBzaGlucG95by9waW5iYWxsLWRlY2tidWlsZGVyYO+8ieOBp+ebtOaOpeihjOOBhuOAgmBpbmRleC5odG1sYCDjgYzjgrLjg7zjg6DmnKzkvZPvvIjljZjkuIDjg5XjgqHjgqTjg6vvvInjgIIKLSDlrp/oo4XjgYzntYLjgo/jgaPjgZ/jgokgYG1haW5gIOOBuCBwdXNoIOOBmeOCi+OAgkdpdEh1YiBQYWdlcyDjgYzoh6rli5XjgaflhazplovniYjjgavlj43mmKDjgZXjgozjgovjgIIKLSAx44Gk44Gu5oyH56S65pu444GM57WC44KP44KL44GU44Go44Gr44CB44Gd44Gu44OV44Kh44Kk44Or44KSIGB0YXNrcy9kb25lL2Ag44G456e75YuV44GZ44KL44CCCi0g54mp55CG44O744Kr44O844OJ44O744Or44O844Or44O744K744O844OW5b2i5byP44Gq44Gp44CB5oyH56S65pu444Gr5pu444GL44KM44Gm44GE44Gq44GE5LuV5qeY44Gv5aSJ44GI44Gq44GE44CCCgojIyDjgr/jgrnjgq8KLSBbeF0gMDEg5bqP55uk44Go6Lu96YeP5YyW77yIYHRhc2tzL2RvbmUvMDEtZWFybHlnYW1lLWFuZC1saWdodHdlaWdodC5tZGDvvInigJTigJQgMjAyNi0xMS0yMyDlrp/oo4Xjg7vlhazplovmuIjjgb/vvIjliJ3mnJ/phY3nva405YCL44CB5Yid5Zue44OJ44Op44OV44OI44Gr6YCj6Y6W44OR44O844OE5L+d6Ki844CB57Sg5p2QMjU2cHjljJbjgacyLjRNQu+8iQotIFt4XSAwMiDjg6njgqbjg7Pjg4nlpInljJbjgajjg5zjg7zjg6vvvIhgdGFza3MvZG9uZS8wMi1yb3VuZC1tb2RpZmllcnMtYW5kLWJhbGxzLm1kYO+8ieKAlOKAlCAyMDI2LTExLTIzIOWun+ijheODu+WFrOmWi+a4iOOBv++8iFIy44CcUjjjg6Ljg4fjgqPjg5XjgqHjgqTjgqLlm7rlrprpoIbjgIHjg5zjg7zjg6vjgqvjg7zjg4kz56iu77yJCgojIyDmrKHjga7jgr/jgrnjgq8KLSDku4rjga/mnKrlrprjgILmlrDjgZfjgYTmjIfnpLrmm7jjga8gYHRhc2tzL2Ag44Gr6L+95Yqg44GV44KM44KL44GL44CBR2l0SHViIElzc3VlIOOBqOOBl+OBpueri+OBpuOCieOCjOOCi+OAgui/veWKoOOBleOCjOOCi+OBvuOBp+aWsOOBl+OBhOS9nOalreOBr+Wni+OCgeOBquOBhOOBk+OBqOOAggotIOacquaxuuWumuOBruWAmeijnO+8iOOBl+OCk+OBveOCiOOBruWIpOaWreW+heOBoeOAguWLneaJi+OBq+Wni+OCgeOBquOBhOOBk+OBqO+8ie+8muODreODvOOCsOODqeOCpOOCr+ani+mAoOOBruacrOagvOWwjuWFpeOAgeODnOODvOODq+OBruOBleOCieOBquOCi+WAi+aAp+WMluOAgeebpOmdouODkOODquOCqOODvOOCt+ODp+ODs+OAggo=
+# 『弾む思いつき』タスク一覧
+
+このファイルが作業の入口。**上から順に、止まらず全部実施すること。確認待ちで止まらないこと。迷ったら指示書の範囲内で自分で決めること。**
+
+## 進め方
+- 作業はこのリポジトリ（`shinpoyo/pinball-deckbuilder`）で行う。構成は `index.html`・`assets/style.css`・`assets/game.js`・`assets/img/*.webp` の静的ファイル構成。
+- 他の AI と並行作業になる可能性があるため、作業前に最新の `origin/main` と開いている PR を確認し、作業用ブランチから Pull Request を作成する（`main` マージ後に GitHub Pages へ自動反映）。
+- 1つの指示書が終わるごとに、そのファイルを `tasks/done/` へ移動する。
+- 物理・カード・ルール・セーブ形式など、指示書に書かれていない仕様は変えない。
+
+## タスク
+- [x] 01 序盤と軽量化（`tasks/done/01-earlygame-and-lightweight.md`）—— 2026-11-23 実装・公開済み（初期配置4個、初回ドラフトに連鎖パーツ保証、素材256px化）
+- [x] 02 ラウンド変化とボール（`tasks/done/02-round-modifiers-and-balls.md`）—— 2026-11-23 実装・公開済み（R2〜R8モディファイア固定順、ボールカード3種）
+- [x] 外部ファイル化・公開品質整備（PR #1）—— 2026-11-23 マージ済み（CSS/JS/WebP25枚を外部ファイル分離して合計約560KB化、OGP・favicon・メタタグ追加、iframe内キー長押しスクロール防止、README更新）
+
+## 次のタスク
+- 今は未定。新しい指示書は `tasks/` に追加されるか、GitHub Issue として立てられる。追加されるまで新しい作業は始めないこと。
+- 未決定の候補（しんぽよの判断待ち。勝手に始めないこと）：ローグライク構造の本格導入、ボールのさらなる個性化、盤面バリエーション。

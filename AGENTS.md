@@ -1,1 +1,28 @@
-IyBBR0VOVFMubWQg4oCUIOOAjuW8vuOCgOaAneOBhOOBpOOBjeOAj+mWi+eZuuODoeODogoKIyMg44OX44Ot44K444Kn44Kv44OICueJqeeQhuODlOODs+ODnOODvOODq8OX44OH44OD44Kt5qeL56+J44OW44Op44Km44K244Ky44O844Og44CC5Y2Y5LiAIGBpbmRleC5odG1sYO+8iFZhbmlsbGEgSlMgKyBDYW52YXMgKyBXZWIgQXVkaW/vvInjgIIK5YWs6ZaL5YWI77yaIGh0dHBzOi8vc2hpbnBveW8uY29tL3BpbmJhbGwtZGVja2J1aWxkZXIvIO+8iEdpdEh1YiBQYWdlc+OAgW1haW4gcHVzaCDjgafoh6rli5Xlj43mmKDvvIkKCiMjIOS9nOalreOBruWFpeWPowotIGBUQVNLUy5tZGAg44KS5pyA5Yid44Gr6Kqt44KA44CC44K/44K544Kv44Gv5LiK44GL44KJ6aCG44Gr44CB5q2i44G+44KJ44Ga5YWo6YOo5a6f5pa944GZ44KL44CCCi0g6Kmz57Sw44Gq5LuV5qeY44GvIGB0YXNrcy8qLm1kYCDjgavjgYLjgovjgILntYLjgo/jgaPjgZ/jgr/jgrnjgq/jga8gYHRhc2tzL2RvbmUvYCDjgbjnp7vli5XjgZnjgovjgIIKCiMjIOODq+ODvOODqwotIOaMh+ekuuabuOOBq+abuOOBi+OCjOOBpuOBhOOBquOBhOS7leanmO+8iOeJqeeQhuWumuaVsOOAgeOCq+ODvOODieWKueaenOOAgeODq+ODvOODq+OAgeOCu+ODvOODluW9ouW8j++8ieOBr+WkieOBiOOBquOBhOOAggotIOeUu+WDj+OBryBgYXNzZXRzL2Ag44Gr44GC44KL6YCP6YGOUE5H44KSIEJhc2U2NCDjgacgYGluZGV4Lmh0bWxgIOOBq+Wfi+OCgei+vOOCgOOAguaWsOOBl+OBhOeUu+WDj+OBjOW/heimgeOBquWgtOWQiOOBr+OAgeOBvuOBmuOBl+OCk+OBveOCiOOBq+ebuOirh+OBmeOCi+OBk+OBqO+8iOWLneaJi+OBq+eUn+aIkOOBl+OBquOBhO+8ieOAggotIOWun+ijheW+jOOBryBgbWFpbmAg44G4IHB1c2gg44GX44CB5YWs6ZaL54mI44Gn5YuV5L2c44GZ44KL44GT44Go44KS6Ieq5YiG44Gn56K66KqN44GZ44KL44GT44Go44CCCi0g5pel5pys6Kqe44Gn44Kz44Oh44Oz44OI44KS5pu444GP44GT44Go44CC5aSJ5pWw5ZCN44O76Zai5pWw5ZCN44Gv6Iux6Kqe44Gu44G+44G+44CCCg==
+# AGENTS.md — 『弾む思いつき』開発メモ
+
+## プロジェクト
+深海物理ピンボール×デッキ構築ブラウザゲーム（Vanilla JS + Canvas 2D + Web Audio API、ビルド不要の静的ファイル構成）。
+公開先： https://shinpoyo.com/pinball-deckbuilder/ （GitHub Pages、`main` 反映で自動公開）
+
+### ファイル構成
+- `index.html`：HTML 本体・メタタグ / OGP
+- `assets/style.css`：スタイルシート
+- `assets/game.js`：ゲーム本体（物理演算・Canvas 描画・Web Audio・UI 制御）
+- `assets/img/`：ゲーム内画像（外部 WebP 25枚）、SVG ファビコン（`favicon.svg`）、OGP 画像（`ogp.jpg`）
+
+※ 以前は単一 `index.html` に Base64 埋め込みしていたが、PR #1 で外部ファイル構成へ移行済み。今後は再び Base64 埋め込みに戻さないこと。
+
+## 作業の入口
+- `TASKS.md` を最初に読む。タスクは上から順に、止まらず全部実施する。
+- 詳細な仕様は `tasks/*.md` にある。終わったタスクは `tasks/done/` へ移動する。
+
+## 複数 AI / 協調運用のルール
+- 複数の AI エージェントが同じリポジトリを操作する可能性があるため、作業開始前に必ず `git fetch origin` で最新の `origin/main` と開いている PR（`gh pr list`）を確認すること。
+- `main` へ直接 push せず、最新の `origin/main` から作業用ブランチを作成し、Pull Request を立てて反映すること。
+- ドキュメントや指示書をコミットする際は、必ず通常の UTF-8 テキスト（プレーン Markdown）として保存し、Base64 文字列のままコミットしないこと。
+
+## 実装ルール
+- 指示書に書かれていない仕様（物理定数、カード効果、ルール、セーブ形式）は変えない。
+- 画像は `assets/img/` の外部ファイル（WebP 推奨）として管理し、`assets/game.js` の `ASSET_PATHS` から参照する。新しい画像が必要な場合は、まずしんぽよに相談すること（勝手に生成しない）。
+- 実装後はローカル HTTP サーバーまたは公開版で動作確認（コンソールエラー・失敗リクエストがないこと）を行ってから PR を作成すること。
+- 日本語でコメントを書くこと。変数名・関数名は英語のまま。
