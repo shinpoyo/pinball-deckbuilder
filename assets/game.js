@@ -84,7 +84,15 @@
     'part_spinner': 'assets/img/part_spinner.webp',
     'part_split': 'assets/img/part_split.webp',
     'part_warp_gate': 'assets/img/part_warp_gate.webp',
-    'ryugu_no_tsukai': 'assets/img/ryugu_no_tsukai.webp'
+    'ryugu_no_tsukai': 'assets/img/ryugu_no_tsukai.webp',
+    'board_bg': 'assets/img/board_bg.webp',
+    'mystery_shell': 'assets/img/mystery_shell.webp',
+    'mut_blast_jelly': 'assets/img/mut_blast_jelly.webp',
+    'mut_gravity_pearl': 'assets/img/mut_gravity_pearl.webp',
+    'mut_plasma_vent': 'assets/img/mut_plasma_vent.webp',
+    'mut_vortex_reef': 'assets/img/mut_vortex_reef.webp',
+    'mut_mirror_mine': 'assets/img/mut_mirror_mine.webp',
+    'mut_electro_prism': 'assets/img/mut_electro_prism.webp'
   };
   const ASSET_IMAGES = {};
   function initAssetImages() {
@@ -667,7 +675,7 @@
       icon: '💥',
       color: '#ff4d94',
       subColor: '#72efdd',
-      baseImg: 'part_detonator',
+      baseImg: 'mut_blast_jelly',
       basePt: 220,
       desc: 'ヒットで周囲パーツを起爆しつつミニボールを四方に射出！'
     },
@@ -678,7 +686,7 @@
       icon: '🌀',
       color: '#c084fc',
       subColor: '#70f5ff',
-      baseImg: 'part_bumper_circle',
+      baseImg: 'mut_gravity_pearl',
       basePt: 200,
       desc: '近くのボールを重力で引き寄せ、連続ヒット後に高反発で弾く！'
     },
@@ -689,7 +697,7 @@
       icon: '⚡',
       color: '#fde047',
       subColor: '#20e3b2',
-      baseImg: 'part_kicker',
+      baseImg: 'mut_plasma_vent',
       basePt: 210,
       desc: '高速打ち上げ＋2ヒットごとにランダムな他パーツ2個へ雷撃連鎖！'
     },
@@ -700,7 +708,7 @@
       icon: '🌪️',
       color: '#fb923c',
       subColor: '#00e5ff',
-      baseImg: 'part_bumper_tri',
+      baseImg: 'mut_vortex_reef',
       basePt: 180,
       desc: '高速回転して周囲の深海魚を引き寄せ、ヒットでコンボ+2！'
     },
@@ -711,7 +719,7 @@
       icon: '💎',
       color: '#f43f5e',
       subColor: '#ffd97d',
-      baseImg: 'part_rebound_wall',
+      baseImg: 'mut_mirror_mine',
       basePt: 160,
       desc: '鋭い反射で隣接起爆＋6秒間スコア+20%オーラ（最大3重）！'
     },
@@ -722,7 +730,7 @@
       icon: '✨',
       color: '#38bdf8',
       subColor: '#f472b6',
-      baseImg: 'part_battery',
+      baseImg: 'mut_electro_prism',
       basePt: 190,
       desc: '他パーツ発動で充電し、解放時にミニボール生成＋周囲感電起動！'
     }
@@ -4271,77 +4279,49 @@
   function drawDeepSeaBackground() {
     ctx.save();
 
-    // 1. 深海グラデーション（上部に光の差し込み、下部ほど濃い紺）
-    const seaGrad = ctx.createLinearGradient(0, 0, 0, WORLD_H);
-    seaGrad.addColorStop(0, '#0f3b6e');
-    seaGrad.addColorStop(0.26, '#082246');
-    seaGrad.addColorStop(0.62, '#041229');
-    seaGrad.addColorStop(1, '#01050e');
-    ctx.fillStyle = seaGrad;
-    ctx.fillRect(0, 0, VIEW_W, WORLD_H);
-
-    // 2. 海面からの光の差し込み（ゴッドレイを強化し、中層まで届くよう密度アップ）
+    const bgImg = getAssetImage('board_bg');
     const now = performance.now() * 0.001;
-    ctx.save();
-    for (let i = 0; i < 6; i++) {
-      const rx = 55 + i * 56 + Math.sin(now * 0.65 + i * 1.1) * 16;
-      const rayLen = 360 + (i % 2) * 70;
-      const rayGrad = ctx.createLinearGradient(rx, 0, rx + 28, rayLen);
-      rayGrad.addColorStop(0, 'rgba(112, 245, 255, 0.17)');
-      rayGrad.addColorStop(0.5, 'rgba(32, 227, 178, 0.07)');
-      rayGrad.addColorStop(1, 'rgba(112, 245, 255, 0)');
-      ctx.fillStyle = rayGrad;
-      ctx.beginPath();
-      ctx.moveTo(rx - 22, 10);
-      ctx.lineTo(rx + 22, 10);
-      ctx.lineTo(rx + 66, rayLen);
-      ctx.lineTo(rx - 40, rayLen);
-      ctx.closePath();
-      ctx.fill();
+
+    if (bgImg) {
+      // 1. 生成された深海遺跡・発光珊瑚の盤面背景イラストを描画
+      ctx.drawImage(bgImg, 0, 0, VIEW_W, WORLD_H);
+      // 盤面パーツ・ボール・魚の視認性を保つための微暗幕＆深海ビネット
+      const scrim = ctx.createRadialGradient(VIEW_W * 0.48, WORLD_H * 0.45, 70, VIEW_W * 0.5, WORLD_H * 0.5, 420);
+      scrim.addColorStop(0, 'rgba(2, 10, 24, 0.34)');
+      scrim.addColorStop(1, 'rgba(1, 6, 16, 0.52)');
+      ctx.fillStyle = scrim;
+      ctx.fillRect(0, 0, VIEW_W, WORLD_H);
+
+      // 揺らめく光の差し込み（薄く重ねて生きた水面感を演出）
+      ctx.save();
+      for (let i = 0; i < 4; i++) {
+        const rx = 85 + i * 76 + Math.sin(now * 0.65 + i * 1.3) * 18;
+        const rayGrad = ctx.createLinearGradient(rx, 0, rx + 20, 320);
+        rayGrad.addColorStop(0, 'rgba(112, 245, 255, 0.11)');
+        rayGrad.addColorStop(1, 'rgba(112, 245, 255, 0)');
+        ctx.fillStyle = rayGrad;
+        ctx.beginPath();
+        ctx.moveTo(rx - 18, 0);
+        ctx.lineTo(rx + 18, 0);
+        ctx.lineTo(rx + 54, 320);
+        ctx.lineTo(rx - 32, 320);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    } else {
+      // フォールバック：画像読み込み前の深海グラデーション
+      const seaGrad = ctx.createLinearGradient(0, 0, 0, WORLD_H);
+      seaGrad.addColorStop(0, '#0f3b6e');
+      seaGrad.addColorStop(0.26, '#082246');
+      seaGrad.addColorStop(0.62, '#041229');
+      seaGrad.addColorStop(1, '#01050e');
+      ctx.fillStyle = seaGrad;
+      ctx.fillRect(0, 0, VIEW_W, WORLD_H);
     }
-    ctx.restore();
 
-    // 2.5 背景中層〜下層の海底岩礁シルエット＆海溝アーチ（中央のスカスカ感を解消）
+    // ゆらゆら揺れる海藻（背景イラストになじむよう控えめに重ねる）
     ctx.save();
-    // 遠景の海底山脈シルエット
-    ctx.fillStyle = 'rgba(4, 15, 34, 0.72)';
-    ctx.beginPath();
-    ctx.moveTo(12, 660);
-    ctx.lineTo(12, 470);
-    ctx.lineTo(52, 435);
-    ctx.lineTo(95, 490);
-    ctx.lineTo(148, 455);
-    ctx.lineTo(192, 505);
-    ctx.lineTo(245, 448);
-    ctx.lineTo(298, 495);
-    ctx.lineTo(340, 442);
-    ctx.lineTo(LANE_X, 480);
-    ctx.lineTo(LANE_X, 660);
-    ctx.closePath();
-    ctx.fill();
-
-    // 近景の盘面下部岩礁シルエット
-    ctx.fillStyle = 'rgba(2, 9, 22, 0.85)';
-    ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(12, 660);
-    ctx.lineTo(12, 545);
-    ctx.lineTo(44, 525);
-    ctx.lineTo(82, 565);
-    ctx.lineTo(128, 548);
-    ctx.lineTo(168, 595);
-    ctx.lineTo(218, 595);
-    ctx.lineTo(262, 545);
-    ctx.lineTo(306, 565);
-    ctx.lineTo(344, 525);
-    ctx.lineTo(LANE_X, 550);
-    ctx.lineTo(LANE_X, 660);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // ゆらゆら揺れる海藻（7本）
     SEAWEEDS.forEach((sw) => {
       ctx.save();
       ctx.strokeStyle = sw.color;
@@ -4715,41 +4695,46 @@
     ctx.stroke();
     ctx.restore();
 
-    // 大貝本体（深海パールシェル）
-    const bodyGrad = ctx.createRadialGradient(-4, -5, 2, 0, 0, ms.r);
-    bodyGrad.addColorStop(0, '#fff7d6');
-    bodyGrad.addColorStop(0.45, '#c084fc');
-    bodyGrad.addColorStop(1, '#3b1566');
-    ctx.fillStyle = bodyGrad;
-    ctx.strokeStyle = '#ffd97d';
-    ctx.lineWidth = 2.2;
-    ctx.shadowColor = '#ffd97d';
-    ctx.shadowBlur = 12;
-    ctx.beginPath();
-    ctx.arc(0, 0, ms.r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // ひび割れ線（HPが減るほど増える）
-    if (ms.hp < 3) {
-      ctx.strokeStyle = '#fff7d6';
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      ctx.moveTo(-7, -9); ctx.lineTo(-1, -1); ctx.lineTo(6, 5);
-      if (ms.hp === 1) {
-        ctx.moveTo(8, -8); ctx.lineTo(1, 0); ctx.lineTo(-8, 8);
+    // 大貝本体（生成された封印大貝イラストを使用、未読込時はフォールバック円）
+    const shellImg = getAssetImage('mystery_shell');
+    if (shellImg) {
+      ctx.shadowColor = ms.hp === 1 ? '#ffd97d' : '#c084fc';
+      ctx.shadowBlur = ms.hp === 1 ? 18 : 12;
+      drawImageCentered(ctx, shellImg, 0, 0, 48, 48, false, Math.sin(now * 0.9) * 0.06);
+      if (ms.hp < 3) {
+        ctx.strokeStyle = '#fff7d6';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(-7, -9); ctx.lineTo(-1, -1); ctx.lineTo(6, 5);
+        if (ms.hp === 1) {
+          ctx.moveTo(8, -8); ctx.lineTo(1, 0); ctx.lineTo(-8, 8);
+        }
+        ctx.stroke();
       }
+    } else {
+      const bodyGrad = ctx.createRadialGradient(-4, -5, 2, 0, 0, ms.r);
+      bodyGrad.addColorStop(0, '#fff7d6');
+      bodyGrad.addColorStop(0.45, '#c084fc');
+      bodyGrad.addColorStop(1, '#3b1566');
+      ctx.fillStyle = bodyGrad;
+      ctx.strokeStyle = '#ffd97d';
+      ctx.lineWidth = 2.2;
+      ctx.shadowColor = '#ffd97d';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(0, 0, ms.r, 0, Math.PI * 2);
+      ctx.fill();
       ctx.stroke();
     }
 
-    // 中央の ??? ラベル
+    // 上部に小さく ??? ラベル
     ctx.shadowColor = '#000';
     ctx.shadowBlur = 4;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 11px sans-serif';
+    ctx.fillStyle = '#fff7d6';
+    ctx.font = '900 10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('???', 0, 0);
+    ctx.fillText('???', 0, -25);
 
     ctx.scale(1 / pulse, 1 / pulse);
 
