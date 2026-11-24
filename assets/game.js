@@ -7,6 +7,7 @@
   const STORAGE_KEY_HISCORE = 'hazumu_omoitsuki_hiscore_v1';
   const STORAGE_KEY_CLEARED = 'hazumu_omoitsuki_cleared_v1';
   const STORAGE_KEY_FISH_ZUKAN = 'hazumu_omoitsuki_fish_zukan_v1'; // 新規図鑑セーブキー（既存セーブを壊さない）
+  const STORAGE_KEY_FUSION_ZUKAN = 'hazumu_omoitsuki_fusion_zukan_v1'; // 合成発見記録用セーブキー
 
   const NORMAS = [3000, 6000, 10000, 16000, 24000, 35000, 50000, 75000];
   const VIEW_W = 420;
@@ -530,6 +531,30 @@
       weight: 7,
       basePt: 0,
       desc: '【ボール変化】強い生物発光で深海魚の取得範囲 +40%、さらに魚の獲得スコア +25%！'
+    },
+    {
+      id: 'ball_split',
+      name: '分裂真珠（ボールカード）',
+      shortName: '分裂真珠',
+      category: 'ball',
+      ballType: 'split_pearl',
+      icon: '🔮',
+      color: '#f472b6',
+      weight: 6,
+      basePt: 0,
+      desc: '【ボール変化】パーツに4回当たるたびに自動でミニボールを1球分裂生成！マルチボール祭り！'
+    },
+    {
+      id: 'ball_magnet',
+      name: '磁石真珠（ボールカード）',
+      shortName: '磁石真珠',
+      category: 'ball',
+      ballType: 'magnet_pearl',
+      icon: '🧲',
+      color: '#ff9e00',
+      weight: 6,
+      basePt: 0,
+      desc: '【ボール変化】近くの深海魚・封印大貝・ジャックポットへカーブして吸い寄せられる！'
     }
   ];
 
@@ -598,8 +623,144 @@
       glowColor: '#38f9d7',
       trailRgb: '56, 249, 215',
       desc: '魚の取得範囲+40% / 魚スコア+25%'
+    },
+    split_pearl: {
+      id: 'split_pearl',
+      name: '分裂真珠',
+      shortBadge: '🔮分裂真珠',
+      r: 9,
+      gravityMult: 1.0,
+      flipperRestBonus: 0,
+      launchMaxMult: 1.0,
+      partScoreMult: 1.0,
+      fishScoreMult: 1.0,
+      fishRangeMult: 1.0,
+      color: '#f9a8d4',
+      glowColor: '#f472b6',
+      trailRgb: '244, 114, 182',
+      desc: 'パーツ4ヒットごとにミニボール自動分裂'
+    },
+    magnet_pearl: {
+      id: 'magnet_pearl',
+      name: '磁石真珠',
+      shortBadge: '🧲磁石真珠',
+      r: 9,
+      gravityMult: 1.0,
+      flipperRestBonus: 0.04,
+      launchMaxMult: 1.0,
+      partScoreMult: 1.05,
+      fishScoreMult: 1.15,
+      fishRangeMult: 1.15,
+      color: '#fde68a',
+      glowColor: '#ff9e00',
+      trailRgb: '255, 158, 0',
+      desc: '魚・封印大貝・ジャックポットへ磁力吸引'
     }
   };
+
+  // パーツ合成進化（化学反応）：別種パーツを重ねると変異パーツへ進化！
+  const MUTATED_PARTS = {
+    blast_jelly: {
+      id: 'blast_jelly',
+      name: '爆裂クラゲ',
+      shortName: '爆裂クラゲ',
+      icon: '💥',
+      color: '#ff4d94',
+      subColor: '#72efdd',
+      baseImg: 'part_detonator',
+      basePt: 220,
+      desc: 'ヒットで周囲パーツを起爆しつつミニボールを四方に射出！'
+    },
+    gravity_pearl: {
+      id: 'gravity_pearl',
+      name: '重力真珠',
+      shortName: '重力真珠',
+      icon: '🌀',
+      color: '#c084fc',
+      subColor: '#70f5ff',
+      baseImg: 'part_bumper_circle',
+      basePt: 200,
+      desc: '近くのボールを重力で引き寄せ、連続ヒット後に高反発で弾く！'
+    },
+    plasma_vent: {
+      id: 'plasma_vent',
+      name: '雷流噴出孔',
+      shortName: '雷流噴出孔',
+      icon: '⚡',
+      color: '#fde047',
+      subColor: '#20e3b2',
+      baseImg: 'part_kicker',
+      basePt: 210,
+      desc: '高速打ち上げ＋2ヒットごとにランダムな他パーツ2個へ雷撃連鎖！'
+    },
+    vortex_reef: {
+      id: 'vortex_reef',
+      name: '竜巻珊瑚',
+      shortName: '竜巻珊瑚',
+      icon: '🌪️',
+      color: '#fb923c',
+      subColor: '#00e5ff',
+      baseImg: 'part_bumper_tri',
+      basePt: 180,
+      desc: '高速回転して周囲の深海魚を引き寄せ、ヒットでコンボ+2！'
+    },
+    mirror_mine: {
+      id: 'mirror_mine',
+      name: '鏡面機雷',
+      shortName: '鏡面機雷',
+      icon: '💎',
+      color: '#f43f5e',
+      subColor: '#ffd97d',
+      baseImg: 'part_rebound_wall',
+      basePt: 160,
+      desc: '鋭い反射で隣接起爆＋6秒間スコア+20%オーラ（最大3重）！'
+    },
+    electro_prism: {
+      id: 'electro_prism',
+      name: '放電プリズム',
+      shortName: '放電プリズム',
+      icon: '✨',
+      color: '#38bdf8',
+      subColor: '#f472b6',
+      baseImg: 'part_battery',
+      basePt: 190,
+      desc: '他パーツ発動で充電し、解放時にミニボール生成＋周囲感電起動！'
+    }
+  };
+
+  const FUSION_RECIPES = [
+    { a: 'detonator', b: 'split', result: 'blast_jelly' },
+    { a: 'bumper_circle', b: 'warp_gate', result: 'gravity_pearl' },
+    { a: 'battery', b: 'kicker', result: 'plasma_vent' },
+    { a: 'bumper_tri', b: 'spinner', result: 'vortex_reef' },
+    { a: 'rebound_wall', b: 'detonator', result: 'mirror_mine' },
+    { a: 'battery', b: 'split', result: 'electro_prism' }
+  ];
+
+  function findFusionRecipe(typeA, typeB) {
+    if (!typeA || !typeB || typeA === typeB) return null;
+    for (let i = 0; i < FUSION_RECIPES.length; i++) {
+      const r = FUSION_RECIPES[i];
+      if ((r.a === typeA && r.b === typeB) || (r.a === typeB && r.b === typeA)) {
+        return MUTATED_PARTS[r.result] || null;
+      }
+    }
+    return null;
+  }
+
+  function getPartDisplayInfo(type) {
+    if (MUTATED_PARTS[type]) return MUTATED_PARTS[type];
+    return CARD_CATALOG.find(c => c.id === type) || null;
+  }
+
+  // 封印された大貝（Mystery Shell）を割ったときの深海ハプニング5種
+  const HAPPENING_DEFS = [
+    { id: 'pearl_storm',   name: 'マルチボール暴走!!', badge: '🫧暴走',     color: '#f472b6', duration: 0,    desc: 'ミニボール4球が一気に放出！盤面が大騒ぎ！' },
+    { id: 'anti_gravity',  name: '深海重力反転!!',     badge: '🙃重力反転', color: '#c084fc', duration: 8.0,  desc: '8秒間、重力が上向きに反転！上部パーツを連打せよ！' },
+    { id: 'all_overdrive', name: '全パーツ一斉起爆!!', badge: '⚡一斉起爆', color: '#fde047', duration: 0,    desc: '盤面の全パーツが連鎖起動！' },
+    { id: 'fish_rush',     name: '深海魚大群ラッシュ!!', badge: '🐟大群',   color: '#20e3b2', duration: 0,    desc: '深海魚5匹が一斉に出現！大量回収のチャンス！' },
+    { id: 'giant_pearl',   name: '巨大真珠タイム!!',   badge: '🧲巨大化',   color: '#ffd97d', duration: 10.0, desc: '10秒間、ボールが1.65倍に巨大化＆スコア×1.5！' }
+  ];
 
   // ラウンドモディファイア定義（R1〜R8固定順、そのラウンド限り有効）
   const ROUND_MODIFIERS = {
@@ -911,6 +1072,22 @@
     return FISH_CATALOG.filter(f => unlockedFishMap[f.id] > 0).length;
   }
 
+  let unlockedFusionsMap = {};
+  try {
+    const rawFusions = localStorage.getItem(STORAGE_KEY_FUSION_ZUKAN);
+    if (rawFusions) unlockedFusionsMap = JSON.parse(rawFusions) || {};
+  } catch (e) {
+    unlockedFusionsMap = {};
+  }
+  function saveFusionDiscovery(mutatedId) {
+    const isFirstTime = !unlockedFusionsMap[mutatedId];
+    unlockedFusionsMap[mutatedId] = (unlockedFusionsMap[mutatedId] || 0) + 1;
+    try {
+      localStorage.setItem(STORAGE_KEY_FUSION_ZUKAN, JSON.stringify(unlockedFusionsMap));
+    } catch (e) {}
+    return isFirstTime;
+  }
+
   const walls = buildBoardWalls();
 
   // マリンスノー（常時ゆっくり漂う白い粒子 85個に増量）と上昇する泡
@@ -1067,7 +1244,32 @@
     hitStopTimer: 0,
     bannerText: null,
     shakeTimer: 0,
-    shakeIntensity: 0
+    shakeIntensity: 0,
+
+    // 封印された大貝（Mystery Shell）＆深海ハプニング
+    mysteryShell: {
+      active: false,
+      x: 187,
+      y: 138,
+      r: 20,
+      hp: 3,
+      maxHp: 3,
+      pulse: 1,
+      cooldown: 0,
+      respawnTimer: 0,
+      spawnsThisRound: 0
+    },
+    activeHappening: null, // { id, name, badge, color, timer, maxTimer }
+    lastHappeningId: null,
+
+    // 変異パーツ・特殊ボール・オーバーキル用状態
+    mirrorAuraTimer: 0,
+    mirrorAuraStacks: 0,
+    splitPearlHits: 0,
+    overkillActive: false,
+    overkillTimer: 0,
+    overkillRerollGranted: false,
+    bonusRerollsNextDraft: 0
   };
 
   function hasFishBuff(groupId) {
@@ -1078,7 +1280,11 @@
     return BALL_SPECS[state.ballType] || BALL_SPECS.normal;
   }
   function getBallRadius() {
-    return getBallSpec().r;
+    let r = getBallSpec().r;
+    if (state.activeHappening && state.activeHappening.id === 'giant_pearl' && state.activeHappening.timer > 0) {
+      r = Math.round(r * 1.65);
+    }
+    return r;
   }
   function hasRoundMod(modId) {
     if (!state.roundModifier) return false;
@@ -1090,6 +1296,9 @@
   function getEffectiveGravity() {
     let g = GRAVITY * getBallSpec().gravityMult;
     if (hasRoundMod('low_gravity')) g *= 0.85;
+    if (state.activeHappening && state.activeHappening.id === 'anti_gravity' && state.activeHappening.timer > 0) {
+      return -Math.abs(g) * 0.55;
+    }
     return g;
   }
   function getMaxActiveFishes() {
@@ -1112,6 +1321,9 @@
     if (hasSynergy('full_spark')) mult *= 1.20;
     if (state.warpAuraTimer > 0) mult *= 1.25;
     if (state.feverTimer > 0) mult *= 1.25;
+    if (state.mirrorAuraTimer > 0 && state.mirrorAuraStacks > 0) mult *= (1 + state.mirrorAuraStacks * 0.20);
+    if (state.activeHappening && state.activeHappening.id === 'giant_pearl' && state.activeHappening.timer > 0) mult *= 1.50;
+    if (state.overkillActive) mult *= 1.50;
     return mult;
   }
 
@@ -1354,6 +1566,44 @@
     refreshSynergies();
   }
 
+  function spawnMysteryShell() {
+    // 盤面上部〜中層の空きスペース（パーツやボスと重なりにくい候補座標）から選択
+    const candidates = [
+      { x: 187, y: 136 },
+      { x: 187, y: 290 },
+      { x: 112, y: 215 },
+      { x: 262, y: 215 },
+      { x: 187, y: 445 }
+    ];
+    let best = candidates[0];
+    let bestMinDist = -1;
+    for (let c = 0; c < candidates.length; c++) {
+      const pt = candidates[c];
+      if (state.bossCore.active && Math.hypot(pt.x - state.bossCore.x, pt.y - state.bossCore.y) < 55) continue;
+      let minD = 999;
+      for (let i = 0; i < state.slots.length; i++) {
+        if (!state.slots[i]) continue;
+        const d = Math.hypot(pt.x - SLOT_POSITIONS[i].x, pt.y - SLOT_POSITIONS[i].y);
+        if (d < minD) minD = d;
+      }
+      if (minD > bestMinDist) {
+        bestMinDist = minD;
+        best = pt;
+      }
+    }
+    const ms = state.mysteryShell;
+    ms.active = true;
+    ms.x = best.x;
+    ms.y = best.y;
+    ms.hp = 3;
+    ms.maxHp = 3;
+    ms.pulse = 1.35;
+    ms.cooldown = 0;
+    ms.respawnTimer = 0;
+    ms.spawnsThisRound++;
+    spawnShockwave(ms.x, ms.y, '#c084fc', 55);
+  }
+
   function startRound(roundNum) {
     state.runToken++;
     state.round = roundNum;
@@ -1361,7 +1611,8 @@
     state.norma = getNormaForRound(roundNum);
     state.ballsLeft = state.maxBallsPerRound;
     state.combo = 0;
-    state.rerollsLeft = 1;
+    state.rerollsLeft = 1 + (state.bonusRerollsNextDraft || 0);
+    state.bonusRerollsNextDraft = 0;
     state.hoverSlotId = -1;
     state.phase = 'PLAY';
 
@@ -1383,6 +1634,19 @@
     state.chainLinks = [];
     state.miniBalls = [];
 
+    // 新ギミック・オーバーキル・オーラのリセット
+    state.activeHappening = null;
+    state.mirrorAuraTimer = 0;
+    state.mirrorAuraStacks = 0;
+    state.splitPearlHits = 0;
+    state.overkillActive = false;
+    state.overkillTimer = 0;
+    state.overkillRerollGranted = false;
+    state.mysteryShell.spawnsThisRound = 0;
+    state.mysteryShell.respawnTimer = 0;
+    const okBar = document.getElementById('overkill-bar');
+    if (okBar) okBar.classList.remove('show');
+
     // ラウンド開始時に魚を泳がせておく（R3「魚群」なら3匹、通常は2匹）
     const initFishes = hasRoundMod('fish_school') ? 3 : 2;
     while (state.activeFishes.length < initFishes) {
@@ -1396,6 +1660,9 @@
     state.bossCore.baseY = 315;
     state.bossCore.hpHits = 0;
     state.bossCore.swimPhase = 0;
+
+    // 封印された大貝（Mystery Shell）を盤面に配置
+    spawnMysteryShell();
 
     hideAllOverlays();
     document.getElementById('place-banner').classList.remove('show');
@@ -1508,14 +1775,14 @@
       if (hasFishBuff('luminescent')) {
         modifiedBase *= 1.10;
       }
-      // 魚パッシブ【群れグループ】：スピナーの加点 +25%
-      if (p.type === 'spinner' && hasFishBuff('school')) {
+      // 魚パッシブ【群れグループ】：スピナー・竜巻珊瑚の加点 +25%
+      if ((p.type === 'spinner' || p.type === 'vortex_reef') && hasFishBuff('school')) {
         modifiedBase *= 1.25;
       }
-      if ((p.type === 'bumper_circle' || p.type === 'bumper_tri') && hasSynergy('bumper_kingdom')) {
+      if ((p.type === 'bumper_circle' || p.type === 'bumper_tri' || p.type === 'gravity_pearl' || p.type === 'vortex_reef') && hasSynergy('bumper_kingdom')) {
         modifiedBase *= 1.35;
       }
-      if ((p.type === 'kicker' || p.type === 'spinner') && hasSynergy('perpetual_engine')) {
+      if ((p.type === 'kicker' || p.type === 'spinner' || p.type === 'plasma_vent' || p.type === 'vortex_reef') && hasSynergy('perpetual_engine')) {
         modifiedBase *= 1.40;
       }
       if (p.level >= 2 && hasSynergy('master_craft')) {
@@ -1554,7 +1821,15 @@
     updateHUD();
 
     if (state.roundScore >= state.norma && state.phase === 'PLAY') {
-      onNormaAchieved();
+      if (!state.overkillActive) {
+        onNormaAchieved();
+      } else if (!state.overkillRerollGranted && state.roundScore >= Math.round(state.norma * 1.5)) {
+        state.overkillRerollGranted = true;
+        state.bonusRerollsNextDraft++;
+        sfx.jackpot();
+        spawnShockwave(VIEW_W / 2, 220, '#ffd97d', 110);
+        spawnPopup(VIEW_W / 2, 200, '🎲 OVERKILL 150%! リロール+1!!', '#ffd97d', 16);
+      }
     }
   }
 
@@ -1579,6 +1854,47 @@
   }
 
   function onNormaAchieved() {
+    // R8クリア（初回制覇）時はそのまま華々しくクリア演出へ、それ以外は6秒間のOVERKILL（欲張りタイム）突入！
+    if (state.round === 8 && !state.endlessMode) {
+      finishOverkillRound();
+      return;
+    }
+    state.overkillActive = true;
+    state.overkillTimer = 6.0;
+    state.overkillRerollGranted = state.roundScore >= Math.round(state.norma * 1.5);
+    if (state.overkillRerollGranted) {
+      state.bonusRerollsNextDraft++;
+    }
+    sfx.roundClear();
+    spawnParticles(state.ball.x, state.ball.y, '#ffd97d', 28, 220);
+    spawnShockwave(state.ball.x, state.ball.y, '#ffd97d', 95);
+    showCenterBanner('NORMA CLEAR! 🔥OVERKILL!', '6秒間スコア×1.5！150%達成で次ドラフト🎲リロール+1', '#ffd97d', 1.6);
+    const okBar = document.getElementById('overkill-bar');
+    if (okBar) okBar.classList.add('show');
+    updateOverkillBarUI();
+  }
+
+  function updateOverkillBarUI() {
+    const titleEl = document.getElementById('overkill-title');
+    const subEl = document.getElementById('overkill-sub');
+    if (!titleEl || !subEl) return;
+    titleEl.textContent = `🔥 OVERKILL ×1.5 (${Math.max(0, state.overkillTimer).toFixed(1)}s)`;
+    if (state.overkillRerollGranted) {
+      subEl.textContent = '✨ 150%達成！次ドラフトの🎲リロール+1獲得済！';
+    } else {
+      const target = Math.round(state.norma * 1.5);
+      const rem = Math.max(0, target - state.roundScore);
+      subEl.textContent = `あと ${rem.toLocaleString()} PTS で次ドラフト🎲リロール+1！`;
+    }
+  }
+
+  function finishOverkillRound() {
+    if (state.phase !== 'PLAY') return;
+    state.overkillActive = false;
+    state.overkillTimer = 0;
+    const okBar = document.getElementById('overkill-bar');
+    if (okBar) okBar.classList.remove('show');
+
     state.phase = 'CLEAR_ANIM';
     setFlippersPressed(true, false);
     setFlippersPressed(false, false);
@@ -1605,17 +1921,23 @@
       const subMsg = ballBonus > 0
         ? `残り真珠ボーナス +${ballBonus.toLocaleString()} PTS！ドラフトへ`
         : 'ノルマ達成！深海カードドラフトへ';
-      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#20e3b2', 1.7);
+      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#20e3b2', 1.4);
       setTimeout(() => {
         if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
           openDraftModal(ballBonus);
         }
-      }, 1650);
+      }, 1350);
     }
   }
 
   function onBallLost() {
     if (state.phase !== 'PLAY') return;
+
+    // オーバーキル中にボールが落ちた場合は残機を減らさずそのままクリア遷移
+    if (state.overkillActive) {
+      finishOverkillRound();
+      return;
+    }
 
     // 1. 時間制ボールセーバー有効時
     if (state.ballSaverTimer > 0) {
@@ -1969,6 +2291,24 @@
     return chosen;
   }
 
+  function predictFusionForCard(card) {
+    if (card.category !== 'part') return null;
+    for (let i = 0; i < state.slots.length; i++) {
+      const s = state.slots[i];
+      if (!s) continue;
+      const fused = findFusionRecipe(card.id, s.type);
+      if (fused) {
+        const partnerInfo = getPartDisplayInfo(s.type);
+        const pName = partnerInfo ? partnerInfo.shortName : s.type;
+        const known = unlockedFusionsMap[fused.id] > 0;
+        return known
+          ? `⚗ 盤面の【${pName}】に重ねて合成 → ${fused.icon}${fused.name}`
+          : `⚗ 盤面の【${pName}】に重ねて未発見の合成進化！ (???)`;
+      }
+    }
+    return null;
+  }
+
   function renderDraftCards() {
     const listEl = document.getElementById('cards-list');
     listEl.innerHTML = '';
@@ -1981,6 +2321,7 @@
         ? 'パーツ配置'
         : (card.category === 'ball' ? 'ボール変化' : (card.id === 'upgrade_chip' ? 'パーツ強化' : '即時発動'));
       const synAlert = predictNewSynergyForCard(card);
+      const fusionAlert = predictFusionForCard(card);
       const partUri = (card.category === 'part' && typeof ASSET_PATHS !== 'undefined') ? ASSET_PATHS['part_' + card.id] : null;
       const iconHtml = partUri
         ? `<img src="${partUri}" alt="${card.shortName}" style="max-width:34px; max-height:34px; object-fit:contain;">`
@@ -1995,6 +2336,7 @@
           </div>
           <div class="card-desc">${card.desc}</div>
           <div class="card-hint">${getCardStatusHint(card)}</div>
+          ${fusionAlert ? `<div class="card-fusion-alert">${fusionAlert}</div>` : ''}
           ${synAlert ? `<div class="card-syn-alert">${synAlert}</div>` : ''}
         </div>
       `;
@@ -2079,14 +2421,14 @@
     } else if (card.id === 'warp_gate') {
       if (state.warpFirstSlot === null) {
         titleEl.textContent = `【渦潮】1つ目のスロットを選択`;
-        subEl.textContent = `緑枠（空き2か所必要）で新規設置、黄枠で既存ペアLvUP`;
+        subEl.textContent = `緑＝新規2か所 / 黄＝LvUP / 桃＝⚗合成進化!`;
       } else {
         titleEl.textContent = `【渦潮】2つ目の空きスロットを選択`;
         subEl.textContent = `出口の空きスロットをタップ（1つ目を再タップで解除）`;
       }
     } else {
       titleEl.textContent = `【${card.shortName}】配置スロットを選択`;
-      subEl.textContent = `緑＝新規配置 / 黄＝同種LvUP（別種スロットは上書き不可）`;
+      subEl.textContent = `緑＝新規 / 黄＝同種LvUP / 桃＝⚗合成進化!`;
     }
   }
 
@@ -2107,6 +2449,7 @@
         if (slot === null) return 'new';
         return null;
       }
+      if (slot && findFusionRecipe('warp_gate', slot.type)) return 'fuse';
       if (slot && slot.type === 'warp_gate' && slot.level < 3) return 'upgrade';
       const emptyCount = state.slots.filter(s => s === null).length;
       if (slot === null && emptyCount >= 2) return 'new';
@@ -2115,6 +2458,7 @@
 
     if (slot === null) return 'new';
     if (slot.type === card.id && slot.level < 3) return 'upgrade';
+    if (findFusionRecipe(card.id, slot.type)) return 'fuse';
     return null;
   }
 
@@ -2127,6 +2471,36 @@
     }
     const card = state.pendingCard;
     const pos = SLOT_POSITIONS[slotId];
+
+    // パーツ合成進化（化学反応）
+    if (action === 'fuse') {
+      const existing = state.slots[slotId];
+      const fused = findFusionRecipe(card.id, existing.type);
+      if (fused) {
+        // もし既存側がワープゲートだった場合、相方のペア参照を安全に解除（残った相方は通常真珠貝に変化して孤立を防ぐ）
+        if (existing.type === 'warp_gate' && existing.pairSlotId !== null && state.slots[existing.pairSlotId]) {
+          state.slots[existing.pairSlotId].pairSlotId = null;
+          state.slots[existing.pairSlotId].type = 'bumper_circle';
+        }
+        const newLevel = Math.min(3, Math.max(1, existing.level) + 1);
+        placePartInSlot(slotId, fused.id, newLevel);
+        state.slots[slotId].pulse = 1.8;
+        const isFirst = saveFusionDiscovery(fused.id);
+        sfx.jackpot();
+        triggerShake(0.18, 4.5);
+        spawnShockwave(pos.x, pos.y, fused.color, 95);
+        spawnParticles(pos.x, pos.y, fused.color, 26, 200);
+        spawnPopup(
+          pos.x,
+          pos.y - 14,
+          isFirst ? `⚗新発見!【${fused.name}】` : `⚗合成進化!【${fused.name}】`,
+          fused.color,
+          15
+        );
+        finishPlacementPhase();
+        return;
+      }
+    }
 
     if (card.id === 'upgrade_chip') {
       const target = state.slots[slotId];
@@ -2503,7 +2877,7 @@
     for (let j = 0; j < state.slots.length; j++) {
       if (j === sourceSlotId) continue;
       const p = state.slots[j];
-      if (p && p.type === 'battery') {
+      if (p && (p.type === 'battery' || p.type === 'electro_prism')) {
         if ((p.charge || 0) < 10) {
           p.charge = Math.min(10, (p.charge || 0) + 1);
           p.pulse = Math.max(p.pulse || 1, 1.24);
@@ -2512,22 +2886,30 @@
     }
   }
 
-  function spawnMiniBalls(x, y, baseVx, baseVy) {
+  function spawnMiniBalls(x, y, baseVx, baseVy, count = 2, maxLimit = 4) {
     const MINI_R = 6;
-    const MAX_MINI = 4;
-    if (state.miniBalls.length >= MAX_MINI) return 0;
+    if (state.miniBalls.length >= maxLimit) return 0;
 
     let spd = Math.hypot(baseVx, baseVy);
     let baseAngle = Math.atan2(baseVy, baseVx);
     if (spd < 240) {
-      spd = 340;
+      spd = 350;
       baseAngle = -Math.PI / 2 + (Math.random() - 0.5) * 0.5;
     }
 
-    const angles = [baseAngle + (25 * Math.PI) / 180, baseAngle - (25 * Math.PI) / 180];
+    const angles = [];
+    if (count === 1) {
+      angles.push(baseAngle + (Math.random() < 0.5 ? 0.35 : -0.35));
+    } else if (count === 2) {
+      angles.push(baseAngle + (25 * Math.PI) / 180, baseAngle - (25 * Math.PI) / 180);
+    } else {
+      for (let k = 0; k < count; k++) {
+        angles.push(baseAngle + (Math.PI * 2 * k) / count + (Math.random() - 0.5) * 0.25);
+      }
+    }
     let spawned = 0;
     for (let k = 0; k < angles.length; k++) {
-      if (state.miniBalls.length >= MAX_MINI) break;
+      if (state.miniBalls.length >= maxLimit) break;
       const a = angles[k];
       state.miniBalls.push({
         x: x + Math.cos(a) * 10,
@@ -2665,6 +3047,25 @@
       spawnParticles(pos.x, pos.y, '#ff4d6d', 10, 140);
       if (chainDepth === 0 && (part.detCount || 0) >= 2) {
         triggerDetonation(targetSlotId, 1);
+      }
+    } else if (MUTATED_PARTS[part.type]) {
+      // 変異パーツ（6種）の強制連鎖起動
+      const mp = MUTATED_PARTS[part.type];
+      sfx.skillShot();
+      addScore(mp.basePt * part.level, pos.x, pos.y, mp.color, 2, targetSlotId, `${mp.icon}${chainTag}`, chainBonusMult);
+      spawnParticles(pos.x, pos.y, mp.color, 14, 175);
+      spawnShockwave(pos.x, pos.y, mp.color, 54);
+      if (part.type === 'blast_jelly' && (part.splitCooldown || 0) <= 0) {
+        const sp = spawnMiniBalls(pos.x, pos.y, (Math.random() - 0.5) * 400, -320, 2, 6);
+        if (sp > 0) part.splitCooldown = 5.0;
+      } else if (part.type === 'vortex_reef') {
+        part.spinVel = 42;
+      } else if (part.type === 'mirror_mine') {
+        state.mirrorAuraStacks = Math.min(3, (state.mirrorAuraStacks || 0) + 1);
+        state.mirrorAuraTimer = 6.0;
+      } else if (part.type === 'electro_prism') {
+        const sp = spawnMiniBalls(pos.x, pos.y, 0, -340, 1, 6);
+        if (sp > 0) spawnPopup(pos.x, pos.y - 16, '✨プリズム分裂!', mp.color, 12);
       }
     }
   }
@@ -3013,6 +3414,200 @@
           }
         }
       }
+
+      // 10. 変異パーツ（化学反応6種）の衝突・固有挙動
+      else if (MUTATED_PARTS[part.type]) {
+        const mp = MUTATED_PARTS[part.type];
+        const r = 20;
+        const minDist = r + ballRadius;
+        if (dist < minDist && dist > 0.0001) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          b.x = pos.x + nx * minDist;
+          b.y = pos.y + ny * minDist;
+          const dot = b.vx * nx + b.vy * ny;
+          if (dot < 0) {
+            b.vx -= 1.92 * dot * nx;
+            b.vy -= 1.92 * dot * ny;
+          }
+
+          if (part.type === 'plasma_vent') {
+            b.vx = (b.vx * 0.45) + (Math.random() - 0.5) * 140;
+            b.vy = -(560 + part.level * 55);
+          } else {
+            const impulse = 175 + part.level * 30;
+            b.vx += nx * impulse;
+            b.vy += ny * impulse;
+          }
+
+          if (part.cooldown <= 0) {
+            part.cooldown = 0.07;
+            part.pulse = 1.65;
+            notifyOtherBatteriesCharged(i);
+
+            if (part.type === 'blast_jelly') {
+              // 爆裂クラゲ：2ヒットごとに隣接起爆＋ミニボール3発四方射出！
+              part.detCount = (part.detCount || 0) + 1;
+              if (part.detCount >= 2) {
+                part.detCount = 0;
+                triggerDetonation(i, 0);
+                const sp = spawnMiniBalls(pos.x, pos.y, b.vx, b.vy, 3, 6);
+                addScore(mp.basePt * part.level, pos.x, pos.y, mp.color, 2, i, sp > 0 ? `💥爆裂+${sp}球!` : '💥爆裂!');
+              } else {
+                sfx.bumper(state.combo);
+                addScore(150 * part.level, pos.x, pos.y, mp.color, 1, i, `💥爆裂 (${part.detCount}/2)`);
+              }
+            } else if (part.type === 'gravity_pearl') {
+              // 重力真珠：吸引→高反発＋周囲衝撃波
+              sfx.warp();
+              addScore(mp.basePt * part.level, pos.x, pos.y, mp.color, 2, i, '🌀重力真珠');
+              spawnShockwave(pos.x, pos.y, mp.color, 64);
+            } else if (part.type === 'plasma_vent') {
+              // 雷流噴出孔：高速打ち上げ＋2ヒットごとにランダム他パーツ2個へ雷撃連鎖！
+              part.detCount = (part.detCount || 0) + 1;
+              sfx.kicker();
+              addScore(mp.basePt * part.level, pos.x, pos.y, mp.color, 2, i, '⚡雷流噴出!');
+              if (part.detCount >= 2) {
+                part.detCount = 0;
+                const others = [];
+                for (let j = 0; j < state.slots.length; j++) {
+                  if (j !== i && state.slots[j]) others.push(j);
+                }
+                for (let k = 0; k < 2 && others.length > 0; k++) {
+                  const pickIdx = Math.floor(Math.random() * others.length);
+                  const targetId = others.splice(pickIdx, 1)[0];
+                  forceActivateSlot(targetId, i, 0);
+                }
+              }
+            } else if (part.type === 'vortex_reef') {
+              // 竜巻珊瑚：高速スピン開始（周囲の魚を吸引）＋コンボ+2
+              part.spinVel = 45;
+              sfx.spinner();
+              addScore(mp.basePt * part.level, pos.x, pos.y, mp.color, 2, i, '🌪️竜巻珊瑚');
+            } else if (part.type === 'mirror_mine') {
+              // 鏡面機雷：スコア+20%オーラ（最大3重）＋隣接1パーツ強制起動
+              state.mirrorAuraStacks = Math.min(3, (state.mirrorAuraStacks || 0) + 1);
+              state.mirrorAuraTimer = 6.0;
+              sfx.skillShot();
+              addScore(mp.basePt * part.level, pos.x, pos.y, mp.color, 2, i, `💎鏡面オーラ×${state.mirrorAuraStacks}`);
+              let nearestId = -1, nearestDist = 155;
+              for (let j = 0; j < state.slots.length; j++) {
+                if (j === i || !state.slots[j]) continue;
+                const d2 = Math.hypot(pos.x - SLOT_POSITIONS[j].x, pos.y - SLOT_POSITIONS[j].y);
+                if (d2 < nearestDist) { nearestDist = d2; nearestId = j; }
+              }
+              if (nearestId !== -1) forceActivateSlot(nearestId, i, 0);
+            } else if (part.type === 'electro_prism') {
+              // 放電プリズム：充電解放でミニボール2球＋隣接起爆
+              const chg = part.charge || 0;
+              part.charge = 0;
+              const pts = (mp.basePt + chg * 35) * part.level;
+              sfx.skillShot();
+              let lbl = chg >= 3 ? `✨放電×${chg}!` : '✨プリズム';
+              if (chg >= 3) {
+                const sp = spawnMiniBalls(pos.x, pos.y, b.vx, b.vy, 2, 6);
+                if (sp > 0) lbl = `✨放電+${sp}球!`;
+                triggerDetonation(i, 0);
+              }
+              addScore(pts, pos.x, pos.y, mp.color, 2, i, lbl);
+            }
+            spawnParticles(pos.x, pos.y, mp.color, 16, 175);
+          }
+        }
+      }
+
+      // 分裂真珠（ボールカード）：メインボールがパーツに4回当たるたびにミニボール自動分裂
+      if (isPrimaryBall && state.ballType === 'split_pearl' && part.cooldown === 0.07) {
+        state.splitPearlHits = (state.splitPearlHits || 0) + 1;
+        if (state.splitPearlHits >= 4) {
+          state.splitPearlHits = 0;
+          const sp = spawnMiniBalls(b.x, b.y, b.vx, b.vy, 1, 6);
+          if (sp > 0) {
+            sfx.warp();
+            spawnPopup(b.x, b.y - 12, '🔮真珠分裂!', '#f472b6', 13);
+            spawnShockwave(b.x, b.y, '#f472b6', 44);
+          }
+        }
+      }
+    }
+  }
+
+  function triggerMysteryHappening(cx, cy) {
+    // 直前と同じハプニングを避けてランダム選出
+    const candidates = HAPPENING_DEFS.filter(h => h.id !== state.lastHappeningId);
+    const picked = candidates[Math.floor(Math.random() * candidates.length)] || HAPPENING_DEFS[0];
+    state.lastHappeningId = picked.id;
+
+    sfx.jackpot();
+    state.hitStopTimer = 0.06;
+    triggerShake(0.24, 5.5);
+    spawnShockwave(cx, cy, picked.color, 130);
+    spawnParticles(cx, cy, picked.color, 34, 240);
+    showCenterBanner(`🐚 封印解放! ${picked.name}`, picked.desc, picked.color, 2.2);
+
+    if (picked.duration > 0) {
+      state.activeHappening = {
+        id: picked.id,
+        name: picked.name,
+        badge: picked.badge,
+        color: picked.color,
+        timer: picked.duration,
+        maxTimer: picked.duration
+      };
+    }
+
+    if (picked.id === 'pearl_storm') {
+      spawnMiniBalls(cx, cy, 0, -380, 4, 6);
+    } else if (picked.id === 'all_overdrive') {
+      for (let j = 0; j < state.slots.length; j++) {
+        if (state.slots[j]) {
+          forceActivateSlot(j, j, 1);
+        }
+      }
+    } else if (picked.id === 'fish_rush') {
+      for (let k = 0; k < 5; k++) {
+        spawnOneFish();
+      }
+    }
+    updateHUD();
+  }
+
+  function collideMysteryShell(b, ballRadius) {
+    const ms = state.mysteryShell;
+    if (!ms.active) return;
+    const dx = b.x - ms.x;
+    const dy = b.y - ms.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = ms.r + ballRadius;
+    if (dist < minDist && dist > 0.0001) {
+      const nx = dx / dist;
+      const ny = dy / dist;
+      b.x = ms.x + nx * minDist;
+      b.y = ms.y + ny * minDist;
+      const dot = b.vx * nx + b.vy * ny;
+      if (dot < 0) {
+        b.vx -= 1.88 * dot * nx;
+        b.vy -= 1.88 * dot * ny;
+      }
+      b.vx += nx * 165;
+      b.vy += ny * 165;
+
+      if (ms.cooldown <= 0) {
+        ms.cooldown = 0.14;
+        ms.hp--;
+        ms.pulse = 1.55;
+        if (ms.hp > 0) {
+          sfx.skillShot();
+          spawnShockwave(ms.x, ms.y, '#c084fc', 55);
+          spawnParticles(ms.x, ms.y, '#ffd97d', 14, 160);
+          addScore(250, ms.x, ms.y, '#c084fc', 2, -1, `🐚封印ひび! (残り${ms.hp})`);
+        } else {
+          ms.active = false;
+          ms.respawnTimer = 14.0;
+          addScore(600, ms.x, ms.y, '#ffd97d', 3, -1, '🐚大貝開封!!');
+          triggerMysteryHappening(ms.x, ms.y);
+        }
+      }
     }
   }
 
@@ -3192,6 +3787,36 @@
       }
     }
 
+    // 封印された大貝（Mystery Shell）・深海ハプニング・鏡面オーラ・オーバーキルのタイマー更新
+    const ms = state.mysteryShell;
+    if (ms.cooldown > 0) ms.cooldown = Math.max(0, ms.cooldown - dt);
+    if (ms.pulse > 1) ms.pulse = Math.max(1, ms.pulse - dt * 2.8);
+    if (!ms.active && state.phase === 'PLAY' && ms.spawnsThisRound < 2) {
+      ms.respawnTimer -= dt;
+      if (ms.respawnTimer <= 0) {
+        spawnMysteryShell();
+      }
+    }
+    if (state.activeHappening) {
+      state.activeHappening.timer -= dt;
+      if (state.activeHappening.timer <= 0) {
+        state.activeHappening = null;
+        updateHUD();
+      }
+    }
+    if (state.mirrorAuraTimer > 0) {
+      state.mirrorAuraTimer = Math.max(0, state.mirrorAuraTimer - dt);
+      if (state.mirrorAuraTimer <= 0) state.mirrorAuraStacks = 0;
+    }
+    if (state.overkillActive && state.phase === 'PLAY') {
+      state.overkillTimer -= dt;
+      updateOverkillBarUI();
+      if (state.overkillTimer <= 0) {
+        finishOverkillRound();
+        return;
+      }
+    }
+
     for (let i = 0; i < state.slots.length; i++) {
       const p = state.slots[i];
       if (!p) continue;
@@ -3200,8 +3825,22 @@
       if (p.spinVel > 0) {
         p.angle += p.spinVel * dt;
         p.spinVel = Math.max(0, p.spinVel - dt * 18);
-      } else if (p.type === 'warp_gate' || p.type === 'spinner') {
-        p.angle += dt * (p.type === 'warp_gate' ? 2.2 : 0.8);
+        // 竜巻珊瑚：回転中は周囲の深海魚を引き寄せる
+        if (p.type === 'vortex_reef') {
+          const vp = SLOT_POSITIONS[i];
+          for (let fIdx = 0; fIdx < state.activeFishes.length; fIdx++) {
+            const f = state.activeFishes[fIdx];
+            const fdx = vp.x - f.x;
+            const fdy = vp.y - f.y;
+            const fd = Math.hypot(fdx, fdy);
+            if (fd > 18 && fd < 150) {
+              f.x += (fdx / fd) * 55 * dt;
+              f.y += (fdy / fd) * 45 * dt;
+            }
+          }
+        }
+      } else if (p.type === 'warp_gate' || p.type === 'spinner' || p.type === 'vortex_reef' || p.type === 'gravity_pearl') {
+        p.angle += dt * (p.type === 'warp_gate' || p.type === 'gravity_pearl' ? 2.2 : 0.9);
       }
     }
     for (let i = 0; i < walls.length; i++) {
@@ -3301,7 +3940,8 @@
 
     const ballR = getBallRadius();
     const effGravity = getEffectiveGravity();
-    const miniGravity = GRAVITY * (hasRoundMod('low_gravity') ? 0.85 : 1.0);
+    const isAntiGrav = !!(state.activeHappening && state.activeHappening.id === 'anti_gravity' && state.activeHappening.timer > 0);
+    const miniGravity = (isAntiGrav ? -GRAVITY * 0.55 : GRAVITY) * (hasRoundMod('low_gravity') ? 0.85 : 1.0);
     const currentPushAx = (state.currentState.enabled && state.currentState.activeDuration > 0)
       ? state.currentState.dir * 260
       : 0;
@@ -3318,6 +3958,50 @@
         b.vx += currentPushAx * subDt;
       }
 
+      // 重力真珠（変異パーツ）の重力吸引
+      if (!b.inLane) {
+        for (let gi = 0; gi < state.slots.length; gi++) {
+          const gp = state.slots[gi];
+          if (gp && gp.type === 'gravity_pearl') {
+            const gpos = SLOT_POSITIONS[gi];
+            const gdx = gpos.x - b.x;
+            const gdy = gpos.y - b.y;
+            const gd = Math.hypot(gdx, gdy);
+            if (gd > 24 && gd < 92) {
+              const pull = (340 + gp.level * 60) * (1 - gd / 92);
+              b.vx += (gdx / gd) * pull * subDt;
+              b.vy += (gdy / gd) * pull * subDt;
+            }
+          }
+        }
+
+        // 磁石真珠（ボールカード）：近くの魚・封印大貝・ジャックポットへ磁力カーブ
+        if (state.ballType === 'magnet_pearl') {
+          let target = null;
+          let bestDist = 145;
+          if (state.mysteryShell.active) {
+            const d = Math.hypot(state.mysteryShell.x - b.x, state.mysteryShell.y - b.y);
+            if (d < bestDist) { bestDist = d; target = state.mysteryShell; }
+          }
+          if (state.jackpotDrone.active) {
+            const d = Math.hypot(state.jackpotDrone.x - b.x, state.jackpotDrone.y - b.y);
+            if (d < bestDist) { bestDist = d; target = state.jackpotDrone; }
+          }
+          for (let fi = 0; fi < state.activeFishes.length; fi++) {
+            const f = state.activeFishes[fi];
+            const d = Math.hypot(f.x - b.x, f.y - b.y);
+            if (d < bestDist) { bestDist = d; target = f; }
+          }
+          if (target && bestDist > 14) {
+            const mdx = target.x - b.x;
+            const mdy = target.y - b.y;
+            const mPull = 380 * (1 - bestDist / 145);
+            b.vx += (mdx / bestDist) * mPull * subDt;
+            b.vy += (mdy / bestDist) * mPull * subDt;
+          }
+        }
+      }
+
       const curSpd = Math.hypot(b.vx, b.vy);
       const maxSpd = 980;
       if (curSpd > maxSpd) {
@@ -3332,10 +4016,11 @@
       collideFlipper(state.rightFlipper, b, ballR);
       collideWalls(b, ballR, false);
       checkBoardGimmicks(subDt);
+      collideMysteryShell(b, ballR);
       collidePartsForBall(b, ballR, subDt, true);
       collideFishes();
 
-      // ミニボール（分裂クラゲから生成）の物理ステップ更新
+      // ミニボール（分裂クラゲ・爆裂クラゲ・分裂真珠から生成）の物理ステップ更新
       for (let m = 0; m < state.miniBalls.length; m++) {
         const mb = state.miniBalls[m];
         mb.vy += miniGravity * subDt;
@@ -3358,6 +4043,7 @@
         collideFlipper(state.rightFlipper, mb, mb.r);
         collideWalls(mb, mb.r, true);
         collideBossWithBall(mb, mb.r);
+        collideMysteryShell(mb, mb.r);
         collidePartsForBall(mb, mb.r, subDt, false);
         collideMiniBallWithFishes(mb);
       }
@@ -3432,6 +4118,34 @@
     ctx.restore();
 
     drawSlotsAndParts();
+    drawMysteryShell();
+
+    // 重力反転ハプニング中の上向きエネルギー矢印演出
+    if (state.activeHappening && state.activeHappening.id === 'anti_gravity' && state.activeHappening.timer > 0) {
+      ctx.save();
+      const t = performance.now() * 0.004;
+      ctx.strokeStyle = 'rgba(192, 132, 252, 0.36)';
+      ctx.lineWidth = 2;
+      for (let ax = 68; ax <= 310; ax += 60) {
+        const ay = 540 - ((t * 110 + ax * 2) % 440);
+        ctx.beginPath();
+        ctx.moveTo(ax - 8, ay + 8);
+        ctx.lineTo(ax, ay);
+        ctx.lineTo(ax + 8, ay + 8);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // オーバーキル中の黄金オーラ枠
+    if (state.overkillActive) {
+      ctx.save();
+      const pulse = 0.25 + Math.sin(performance.now() * 0.014) * 0.14;
+      ctx.strokeStyle = `rgba(255, 217, 125, ${pulse})`;
+      ctx.lineWidth = 5;
+      ctx.strokeRect(4, 4, VIEW_W - 8, VIEW_H - 8);
+      ctx.restore();
+    }
 
     // 起爆ウニの連鎖強制起動電撃ライン描画
     if (state.chainLinks.length > 0) {
@@ -3970,6 +4684,88 @@
     ctx.restore();
   }
 
+  function drawMysteryShell() {
+    const ms = state.mysteryShell;
+    if (!ms.active) return;
+    const now = performance.now() * 0.005;
+    const pulse = (ms.pulse || 1) + Math.sin(now * 2.2) * 0.04;
+
+    ctx.save();
+    ctx.translate(ms.x, ms.y);
+    ctx.scale(pulse, pulse);
+
+    // 神秘的なオーラリング
+    const aura = ctx.createRadialGradient(0, 0, 4, 0, 0, ms.r + 14);
+    aura.addColorStop(0, 'rgba(255, 217, 125, 0.52)');
+    aura.addColorStop(0.55, 'rgba(192, 132, 252, 0.30)');
+    aura.addColorStop(1, 'rgba(192, 132, 252, 0)');
+    ctx.fillStyle = aura;
+    ctx.beginPath();
+    ctx.arc(0, 0, ms.r + 14, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 回転する封印の魔法輪
+    ctx.save();
+    ctx.rotate(now * 0.6);
+    ctx.strokeStyle = '#c084fc';
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.arc(0, 0, ms.r + 4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // 大貝本体（深海パールシェル）
+    const bodyGrad = ctx.createRadialGradient(-4, -5, 2, 0, 0, ms.r);
+    bodyGrad.addColorStop(0, '#fff7d6');
+    bodyGrad.addColorStop(0.45, '#c084fc');
+    bodyGrad.addColorStop(1, '#3b1566');
+    ctx.fillStyle = bodyGrad;
+    ctx.strokeStyle = '#ffd97d';
+    ctx.lineWidth = 2.2;
+    ctx.shadowColor = '#ffd97d';
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(0, 0, ms.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // ひび割れ線（HPが減るほど増える）
+    if (ms.hp < 3) {
+      ctx.strokeStyle = '#fff7d6';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(-7, -9); ctx.lineTo(-1, -1); ctx.lineTo(6, 5);
+      if (ms.hp === 1) {
+        ctx.moveTo(8, -8); ctx.lineTo(1, 0); ctx.lineTo(-8, 8);
+      }
+      ctx.stroke();
+    }
+
+    // 中央の ??? ラベル
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = 4;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('???', 0, 0);
+
+    ctx.scale(1 / pulse, 1 / pulse);
+
+    // 残り封印ドット（3個）
+    for (let k = 0; k < ms.maxHp; k++) {
+      const px = (k - 1) * 9;
+      const py = ms.r + 9;
+      ctx.fillStyle = k < ms.hp ? '#ffd97d' : 'rgba(127, 166, 196, 0.28)';
+      ctx.beginPath();
+      ctx.arc(px, py, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
   function drawSlotsAndParts() {
     const isPlacePhase = state.phase === 'PLACE';
     const showSkillTarget = state.phase === 'PLAY' && (state.ball.waitingLaunch || state.skillShotTimer > 0);
@@ -4010,6 +4806,22 @@
           ctx.beginPath();
           ctx.arc(0, 0, 28, 0, Math.PI * 2);
           ctx.stroke();
+        } else if (action === 'fuse') {
+          const fp = 28 + Math.sin(now * 3.5) * 2.5;
+          ctx.strokeStyle = '#f472b6';
+          ctx.fillStyle = 'rgba(244, 114, 182, 0.22)';
+          ctx.lineWidth = 3;
+          ctx.shadowColor = '#f472b6';
+          ctx.shadowBlur = 16;
+          ctx.beginPath();
+          ctx.arc(0, 0, fp, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#fde047';
+          ctx.font = '900 10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('⚗合成!', 0, -31);
         } else if (action === 'new') {
           ctx.strokeStyle = '#20e3b2';
           ctx.fillStyle = 'rgba(32, 227, 178, 0.16)';
@@ -4058,11 +4870,35 @@
       const scale = part.pulse || 1;
       ctx.scale(scale, scale);
 
-      // パーツ9種をすべて対応するPNG画像（part_<type>.png）で描画
-      const partImg = getAssetImage('part_' + part.type);
-      const cardInfo = CARD_CATALOG.find(c => c.id === part.type);
+      // 通常パーツ9種＋変異パーツ6種の画像・オーラ描画
+      const mutatedInfo = MUTATED_PARTS[part.type];
+      const partImg = mutatedInfo ? getAssetImage(mutatedInfo.baseImg) : getAssetImage('part_' + part.type);
+      const cardInfo = mutatedInfo || CARD_CATALOG.find(c => c.id === part.type);
       ctx.shadowColor = cardInfo ? cardInfo.color : '#70f5ff';
       let baseBlur = part.pulse > 1.05 ? 18 : 10;
+
+      // 変異パーツ専用の二重発光オーラ＆回転リング
+      if (mutatedInfo) {
+        baseBlur = Math.max(baseBlur, 16);
+        const mHalo = ctx.createRadialGradient(0, 0, 4, 0, 0, 30);
+        mHalo.addColorStop(0, mutatedInfo.color + '88');
+        mHalo.addColorStop(0.6, mutatedInfo.subColor + '33');
+        mHalo.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = mHalo;
+        ctx.beginPath();
+        ctx.arc(0, 0, 30, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.rotate(now * 0.9);
+        ctx.strokeStyle = mutatedInfo.color;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
 
       // 起爆ウニ：カウントが進むほど光が強まる（0, 1, 2）
       if (part.type === 'detonator') {
@@ -4079,8 +4915,8 @@
           ctx.fill();
         }
       }
-      // 蓄電クラゲ：充電が溜まるほど画像が明るく光る（0〜10）
-      else if (part.type === 'battery') {
+      // 蓄電クラゲ・放電プリズム：充電が溜まるほど画像が明るく光る（0〜10）
+      else if (part.type === 'battery' || part.type === 'electro_prism') {
         const chg = part.charge || 0;
         baseBlur = Math.max(baseBlur, 8 + chg * 2.2);
         if (chg > 0) {
@@ -4098,19 +4934,32 @@
 
       ctx.shadowBlur = baseBlur;
 
-      if (part.type === 'spinner' || part.type === 'warp_gate') {
+      if (part.type === 'spinner' || part.type === 'warp_gate' || part.type === 'vortex_reef' || part.type === 'gravity_pearl') {
         drawImageCentered(ctx, partImg, 0, 0, 42, 42, false, part.angle);
-      } else if (part.type === 'rebound_wall') {
+      } else if (part.type === 'rebound_wall' || part.type === 'mirror_mine') {
         const rot = part.dir > 0 ? 0.35 : -0.35;
         drawImageCentered(ctx, partImg, 0, 0, 48, 42, part.dir < 0, rot);
       } else if (part.type === 'bumper_tri') {
         drawImageCentered(ctx, partImg, 0, 0, 46, 46, part.dir < 0, 0);
       } else {
-        // bumper_circle, kicker, detonator, battery, split
+        // bumper_circle, kicker, detonator, battery, split, blast_jelly, plasma_vent, electro_prism
         drawImageCentered(ctx, partImg, 0, 0, 44, 44, false, 0);
       }
 
       ctx.scale(1 / scale, 1 / scale);
+
+      // 変異パーツの進化バッジ描画
+      if (mutatedInfo) {
+        ctx.save();
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 4;
+        ctx.fillStyle = mutatedInfo.color;
+        ctx.font = '900 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`★${mutatedInfo.icon}${mutatedInfo.shortName}`, 0, -26);
+        ctx.restore();
+      }
 
       // 連鎖パーツの個別ステータスバッジ描画
       if (part.type === 'detonator') {
@@ -4765,18 +5614,20 @@
       const partsHtml = state.slots
         .map((s, idx) => {
           if (!s) return null;
-          const c = CARD_CATALOG.find(item => item.id === s.type);
-          return `#${idx + 1}(${SLOT_POSITIONS[idx].label}): <b>${c ? c.shortName : s.type} Lv${s.level}</b> (${s.totalEarned.toLocaleString()}pt)`;
+          const c = getPartDisplayInfo(s.type);
+          const prefix = MUTATED_PARTS[s.type] ? '⚗' : '';
+          return `#${idx + 1}(${SLOT_POSITIONS[idx].label}): <b>${prefix}${c ? c.shortName : s.type} Lv${s.level}</b> (${s.totalEarned.toLocaleString()}pt)`;
         })
         .filter(Boolean)
         .join('<br>');
 
+      const discoveredFusionCount = Object.keys(unlockedFusionsMap).filter(k => unlockedFusionsMap[k] > 0).length;
       const bSpec = getBallSpec();
       const mod = state.roundModifier || ROUND_MODIFIERS[1];
       document.getElementById('pause-stats').innerHTML = `
         <b>現在ラウンド</b>: ROUND ${state.round} 【${mod.name}: ${mod.desc}】<br>
         <b>総スコア</b>: ${state.totalScore.toLocaleString()} PTS / <b>現在ボール</b>: <span class="syn-hl">${bSpec.shortBadge}</span> (${bSpec.desc})<br>
-        <b>海神の祝福(スコアブースト)</b>: +${state.scoreBoosterCount * 10}% / <b>海流フィン強化</b>: Lv${state.flipperLevel}<br><br>
+        <b>海神の祝福</b>: +${state.scoreBoosterCount * 10}% / <b>フィン強化</b>: Lv${state.flipperLevel} / <b>⚗合成発見</b>: ${discoveredFusionCount}/${FUSION_RECIPES.length}種<br><br>
         <b>【🐟発動中の深海魚パッシブ (${state.activeFishGroups.size}/5系統)】</b><br>
         ${fishHtml}<br><br>
         <b>【✨発動中の構築シナジー (${state.activeSynergies.length}個)】</b><br>
@@ -4798,9 +5649,13 @@
   document.getElementById('btn-resume').addEventListener('click', togglePause);
   document.getElementById('btn-retire').addEventListener('click', () => {
     state.runToken++;
+    state.overkillActive = false;
+    state.overkillTimer = 0;
     state.phase = 'TITLE';
     hideAllOverlays();
     document.getElementById('place-banner').classList.remove('show');
+    const okBar = document.getElementById('overkill-bar');
+    if (okBar) okBar.classList.remove('show');
     updateTitleRecords();
     document.getElementById('ov-title').classList.add('show');
   });
@@ -4810,6 +5665,15 @@
       finishPlacementPhase();
     }
   });
+
+  const btnOverkillNext = document.getElementById('btn-overkill-next');
+  if (btnOverkillNext) {
+    btnOverkillNext.addEventListener('click', () => {
+      if (state.phase === 'PLAY' && state.overkillActive) {
+        finishOverkillRound();
+      }
+    });
+  }
 
   // 図鑑の開閉ボタン（タイトル画面＆リザルト画面から）
   document.getElementById('btn-open-zukan-title').addEventListener('click', () => {
