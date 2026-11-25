@@ -30,7 +30,8 @@
         </div>
       </div>
       <div class="icon-btns">
-        <button id="btn-nudge" class="icon-btn nudge-btn" title="海流揺らし (Shift / X / タップ)">🌊揺らす</button>
+        <button id="btn-burst" class="icon-btn burst-btn" title="アクアバースト (W / E / タップ)：100%で全魚回収＋全パーツ連鎖！">🌊 0%</button>
+        <button id="btn-nudge" class="icon-btn nudge-btn" title="海流揺らし (Shift / X / タップ)">揺らす</button>
         <button id="btn-bgm" class="icon-btn" title="深海BGM On/Off">🎵</button>
         <button id="btn-mute" class="icon-btn" title="全サウンド ミュート切替">🔊</button>
         <button id="btn-pause" class="icon-btn" title="一時停止・ビルド＆魚効果確認">⏸</button>
@@ -72,13 +73,17 @@
       </div>
       <button id="btn-overkill-next" class="overkill-next-btn">次へ ⏭</button>
     </div>
+    <div id="aquarium-exit-bar">
+      <span class="aquarium-hint">🫧 水槽をタップすると波紋が広がり魚たちが寄ってきます</span>
+      <button id="btn-aquarium-exit" class="overkill-next-btn">戻る</button>
+    </div>
     <canvas id="game-canvas" width="420" height="660"></canvas>
 
     <!-- Title Overlay -->
     <div id="ov-title" class="overlay show">
       <div class="modal-box">
         <div class="game-title">弾む思いつき</div>
-        <div class="game-subtitle">DEEP SEA PINBALL × DECK BUILDER</div>
+        <div class="game-subtitle">DEEP SEA AQUARIUM PINBALL × DECK BUILDER</div>
         <div class="records-box">
           <div class="rec-item">
             <span class="rec-label">HIGH SCORE</span>
@@ -94,11 +99,12 @@
           </div>
         </div>
         <div class="howto-box">
-          ・発光する<b>真珠ボール</b>を打ち出し、各ラウンド<b>3球以内</b>にノルマ達成でクリア！全8ラウンド（R8深海の主）制覇を目指します。<br>
-          ・クリア後に<b>カード3枚から1枚</b>をドラフトし、<b>10か所のスロット</b>に深海パーツ（真珠貝・珊瑚・熱水噴出孔・渦潮など）を設置・強化！<br>
-          ・<span class="syn-hl">★泳ぐ深海魚コレクション</span>：盤面を横切る<b>全12種の深海魚</b>にボールを当てると跳ね返りながら<b>回収（図鑑登録＆高得点）</b>！集めた魚の種類に応じてそのランの間だけ<b>5系統のパッシブ効果</b>が発動します。
+          ・美しいアクアリウム水槽に<b>真珠ボール</b>を打ち出し、全8ラウンド制覇を目指します。<br>
+          ・パーツ同士を重ねて<b>⚗合成進化</b>！封印された大貝（<b>???</b>）を割るとハプニング発生！<br>
+          ・<span class="syn-hl">🫧マイ・アクアリウム</span>：集めた魚は水槽の奥に棲みついて泳ぎ続け、ゲージ100%で<b>🌊アクアバースト</b>発動！
         </div>
-        <button id="btn-start" class="primary-btn">深海へ潜る (GAME START)</button>
+        <button id="btn-start" class="primary-btn">アクアリウムへ潜る (GAME START)</button>
+        <button id="btn-aquarium-view" class="secondary-btn">🫧 アクアリウムを眺める</button>
         <button id="btn-open-zukan-title" class="secondary-btn">🐟 深海魚図鑑を見る</button>
         <button id="btn-practice" class="secondary-btn" style="display:none;">海溝エンドレス練習 (R9〜)</button>
       </div>
