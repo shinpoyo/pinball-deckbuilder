@@ -85,6 +85,7 @@
     'part_split': 'assets/img/part_split.webp',
     'part_warp_gate': 'assets/img/part_warp_gate.webp',
     'ryugu_no_tsukai': 'assets/img/ryugu_no_tsukai.webp',
+    'aquarium_bg': 'assets/img/aquarium_bg.webp',
     'board_bg': 'assets/img/board_bg.webp',
     'mystery_shell': 'assets/img/mystery_shell.webp',
     'mut_blast_jelly': 'assets/img/mut_blast_jelly.webp',
@@ -905,8 +906,22 @@
       osc.stop(now + duration);
     }
     bumper(combo = 1) {
-      const base = 300 + Math.min(combo, 35) * 16;
-      this.playTone(base, 'sine', 0.12, 0.19, base * 1.45);
+      // コンボに合わせて澄んだペンタトニック（ヨナ抜き）音階で美しく上昇する水琴チャイム
+      const scale = [392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51];
+      const note = scale[Math.max(0, combo - 1) % scale.length];
+      this.playTone(note, 'sine', 0.16, 0.17, note * 1.008);
+      this.playTone(note * 2, 'triangle', 0.09, 0.055, note * 2.01);
+    }
+    aquaBurst() {
+      const notes = [392.00, 493.88, 587.33, 783.99, 987.77, 1174.66, 1567.98];
+      notes.forEach((n, i) => setTimeout(() => {
+        this.playTone(n, 'sine', 0.32, 0.16, n * 1.005);
+        this.playTone(n * 0.5, 'triangle', 0.25, 0.07);
+      }, i * 52));
+    }
+    waterDrop() {
+      const base = 520 + Math.random() * 240;
+      this.playTone(base, 'sine', 0.14, 0.11, base * 1.42);
     }
     kicker() {
       this.playTone(180, 'triangle', 0.19, 0.18, 690);
@@ -1277,8 +1292,124 @@
     overkillActive: false,
     overkillTimer: 0,
     overkillRerollGranted: false,
-    bonusRerollsNextDraft: 0
+    bonusRerollsNextDraft: 0,
+
+    // アクアリウム世界＆アクアバースト（潮汐ゲージ必殺技）
+    aquaGauge: 0, // 0〜100
+    tankFishes: [], // 背景水槽に棲みついて優雅に泳ぐ魚たち
+    waterRipples: [], // 水面の光の波紋
+    aquariumViewMode: false,
+    attractPoint: null // { x, y, timer } 水槽タップで魚が寄ってくる光の粒
   };
+
+  function spawnWaterRipple(x, y, color = '#70f5ff', maxR = 75) {
+    state.waterRipples.push({ x, y, r: 6, maxR, color, alpha: 0.78 });
+  }
+
+  function addTankFish(spec, startInside = false) {
+    if (!spec) return;
+    if (state.tankFishes.length >= 16) state.tankFishes.shift();
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const minY = Math.max(90, spec.bandY ? spec.bandY[0] : 130);
+    const maxY = Math.min(540, spec.bandY ? spec.bandY[1] + 90 : 480);
+    const baseY = minY + Math.random() * Math.max(40, maxY - minY);
+    state.tankFishes.push({
+      spec,
+      x: startInside ? (45 + Math.random() * (VIEW_W - 90)) : (dir > 0 ? -30 : VIEW_W + 30),
+      y: baseY,
+      baseY,
+      dir,
+      speed: 18 + Math.random() * 22,
+      scale: 0.68 + Math.random() * 0.34,
+      alpha: 0.42 + Math.random() * 0.24,
+      phase: Math.random() * Math.PI * 2,
+      bobAmp: 6 + Math.random() * 8
+    });
+  }
+
+  function populateTitleTankFishes() {
+    state.tankFishes = [];
+    const unlocked = FISH_CATALOG.filter(f => unlockedFishMap[f.id] > 0);
+    const source = unlocked.length >= 3 ? unlocked : FISH_CATALOG.slice(0, 6);
+    source.slice(0, 12).forEach(spec => addTankFish(spec, true));
+  }
+
+  function updateTankFishes(dt) {
+    if (state.attractPoint) {
+      state.attractPoint.timer -= dt;
+      if (state.attractPoint.timer <= 0) state.attractPoint = null;
+    }
+    for (let i = 0; i < state.tankFishes.length; i++) {
+      const tf = state.tankFishes[i];
+      tf.phase += dt * 2.2;
+      if (state.attractPoint) {
+        const dx = state.attractPoint.x - tf.x;
+        const dy = state.attractPoint.y - tf.y;
+        const d = Math.hypot(dx, dy);
+        if (d > 24 && d < 240) {
+          tf.dir = dx >= 0 ? 1 : -1;
+          tf.x += (dx / d) * (tf.speed * 2.1) * dt;
+          tf.y += (dy / d) * (tf.speed * 1.6) * dt;
+          tf.baseY = tf.y;
+          continue;
+        }
+      }
+      tf.x += tf.dir * tf.speed * dt;
+      tf.y = tf.baseY + Math.sin(tf.phase) * tf.bobAmp;
+      if (tf.dir > 0 && tf.x > VIEW_W + 45) {
+        tf.dir = -1;
+        tf.baseY = 100 + Math.random() * 420;
+      } else if (tf.dir < 0 && tf.x < -45) {
+        tf.dir = 1;
+        tf.baseY = 100 + Math.random() * 420;
+      }
+    }
+    for (let i = state.waterRipples.length - 1; i >= 0; i--) {
+      const rp = state.waterRipples[i];
+      rp.r += (rp.maxR - rp.r) * dt * 4.5 + 18 * dt;
+      rp.alpha -= dt * 0.95;
+      if (rp.alpha <= 0) state.waterRipples.splice(i, 1);
+    }
+  }
+
+  function chargeAquaGauge(amount) {
+    if (state.phase !== 'PLAY') return;
+    const prev = state.aquaGauge;
+    state.aquaGauge = Math.min(100, state.aquaGauge + amount);
+    if (prev < 100 && state.aquaGauge >= 100) {
+      sfx.skillShot();
+      spawnPopup(VIEW_W / 2, 130, '🌊 AQUA BURST READY!! (W / タップ)', '#72efdd', 14);
+    }
+  }
+
+  function triggerAquaBurst() {
+    if (state.phase !== 'PLAY' || state.aquaGauge < 100) return;
+    state.aquaGauge = 0;
+    sfx.aquaBurst();
+    state.hitStopTimer = 0.055;
+    triggerShake(0.24, 5.2);
+    spawnWaterRipple(187, 320, '#72efdd', 240);
+    spawnWaterRipple(187, 320, '#ffd97d', 180);
+    spawnParticles(187, 320, '#70f5ff', 36, 250);
+    showCenterBanner('🌊 AQUA BURST!!', '大波紋が全パーツ連鎖＆深海魚を一斉回収！', '#72efdd', 1.8);
+
+    // 1. 落ちそうなボールを上方へふんわり救出＆加速
+    if (!state.ball.inLane && !state.ball.waitingLaunch) {
+      state.ball.vy = Math.min(state.ball.vy, -460);
+      state.ball.vx += (187 - state.ball.x) * 1.4;
+    }
+    // 2. 盤面を泳いでいるすべての深海魚を一気に回収！
+    for (let i = state.activeFishes.length - 1; i >= 0; i--) {
+      onCatchFish(state.activeFishes[i], i);
+    }
+    // 3. 盤面の全パーツを連鎖起動！
+    for (let j = 0; j < state.slots.length; j++) {
+      if (state.slots[j]) {
+        forceActivateSlot(j, j, 1);
+      }
+    }
+    updateHUD();
+  }
 
   function hasFishBuff(groupId) {
     return state.activeFishGroups.has(groupId);
@@ -1488,6 +1619,9 @@
 
     const tag = isNewZukan ? `🐟NEW! ${spec.name}` : (hasRoundMod('big_catch') ? `🎣大漁! ${spec.name}` : `🐟${spec.name}`);
     addScore(fishPoints, fishObj.x, fishObj.y, spec.color, spec.rarity === 'ssr' ? 3 : (spec.rarity === 'rare' ? 2 : 1), -1, tag);
+    // 回収した魚がそのままマイ・アクアリウム（背景水槽）に棲みついて泳ぎ続ける！
+    addTankFish(spec, false);
+    spawnWaterRipple(fishObj.x, fishObj.y, spec.color, 78);
 
     if (newlyActivatedGroup) {
       spawnPopup(
@@ -1523,7 +1657,7 @@
     state.particles = [];
     state.shockwaves = [];
 
-    // ラン中魚コレクション・パッシブ・ボール種別のリセット
+    // ラン中魚コレクション・パッシブ・ボール種別・アクアリウム状態のリセット
     state.activeFishes = [];
     state.caughtFishThisRun = [];
     state.activeFishGroups = new Set();
@@ -1534,6 +1668,13 @@
     state.chainLinks = [];
     state.miniBalls = [];
     state.ballType = 'normal';
+    state.aquaGauge = 0;
+    state.waterRipples = [];
+    state.aquariumViewMode = false;
+    state.tankFishes = [];
+    // 初期の小さな水槽に2匹の観賞魚を泳がせて生命感を出す
+    addTankFish(FISH_CATALOG[0], true);
+    addTankFish(FISH_CATALOG[2], true);
 
     // 初期盤面（4個配置）：真珠貝（丸バンパー）×2 ＋ 海流の渦（スピナー） ＋ 枝珊瑚（三角バンパー）
     // 盤面中央が空っぽに見えないよう、中上・中央(#3: index 2)と深層・中央(#6: index 5)に配置
@@ -1825,6 +1966,12 @@
       ? `🎯SKILL SHOT! +${gained.toLocaleString()}`
       : (labelPrefix ? `${labelPrefix} +${gained.toLocaleString()}` : `+${gained.toLocaleString()}`);
     spawnPopup(x, y, popText, isSkillShot ? '#ffd97d' : color, isSkillShot ? 15 : 13);
+
+    // ヒットごとにアクアバーストゲージをチャージ＆柔らかな水波紋を発生
+    chargeAquaGauge(slotId >= 0 ? 5 : 8);
+    if (state.waterRipples.length < 10) {
+      spawnWaterRipple(x, y, color, isSkillShot ? 74 : 46);
+    }
 
     updateHUD();
 
@@ -3696,6 +3843,23 @@
       bb.x += Math.sin(bb.wobble) * 14 * dt;
       if (bb.y < -10) seaBubbles.splice(i, 1);
     }
+
+    // 移動中の真珠ボールから細かな気泡（マイクロバブル）を優雅に放出
+    if (state.phase === 'PLAY' && !state.ball.waitingLaunch && seaBubbles.length < 48) {
+      const bSpd = Math.hypot(state.ball.vx, state.ball.vy);
+      if (bSpd > 140 && Math.random() < dt * 14) {
+        seaBubbles.push({
+          x: state.ball.x + (Math.random() - 0.5) * 10,
+          y: state.ball.y + (Math.random() - 0.5) * 10,
+          r: 1.2 + Math.random() * 2.2,
+          vy: -(32 + Math.random() * 38),
+          wobble: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    // 背景アクアリウムの棲みつき魚＆水面波紋の更新
+    updateTankFishes(dt);
   }
 
   function stepPhysics(dt) {
@@ -4102,6 +4266,10 @@
     }
 
     drawDeepSeaBackground();
+    if (state.aquariumViewMode) {
+      ctx.restore();
+      return;
+    }
     drawPinballGimmicks();
 
     // 渦潮（ワープゲート）のペア連結ライン
@@ -4191,24 +4359,36 @@
     }
     ctx.restore();
 
-    // 海底洞窟フレーム壁の描画
+    // 透き通るクリスタルガラス水槽フレームの描画
     ctx.save();
     ctx.lineCap = 'round';
     for (let i = 0; i < walls.length; i++) {
       const w = walls[i];
-      ctx.strokeStyle = w.pulse > 0 ? '#ffffff' : w.color;
-      ctx.lineWidth = w.oneWayLeft ? 2.5 : (3.5 + w.pulse * 2.5);
-      ctx.shadowColor = w.isSlingshot ? '#ff5c8a' : '#00b4d8';
-      ctx.shadowBlur = w.isSlingshot ? 12 : 6;
       if (w.oneWayLeft) {
         ctx.setLineDash([5, 4]);
       } else {
         ctx.setLineDash([]);
       }
+      // 外側の柔らかなクリスタル光彩
+      ctx.strokeStyle = w.pulse > 0 ? '#ffffff' : (w.isSlingshot ? 'rgba(255, 130, 175, 0.85)' : 'rgba(130, 238, 255, 0.48)');
+      ctx.lineWidth = w.oneWayLeft ? 2.2 : (3.2 + w.pulse * 2.5);
+      ctx.shadowColor = w.isSlingshot ? '#ff7aa2' : '#70f5ff';
+      ctx.shadowBlur = w.isSlingshot ? 12 : 8;
       ctx.beginPath();
       ctx.moveTo(w.x1, w.y1);
       ctx.lineTo(w.x2, w.y2);
       ctx.stroke();
+
+      // 内側のガラスハイライト芯線
+      if (!w.oneWayLeft) {
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = w.pulse > 0 ? '#ffffff' : 'rgba(230, 252, 255, 0.45)';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(w.x1, w.y1);
+        ctx.lineTo(w.x2, w.y2);
+        ctx.stroke();
+      }
     }
     ctx.restore();
 
@@ -4279,34 +4459,58 @@
   function drawDeepSeaBackground() {
     ctx.save();
 
-    const bgImg = getAssetImage('board_bg');
+    // タイトル・鑑賞モード・R1〜R4は「光の珊瑚アクアリウム」、R5以降は「深海遺跡アクアリウム」へ遷移
+    const useSunlitAquarium = (state.phase === 'TITLE' || state.aquariumViewMode || state.round <= 4);
+    const bgImg = getAssetImage(useSunlitAquarium ? 'aquarium_bg' : 'board_bg') || getAssetImage('board_bg');
     const now = performance.now() * 0.001;
 
     if (bgImg) {
-      // 1. 生成された深海遺跡・発光珊瑚の盤面背景イラストを描画
       ctx.drawImage(bgImg, 0, 0, VIEW_W, WORLD_H);
-      // 盤面パーツ・ボール・魚の視認性を保つための微暗幕＆深海ビネット
+      // 鑑賞モード時は透明度を上げて水槽の美しさを全開に、プレイ中はパーツ視認性を保つ微暗幕
+      const scrimA0 = state.aquariumViewMode ? 0.08 : (useSunlitAquarium ? 0.24 : 0.30);
+      const scrimA1 = state.aquariumViewMode ? 0.20 : (useSunlitAquarium ? 0.42 : 0.48);
       const scrim = ctx.createRadialGradient(VIEW_W * 0.48, WORLD_H * 0.45, 70, VIEW_W * 0.5, WORLD_H * 0.5, 420);
-      scrim.addColorStop(0, 'rgba(2, 10, 24, 0.34)');
-      scrim.addColorStop(1, 'rgba(1, 6, 16, 0.52)');
+      scrim.addColorStop(0, `rgba(2, 14, 32, ${scrimA0})`);
+      scrim.addColorStop(1, `rgba(1, 8, 22, ${scrimA1})`);
       ctx.fillStyle = scrim;
       ctx.fillRect(0, 0, VIEW_W, WORLD_H);
 
-      // 揺らめく光の差し込み（薄く重ねて生きた水面感を演出）
+      // 揺らめく光の差し込み（ゴッドレイ）＋コンボ連動オーロラ光彩
+      const highEnergy = state.feverTimer > 0 || state.overkillActive || state.combo >= 10;
       ctx.save();
       for (let i = 0; i < 4; i++) {
-        const rx = 85 + i * 76 + Math.sin(now * 0.65 + i * 1.3) * 18;
-        const rayGrad = ctx.createLinearGradient(rx, 0, rx + 20, 320);
-        rayGrad.addColorStop(0, 'rgba(112, 245, 255, 0.11)');
-        rayGrad.addColorStop(1, 'rgba(112, 245, 255, 0)');
+        const rx = 75 + i * 82 + Math.sin(now * 0.7 + i * 1.3) * 18;
+        const rayGrad = ctx.createLinearGradient(rx, 0, rx + 24, 340);
+        if (highEnergy) {
+          const hue = (175 + i * 32 + now * 28) % 360;
+          rayGrad.addColorStop(0, `hsla(${hue}, 90%, 72%, 0.16)`);
+          rayGrad.addColorStop(1, `hsla(${hue}, 90%, 72%, 0)`);
+        } else {
+          rayGrad.addColorStop(0, 'rgba(130, 248, 255, 0.13)');
+          rayGrad.addColorStop(1, 'rgba(130, 248, 255, 0)');
+        }
         ctx.fillStyle = rayGrad;
         ctx.beginPath();
-        ctx.moveTo(rx - 18, 0);
-        ctx.lineTo(rx + 18, 0);
-        ctx.lineTo(rx + 54, 320);
-        ctx.lineTo(rx - 32, 320);
+        ctx.moveTo(rx - 20, 0);
+        ctx.lineTo(rx + 20, 0);
+        ctx.lineTo(rx + 60, 340);
+        ctx.lineTo(rx - 36, 340);
         ctx.closePath();
         ctx.fill();
+      }
+
+      // 水面のゆらめくコースティクス（光の網目波紋）
+      ctx.strokeStyle = 'rgba(165, 248, 255, 0.14)';
+      ctx.lineWidth = 1.4;
+      for (let c = 0; c < 3; c++) {
+        ctx.beginPath();
+        const baseY = 34 + c * 28;
+        for (let x = 18; x <= VIEW_W - 18; x += 24) {
+          const wy = baseY + Math.sin(x * 0.035 + now * (1.4 + c * 0.35) + c) * 7;
+          if (x === 18) ctx.moveTo(x, wy);
+          else ctx.lineTo(x, wy);
+        }
+        ctx.stroke();
       }
       ctx.restore();
     } else {
@@ -4318,6 +4522,62 @@
       seaGrad.addColorStop(1, '#01050e');
       ctx.fillStyle = seaGrad;
       ctx.fillRect(0, 0, VIEW_W, WORLD_H);
+    }
+
+    // マイ・アクアリウムの棲みつき魚たち（背景水槽の奥を優雅に回遊）
+    if (state.tankFishes.length > 0) {
+      ctx.save();
+      for (let i = 0; i < state.tankFishes.length; i++) {
+        const tf = state.tankFishes[i];
+        const fishImg = getAssetImage(tf.spec.id);
+        if (!fishImg) continue;
+        ctx.save();
+        ctx.globalAlpha = state.aquariumViewMode ? Math.min(0.95, tf.alpha + 0.36) : tf.alpha;
+        ctx.shadowColor = tf.spec.color || '#70f5ff';
+        ctx.shadowBlur = state.aquariumViewMode ? 12 : 6;
+        const size = (tf.spec.r * 2.6) * tf.scale * (state.aquariumViewMode ? 1.2 : 1.0);
+        const tilt = Math.sin(tf.phase * 1.4) * 0.06;
+        drawImageCentered(ctx, fishImg, tf.x, tf.y, size, size, tf.dir < 0, tilt);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+
+    // 水面の光の波紋（ヒット時・タップ時・アクアバースト時に広がる二重リング）
+    if (state.waterRipples.length > 0) {
+      ctx.save();
+      for (let i = 0; i < state.waterRipples.length; i++) {
+        const rp = state.waterRipples[i];
+        ctx.strokeStyle = rp.color;
+        ctx.globalAlpha = Math.max(0, rp.alpha * 0.65);
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2);
+        ctx.stroke();
+        if (rp.r > 14) {
+          ctx.globalAlpha = Math.max(0, rp.alpha * 0.35);
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          ctx.arc(rp.x, rp.y, rp.r * 0.68, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+
+    // 鑑賞モードでタップした光の粒（魚が寄ってくる）
+    if (state.attractPoint) {
+      const ap = state.attractPoint;
+      ctx.save();
+      const g = ctx.createRadialGradient(ap.x, ap.y, 1, ap.x, ap.y, 16);
+      g.addColorStop(0, 'rgba(255, 247, 214, 0.92)');
+      g.addColorStop(0.5, 'rgba(112, 245, 255, 0.45)');
+      g.addColorStop(1, 'rgba(112, 245, 255, 0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(ap.x, ap.y, 16, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
 
     // ゆらゆら揺れる海藻（背景イラストになじむよう控えめに重ねる）
@@ -5134,7 +5394,7 @@
   function drawBall() {
     const b = state.ball;
     const bSpec = getBallSpec();
-    const ballR = bSpec.r;
+    const ballR = getBallRadius();
     ctx.save();
 
     const trailColor = state.feverTimer > 0
@@ -5353,6 +5613,14 @@
 
     const nudgeBtn = document.getElementById('btn-nudge');
     nudgeBtn.classList.toggle('tilted', state.tiltPenalty);
+
+    const burstBtn = document.getElementById('btn-burst');
+    if (burstBtn) {
+      const pctGauge = Math.floor(state.aquaGauge);
+      const isReady = pctGauge >= 100 && state.phase === 'PLAY';
+      burstBtn.textContent = isReady ? '🌊BURST!' : `🌊${pctGauge}%`;
+      burstBtn.classList.toggle('ready', isReady);
+    }
 
     document.getElementById('ctrl-left').classList.toggle('disabled', state.tiltPenalty);
     document.getElementById('ctrl-right').classList.toggle('disabled', state.tiltPenalty);
@@ -5706,15 +5974,78 @@
   document.getElementById('btn-to-title').addEventListener('click', () => {
     state.runToken++;
     state.phase = 'TITLE';
+    state.aquariumViewMode = false;
     hideAllOverlays();
+    populateTitleTankFishes();
     updateTitleRecords();
     document.getElementById('ov-title').classList.add('show');
+  });
+
+  // アクアバースト（ボタン＆W/Eキー）
+  const btnBurst = document.getElementById('btn-burst');
+  if (btnBurst) {
+    btnBurst.addEventListener('click', () => triggerAquaBurst());
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    if (e.code === 'KeyW' || e.code === 'KeyE') {
+      if (state.phase === 'PLAY' && state.aquaGauge >= 100) {
+        e.preventDefault();
+        triggerAquaBurst();
+      }
+    }
+  });
+
+  // アクアリウム鑑賞モード（タイトル画面から水槽をフル鑑賞＆タップで波紋・魚寄せ）
+  const btnAqView = document.getElementById('btn-aquarium-view');
+  const btnAqExit = document.getElementById('btn-aquarium-exit');
+  const aqExitBar = document.getElementById('aquarium-exit-bar');
+  const appEl = document.getElementById('app');
+
+  if (btnAqView && btnAqExit && aqExitBar) {
+    btnAqView.addEventListener('click', () => {
+      sfx.init();
+      sfx.waterDrop();
+      state.aquariumViewMode = true;
+      hideAllOverlays();
+      populateTitleTankFishes();
+      appEl.classList.add('aquarium-view');
+      aqExitBar.classList.add('show');
+      spawnWaterRipple(VIEW_W / 2, VIEW_H * 0.45, '#72efdd', 140);
+    });
+    btnAqExit.addEventListener('click', () => {
+      sfx.place();
+      state.aquariumViewMode = false;
+      state.attractPoint = null;
+      appEl.classList.remove('aquarium-view');
+      aqExitBar.classList.remove('show');
+      document.getElementById('ov-title').classList.add('show');
+    });
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    if (!state.aquariumViewMode) return;
+    const pt = getCanvasCoords(e.clientX, e.clientY);
+    sfx.waterDrop();
+    spawnWaterRipple(pt.x, pt.y, '#70f5ff', 95);
+    spawnWaterRipple(pt.x, pt.y, '#ffd97d', 56);
+    state.attractPoint = { x: pt.x, y: pt.y, timer: 4.0 };
+    for (let k = 0; k < 5 && seaBubbles.length < 52; k++) {
+      seaBubbles.push({
+        x: pt.x + (Math.random() - 0.5) * 18,
+        y: pt.y + (Math.random() - 0.5) * 12,
+        r: 1.5 + Math.random() * 2.8,
+        vy: -(40 + Math.random() * 45),
+        wobble: Math.random() * Math.PI * 2
+      });
+    }
   });
 
   // =========================================================================
   // 12. メインループ (60fps)
   // =========================================================================
   updateTitleRecords();
+  populateTitleTankFishes();
   placePartInSlot(0, 'bumper_circle', 1);
   placePartInSlot(1, 'bumper_circle', 1);
   placePartInSlot(2, 'spinner', 1);
