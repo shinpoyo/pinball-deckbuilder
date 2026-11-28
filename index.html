@@ -19,41 +19,44 @@
 </head>
 <body>
 <div id="app">
-  <!-- HUD -->
+  <!-- HUD (Roguelike Battle) -->
   <div id="hud">
     <div class="hud-top">
-      <div class="hud-group">
-        <span id="round-badge" class="round-badge">ROUND 1 / 8</span>
-        <div class="balls-box">
-          <span>PEARL</span>
-          <div id="balls-dots" style="display:flex; gap:4px;"></div>
-        </div>
+      <div class="hud-group" style="gap:5px;">
+        <span id="round-badge" class="round-badge">FLOOR 1/8</span>
+        <span id="hud-hp" class="rogue-pill hp" title="プレイヤーHP">❤️ 50/50</span>
+        <span id="hud-shield" class="rogue-pill shield" title="防御シールド">🛡 0</span>
+        <span id="hud-atk" class="rogue-pill atk" title="ボール基礎ダメージ">⚔ 3</span>
+        <span id="hud-gold" class="rogue-pill gold" title="所持ゴールド">🪙 0</span>
+        <div id="balls-dots" style="display:none;"></div>
       </div>
       <div class="icon-btns">
-        <button id="btn-burst" class="icon-btn burst-btn" title="アクアバースト (W / E / タップ)：100%で全魚回収＋全パーツ連鎖！">🌊 0%</button>
+        <button id="btn-burst" class="icon-btn burst-btn" title="アクアバースト (W / E / タップ)：100%で敵に大ダメージ＋全パーツ連鎖！">🌊 0%</button>
         <button id="btn-nudge" class="icon-btn nudge-btn" title="海流揺らし (Shift / X / タップ)">揺らす</button>
         <button id="btn-bgm" class="icon-btn" title="深海BGM On/Off">🎵</button>
         <button id="btn-mute" class="icon-btn" title="全サウンド ミュート切替">🔊</button>
-        <button id="btn-pause" class="icon-btn" title="一時停止・ビルド＆魚効果確認">⏸</button>
+        <button id="btn-pause" class="icon-btn" title="一時停止・所持レリック＆ビルド確認">⏸</button>
       </div>
     </div>
-    <div id="round-stepper" class="round-stepper"></div>
+    <div id="round-stepper" class="round-stepper" style="display:none;"></div>
     <div class="hud-mid">
-      <div class="score-area">
-        <span id="score-current" class="score-current">0</span>
-        <span id="score-norma" class="score-norma">/ 3,000</span>
+      <div class="enemy-hud-area">
+        <span id="enemy-name-hud" class="enemy-name-hud">深海モンスター</span>
+        <span id="score-current" class="score-current" style="font-size:12px;">40</span>
+        <span id="score-norma" class="score-norma">/ 40 HP</span>
+        <span id="enemy-intent-hud" class="enemy-intent-pill">⚔ 6 (6.0s)</span>
       </div>
       <div class="combo-area">
         <div id="fish-buff-bar" class="fish-buff-bar"></div>
         <span id="ball-type-tag" class="fish-buff-pill" style="background:rgba(112,245,255,0.16); border-color:rgba(112,245,255,0.45); color:#e6f6ff;" title="現在の真珠ボール種別">⚪真珠</span>
         <span id="mod-tag" class="fish-buff-pill" style="display:none; background:rgba(255,217,125,0.18); border-color:rgba(255,217,125,0.55); color:#ffd97d;"></span>
-        <span id="synergy-tag" class="synergy-tag" style="display:none;" title="クリックで発動中シナジーを確認">✨SYNERGY 0</span>
+        <span id="synergy-tag" class="synergy-tag" style="display:none;" title="クリックで発動中シナジー＆レリックを確認">✨SYNERGY 0</span>
         <span id="boost-tag" class="boost-tag" style="display:none;">+0%</span>
-        <span id="combo-badge" class="combo-badge">0 HIT (×1.00)</span>
+        <span id="combo-badge" class="combo-badge">0 HIT</span>
       </div>
     </div>
-    <div class="norma-bar-bg">
-      <div id="norma-bar" class="norma-bar-fill"></div>
+    <div class="norma-bar-bg enemy-hp-bar-bg">
+      <div id="norma-bar" class="norma-bar-fill enemy-hp-fill"></div>
     </div>
   </div>
 
@@ -83,7 +86,7 @@
     <div id="ov-title" class="overlay show">
       <div class="modal-box">
         <div class="game-title">弾む思いつき</div>
-        <div class="game-subtitle">DEEP SEA AQUARIUM PINBALL × DECK BUILDER</div>
+        <div class="game-subtitle">AQUARIUM ROGUELIKE PINBALL</div>
         <div class="records-box">
           <div class="rec-item">
             <span class="rec-label">HIGH SCORE</span>
@@ -99,14 +102,71 @@
           </div>
         </div>
         <div class="howto-box">
-          ・美しいアクアリウム水槽に<b>真珠ボール</b>を打ち出し、全8ラウンド制覇を目指します。<br>
-          ・パーツ同士を重ねて<b>⚗合成進化</b>！封印された大貝（<b>???</b>）を割るとハプニング発生！<br>
-          ・<span class="syn-hl">🫧マイ・アクアリウム</span>：集めた魚は水槽の奥に棲みついて泳ぎ続け、ゲージ100%で<b>🌊アクアバースト</b>発動！
+          ・美しいアクアリウム水槽を舞台に、<b>1戦ずつ深海の敵を倒して全8層を踏破</b>するローグライク・ピンボール！<br>
+          ・ボールを敵に当てて<b>直接ダメージ（初期3→強化で+5等）</b>、防御パーツで<b>🛡シールド</b>を積み、敵の攻撃を防ごう！<br>
+          ・<span class="syn-hl">🗺️分岐マップ</span>でバトル・エリート・休憩・ショップを選び、<b>ボール強化＆レリック＆⚗合成進化</b>で最強ビルドを構築！
         </div>
-        <button id="btn-start" class="primary-btn">アクアリウムへ潜る (GAME START)</button>
+        <button id="btn-start" class="primary-btn">深海踏破へ出発 (NEW RUN)</button>
         <button id="btn-aquarium-view" class="secondary-btn">🫧 アクアリウムを眺める</button>
         <button id="btn-open-zukan-title" class="secondary-btn">🐟 深海魚図鑑を見る</button>
-        <button id="btn-practice" class="secondary-btn" style="display:none;">海溝エンドレス練習 (R9〜)</button>
+        <button id="btn-practice" class="secondary-btn" style="display:none;">海溝エンドレス (R9〜)</button>
+      </div>
+    </div>
+
+    <!-- Roguelike Branching Map Overlay -->
+    <div id="ov-map" class="overlay">
+      <div class="modal-box map-modal-box">
+        <div class="game-title" style="font-size:20px; margin-bottom:2px;">🗺️ 深海踏破マップ</div>
+        <div id="map-status-bar" class="map-status-bar">❤️ 50/50 ｜ ⚔ 3 ｜ 🪙 0 ｜ 🎁 0個</div>
+        <div id="map-relics-bar" class="map-relics-bar"></div>
+        <div id="map-canvas-wrap" class="map-canvas-wrap">
+          <svg id="map-svg" class="map-svg"></svg>
+          <div id="map-nodes" class="map-nodes"></div>
+        </div>
+        <div class="map-legend">⚔バトル ／ 💀エリート ／ ⛺泉(回復/強化) ／ 🛒ショップ ／ ❓イベント ／ 👑ボス</div>
+      </div>
+    </div>
+
+    <!-- Shop Overlay -->
+    <div id="ov-shop" class="overlay">
+      <div class="modal-box">
+        <div class="game-title" style="font-size:21px; margin-bottom:2px;">🛒 海溝ショップ</div>
+        <div id="shop-gold-info" class="draft-sub">所持ゴールド: 🪙 0 G</div>
+        <div id="shop-items" class="cards-list" style="margin-bottom:10px;"></div>
+        <button id="btn-shop-leave" class="primary-btn">マップへ進む</button>
+      </div>
+    </div>
+
+    <!-- Rest Overlay -->
+    <div id="ov-rest" class="overlay">
+      <div class="modal-box">
+        <div class="game-title" style="font-size:21px; margin-bottom:4px;">⛺ 深海の癒しの泉</div>
+        <div id="rest-status" class="draft-sub">静かな光の泉で体力を回復するか、真珠を研磨して攻撃力を高めよう</div>
+        <div class="cards-list">
+          <div id="btn-rest-heal" class="card-item instant">
+            <div class="card-icon" style="border-color:#20e3b2;">💖</div>
+            <div class="card-body">
+              <div class="card-top"><span class="card-name" style="color:#20e3b2;">泉で休む（HP回復）</span><span class="card-type">回復</span></div>
+              <div id="rest-heal-desc" class="card-desc">最大HPの35%を回復する。</div>
+            </div>
+          </div>
+          <div id="btn-rest-forge" class="card-item instant">
+            <div class="card-icon" style="border-color:#ffd97d;">⚔️</div>
+            <div class="card-body">
+              <div class="card-top"><span class="card-name" style="color:#ffd97d;">真珠を研磨する（攻撃強化）</span><span class="card-type">永続強化</span></div>
+              <div class="card-desc">ボール基礎ダメージを永続で <b>+3</b> する！</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Overlay -->
+    <div id="ov-event" class="overlay">
+      <div class="modal-box">
+        <div id="event-title" class="game-title" style="font-size:20px; margin-bottom:4px;">❓ 深海の出会い</div>
+        <div id="event-desc" class="howto-box" style="text-align:left; margin-bottom:10px;"></div>
+        <div id="event-choices" class="cards-list"></div>
       </div>
     </div>
 
@@ -120,11 +180,11 @@
       </div>
     </div>
 
-    <!-- Draft Overlay -->
+    <!-- Draft / Battle Reward Overlay -->
     <div id="ov-draft" class="overlay">
       <div class="modal-box">
-        <div id="draft-header" class="draft-header">ROUND 1 CLEAR!</div>
-        <div id="draft-bonus-info" class="draft-sub">深海カードを1枚選んで盤面をビルドしよう</div>
+        <div id="draft-header" class="draft-header">BATTLE VICTORY!</div>
+        <div id="draft-bonus-info" class="draft-sub">報酬カードを1枚選んでビルドを強化しよう</div>
         <div id="draft-fish-buffs" style="width:100%; font-size:10.5px; color:var(--pearl-gold); margin-bottom:6px;"></div>
         <div class="peek-bar">
           <button id="btn-peek-board" class="util-btn">👁 盤面を確認</button>

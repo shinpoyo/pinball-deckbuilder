@@ -564,6 +564,108 @@
       weight: 6,
       basePt: 0,
       desc: '【ボール変化】近くの深海魚・封印大貝・ジャックポットへカーブして吸い寄せられる！'
+    },
+    {
+      id: 'ball_atk_2',
+      name: '真珠研磨（攻撃力+2）',
+      shortName: '真珠研磨',
+      category: 'instant',
+      icon: '⚔️',
+      color: '#fde047',
+      weight: 12,
+      basePt: 0,
+      desc: '【ボール強化】ボールの基礎ダメージを永続で +2 する！（初期3 → 強化で大幅UP）'
+    },
+    {
+      id: 'ball_atk_5',
+      name: '深淵の核（攻撃力+5）',
+      shortName: '深淵の核',
+      category: 'instant',
+      icon: '🔥',
+      color: '#ff5c8a',
+      weight: 6,
+      basePt: 0,
+      desc: '【レア強化】ボールの基礎ダメージを一気に +5 する！パーツ追撃ダメージも連動強化！'
+    },
+    {
+      id: 'shield_boost',
+      name: '真珠殻の加護（防御強化）',
+      shortName: '真珠殻の加護',
+      category: 'instant',
+      icon: '🛡️',
+      color: '#70f5ff',
+      weight: 10,
+      basePt: 0,
+      desc: '【防御アイテム】防御パーツの🛡シールド獲得量 +2 ＆ 最大HP +8（HPも+8回復）！'
+    },
+    {
+      id: 'relic_random',
+      name: '深海の遺物（レリック獲得）',
+      shortName: '深海の遺物',
+      category: 'instant',
+      icon: '🎁',
+      color: '#c084fc',
+      weight: 9,
+      basePt: 0,
+      desc: '【レリック】未所持の強力な防御・攻撃レリックを1つ獲得する！'
+    }
+  ];
+
+  // ローグライク：防御＆攻撃レリック一覧
+  const RELIC_CATALOG = [
+    { id: 'pearl_shield',  name: '真珠の盾',       icon: '🛡️', color: '#70f5ff', price: 55, desc: '戦闘開始時に自動で 🛡シールド +10 を得る' },
+    { id: 'shell_flipper', name: '硬殻フリッパー', icon: '🐚', color: '#38bdf8', price: 60, desc: 'フリッパーで弾くたびに 🛡シールド +1' },
+    { id: 'bubble_thorns', name: '泡のトゲ鎧',     icon: '🫧', color: '#f472b6', price: 55, desc: '敵の攻撃を受けるたびに 5 反撃ダメージを与える' },
+    { id: 'deep_heal',     name: '深海の癒し貝',   icon: '💖', color: '#20e3b2', price: 50, desc: 'バトル勝利時に HP +12 回復する' },
+    { id: 'venom_pearl',   name: '毒真珠の牙',     icon: '☠️', color: '#a3e635', price: 65, desc: 'ボールを敵に当てるたび ☠毒 +2（敵行動時に毒ダメージ）' },
+    { id: 'vampire_pearl', name: '吸血真珠',       icon: '🩸', color: '#fb7185', price: 70, desc: '敵に5回ボールを当てるたびに HP +2 回復' },
+    { id: 'storm_orb',     name: '雷撃オーブ',     icon: '⚡', color: '#fde047', price: 65, desc: '10コンボ達成ごとに敵へ 12 雷撃ダメージ！' },
+    { id: 'gold_magnet',   name: '黄金の羅針盤',   icon: '🪙', color: '#ffd97d', price: 45, desc: 'バトル勝利時の獲得ゴールドが +50% になる' }
+  ];
+
+  // ローグライク：深海モンスター図鑑（既存WebPを活用）
+  const ENEMY_POOL = {
+    normal: [
+      { id: 'mitsukurizame',   name: 'ミツクリザメ',     img: 'mitsukurizame',   baseHp: 38,  atk: 6,  interval: 6.2, color: '#ff5c8a', intents: ['attack', 'attack', 'heavy'] },
+      { id: 'daiouika',        name: '深海ダイオウイカ', img: 'daiouika',        baseHp: 46,  atk: 7,  interval: 6.8, color: '#f472b6', intents: ['attack', 'defend', 'heavy'] },
+      { id: 'chochin_ankou',   name: '提灯アンコウ',     img: 'chochin_ankou',   baseHp: 42,  atk: 8,  interval: 7.2, color: '#ffd97d', intents: ['defend', 'heavy', 'attack'] },
+      { id: 'fukurounagi',     name: 'フクロウナギ',     img: 'fukurounagi',     baseHp: 40,  atk: 6,  interval: 5.8, color: '#a855f7', intents: ['poison_atk', 'attack', 'poison_atk'] },
+      { id: 'ryugu_no_tsukai', name: 'リュウグウの使い', img: 'ryugu_no_tsukai', baseHp: 52,  atk: 7,  interval: 7.0, color: '#38bdf8', intents: ['defend', 'attack', 'heavy'] }
+    ],
+    elite: [
+      { id: 'coelacanth',      name: '💀古代王シーラカンス', img: 'coelacanth',  baseHp: 78,  atk: 10, interval: 6.4, color: '#ffd97d', intents: ['defend', 'heavy', 'attack', 'defend'] },
+      { id: 'abyss_kraken',    name: '💀深淵クラーケン',     img: 'daiouika',    baseHp: 84,  atk: 11, interval: 6.0, color: '#ff4d6d', intents: ['attack', 'poison_atk', 'heavy'] }
+    ],
+    boss: {
+      id: 'abyss_leviathan', name: '👑深海の主・レヴィアタン', img: 'boss', baseHp: 185, atk: 14, interval: 6.2, color: '#ff3b6b', intents: ['attack', 'defend', 'heavy', 'poison_atk']
+    }
+  };
+
+  // ローグライク：イベントマス（❓）の2択イベント
+  const EVENT_POOL = [
+    {
+      title: '❓ 沈没した海賊の宝箱',
+      desc: 'サンゴの隙間に古い宝箱が沈んでいる。封印の棘が巻かれているが、中には確かな魔力が眠っているようだ。',
+      choices: [
+        { label: '棘を無視してこじ開ける', sub: 'HP -8 ／ 未所持レリック1個 ＆ 🪙+35G 獲得！', color: '#c084fc', action: 'chest_risk' },
+        { label: '周りの金貨だけ慎重に拾う', sub: 'ノーダメージで 🪙+30G 獲得', color: '#ffd97d', action: 'chest_safe' }
+      ]
+    },
+    {
+      title: '❓ 古代アクアリウムの祭壇',
+      desc: '青白く光る古代の祭壇が、真珠の力を高める代わりに生命力を求めている。',
+      choices: [
+        { label: '生命力を捧げて真珠を鍛える', sub: 'HP -10 ／ ボール基礎ダメージ 永続 +5!!', color: '#ff5c8a', action: 'altar_power' },
+        { label: '静かに祈って癒しを受ける', sub: 'HP +18 回復', color: '#20e3b2', action: 'altar_heal' }
+      ]
+    },
+    {
+      title: '❓ 深海の鍛冶貝',
+      desc: '巨大な真珠貝が「ゴールドを払えば真珠を極限まで磨いてやろう」と語りかけてくる。',
+      choices: [
+        { label: '🪙45G 払って極限研磨する', sub: 'ボール基礎ダメージ +4（ゴールド不足時は+1）', color: '#fde047', action: 'smith_pay' },
+        { label: '防御の秘術を教わる（無料）', sub: '防御パーツの🛡シールド獲得量 +2 ＆ 最大HP +6', color: '#70f5ff', action: 'smith_shield' }
+      ]
     }
   ];
 
@@ -1408,7 +1510,606 @@
         forceActivateSlot(j, j, 1);
       }
     }
+    // 4. ローグライク戦闘：敵へ大ダメージ＋シールド獲得！
+    if (state.battleEnemy && state.battleEnemy.hp > 0) {
+      gainShield(12);
+      dealDamageToEnemy(state.ballDamage * 6, 187, 230, '#72efdd', '🌊BURST!');
+    }
     updateHUD();
+  }
+
+  // =========================================================================
+  // 5.5 ローグライク戦闘＆分岐マップ（Slay the Spire 風）
+  // =========================================================================
+  state.hp = 50;
+  state.maxHp = 50;
+  state.shield = 0;
+  state.gold = 0;
+  state.ballDamage = 3; // 初期ボール基礎ダメージ 3（強化で +2 / +5 等に成長！）
+  state.shieldBonus = 0;
+  state.relics = [];
+  state.battleEnemy = null;
+  state.attackBolts = [];
+  state.vampireHits = 0;
+  state.mapFloors = [];
+  state.currentFloor = 0; // 0 = まだ1層未選択, 1〜8 = 現在クリア/挑戦中の層
+  state.currentNodeIdx = -1;
+  state.currentBattleType = 'battle'; // 'battle' | 'elite' | 'boss'
+  state.playerHitFlash = 0;
+
+  function hasRelic(relicId) {
+    return state.relics.includes(relicId);
+  }
+
+  function grantRandomRelic() {
+    const unowned = RELIC_CATALOG.filter(r => !state.relics.includes(r.id));
+    if (unowned.length === 0) {
+      state.ballDamage += 2;
+      return { name: '真珠研磨 (+2 DMG)', icon: '⚔️' };
+    }
+    const picked = unowned[Math.floor(Math.random() * unowned.length)];
+    state.relics.push(picked.id);
+    return picked;
+  }
+
+  function getEffectiveBallDamage() {
+    let dmg = state.ballDamage + Math.floor(state.combo / 10);
+    if (state.ballType === 'heavy') dmg = Math.ceil(dmg * 1.25);
+    if (state.activeHappening && state.activeHappening.id === 'giant_pearl' && state.activeHappening.timer > 0) {
+      dmg = Math.ceil(dmg * 1.5);
+    }
+    if (state.feverTimer > 0) dmg = Math.ceil(dmg * 1.25);
+    return Math.max(1, dmg);
+  }
+
+  function gainShield(amount, x = VIEW_W / 2, y = 550) {
+    if (amount <= 0) return;
+    state.shield = Math.min(99, state.shield + amount);
+    spawnPopup(x, y, `🛡+${amount}`, '#70f5ff', 11.5);
+    updateHUD();
+  }
+
+  function spawnAttackBolt(fromX, fromY, dmg, color = '#ffd97d') {
+    const e = state.battleEnemy;
+    if (!e || e.hp <= 0) return;
+    state.attackBolts.push({
+      x1: fromX,
+      y1: fromY,
+      x2: e.x,
+      y2: e.y,
+      color,
+      timer: 0.28,
+      maxTimer: 0.28
+    });
+    dealDamageToEnemy(dmg, e.x + (Math.random() - 0.5) * 20, e.y - 10, color, '');
+  }
+
+  function dealDamageToEnemy(rawDmg, x, y, color = '#fde047', prefix = '') {
+    const e = state.battleEnemy;
+    if (!e || e.hp <= 0 || state.phase !== 'PLAY') return;
+    let dmg = Math.max(1, Math.round(rawDmg));
+    if (e.shield > 0) {
+      const absorbed = Math.min(e.shield, dmg);
+      e.shield -= absorbed;
+      dmg -= absorbed;
+      if (absorbed > 0) {
+        spawnPopup(e.x, e.y + 12, `🛡-${absorbed}`, '#93c5fd', 11);
+      }
+    }
+    if (dmg > 0) {
+      e.hp = Math.max(0, e.hp - dmg);
+      e.flash = 0.16;
+      e.pulse = 1.22;
+      state.totalScore += dmg * 50;
+      const lbl = prefix ? `${prefix} -${dmg}` : `-${dmg}`;
+      spawnPopup(x, y, lbl, color, dmg >= 8 ? 16 : 13.5);
+      spawnParticles(e.x, e.y, color, dmg >= 8 ? 14 : 7, 145);
+    }
+    updateHUD();
+    if (e.hp <= 0) {
+      onEnemyDefeated();
+    }
+  }
+
+  function damagePlayer(rawDmg, reason = '敵の攻撃!') {
+    if (state.phase !== 'PLAY') return;
+    let dmg = Math.max(1, Math.round(rawDmg));
+    if (state.shield > 0) {
+      const blocked = Math.min(state.shield, dmg);
+      state.shield -= blocked;
+      dmg -= blocked;
+      if (blocked > 0) {
+        spawnPopup(VIEW_W / 2, 530, `🛡防御 -${blocked}`, '#70f5ff', 13);
+      }
+    }
+    if (dmg > 0) {
+      state.hp = Math.max(0, state.hp - dmg);
+      state.playerHitFlash = 0.35;
+      triggerShake(0.22, 5.5);
+      sfx.ballLost();
+      spawnPopup(VIEW_W / 2, 505, `💥${reason} -${dmg} HP`, '#ff4d6d', 15);
+    } else {
+      sfx.targetLit();
+      spawnShockwave(VIEW_W / 2, 555, '#70f5ff', 68);
+    }
+
+    // 泡のトゲ鎧：被弾時に5反撃ダメージ
+    if (reason !== '落球ダメージ' && hasRelic('bubble_thorns') && state.battleEnemy && state.battleEnemy.hp > 0) {
+      dealDamageToEnemy(5, state.battleEnemy.x, state.battleEnemy.y - 16, '#f472b6', '🫧反撃');
+    }
+
+    updateHUD();
+    if (state.hp <= 0) {
+      state.phase = 'RESULT';
+      showResultScreen(false);
+    }
+  }
+
+  function getEnemyIntentInfo(e) {
+    if (!e) return { type: 'attack', val: 0, label: '' };
+    const type = e.intents[e.intentIdx % e.intents.length];
+    if (type === 'attack') return { type, val: e.atk, label: `⚔ ${e.atk}` };
+    if (type === 'heavy') return { type, val: Math.round(e.atk * 1.55), label: `💥 ${Math.round(e.atk * 1.55)}` };
+    if (type === 'defend') return { type, val: Math.round(e.atk * 1.2 + 4), label: `🛡 +${Math.round(e.atk * 1.2 + 4)}` };
+    if (type === 'poison_atk') return { type, val: Math.round(e.atk * 0.9), label: `☠ ${Math.round(e.atk * 0.9)}` };
+    return { type: 'attack', val: e.atk, label: `⚔ ${e.atk}` };
+  }
+
+  function spawnBattleEnemy(floorNum, battleType = 'battle') {
+    let spec;
+    if (battleType === 'boss' || floorNum >= 8) {
+      spec = ENEMY_POOL.boss;
+    } else if (battleType === 'elite') {
+      spec = ENEMY_POOL.elite[Math.floor(Math.random() * ENEMY_POOL.elite.length)];
+    } else {
+      spec = ENEMY_POOL.normal[(floorNum - 1 + Math.floor(Math.random() * 2)) % ENEMY_POOL.normal.length];
+    }
+    const scale = 1 + (floorNum - 1) * 0.24;
+    const maxHp = Math.round(spec.baseHp * (battleType === 'boss' ? 1 : scale));
+    const atk = Math.round(spec.atk * (1 + (floorNum - 1) * 0.14));
+    state.battleEnemy = {
+      id: spec.id,
+      name: spec.name,
+      img: spec.img,
+      color: spec.color,
+      hp: maxHp,
+      maxHp,
+      shield: 0,
+      poison: 0,
+      atk,
+      intents: spec.intents,
+      intentIdx: 0,
+      atkInterval: spec.interval,
+      atkTimer: spec.interval,
+      x: 187,
+      y: 220,
+      baseY: 220,
+      vx: battleType === 'boss' ? 42 : 52,
+      r: battleType === 'boss' ? 34 : (battleType === 'elite' ? 30 : 26),
+      pulse: 1,
+      flash: 0,
+      cooldown: 0,
+      swimPhase: 0
+    };
+  }
+
+  function updateBattleEnemy(dt) {
+    const e = state.battleEnemy;
+    if (!e || e.hp <= 0 || state.phase !== 'PLAY') return;
+    e.swimPhase += dt * 2.2;
+    e.x += e.vx * dt;
+    e.y = e.baseY + Math.sin(e.swimPhase) * 14;
+    if (e.x < 92) { e.x = 92; e.vx = Math.abs(e.vx); }
+    if (e.x > 282) { e.x = 282; e.vx = -Math.abs(e.vx); }
+    if (e.pulse > 1) e.pulse = Math.max(1, e.pulse - dt * 3.0);
+    if (e.flash > 0) e.flash = Math.max(0, e.flash - dt);
+    if (e.cooldown > 0) e.cooldown = Math.max(0, e.cooldown - dt);
+
+    // ボール発射後にリアルタイムで敵の攻撃ゲージが進行！
+    if (!state.ball.waitingLaunch) {
+      e.atkTimer -= dt;
+      const intentHudEl = document.getElementById('enemy-intent-hud');
+      if (intentHudEl) {
+        const curIntent = getEnemyIntentInfo(e);
+        intentHudEl.textContent = `${curIntent.label} (${Math.max(0, e.atkTimer).toFixed(1)}s)`;
+        intentHudEl.classList.toggle('urgent', e.atkTimer < 1.5);
+      }
+      if (e.atkTimer <= 0) {
+        // 毒ダメージが先に入る
+        if (e.poison > 0) {
+          const pDmg = e.poison;
+          e.poison = Math.max(0, e.poison - 1);
+          dealDamageToEnemy(pDmg, e.x, e.y - 24, '#a3e635', '☠毒');
+          if (e.hp <= 0) return;
+        }
+        const intent = getEnemyIntentInfo(e);
+        if (intent.type === 'defend') {
+          e.shield += intent.val;
+          e.pulse = 1.3;
+          sfx.targetLit();
+          spawnShockwave(e.x, e.y, '#93c5fd', 56);
+          spawnPopup(e.x, e.y - 18, `🛡敵バリア +${intent.val}`, '#93c5fd', 13);
+        } else if (intent.type === 'poison_atk') {
+          state.shield = Math.max(0, state.shield - 3);
+          damagePlayer(intent.val, `${e.name}の毒撃`);
+        } else {
+          damagePlayer(intent.val, `${e.name}の攻撃`);
+        }
+        e.intentIdx++;
+        e.atkTimer = e.atkInterval;
+        updateHUD();
+      }
+    }
+
+    // 追撃ビームエフェクト更新
+    for (let i = state.attackBolts.length - 1; i >= 0; i--) {
+      state.attackBolts[i].timer -= dt;
+      if (state.attackBolts[i].timer <= 0) state.attackBolts.splice(i, 1);
+    }
+    if (state.playerHitFlash > 0) state.playerHitFlash = Math.max(0, state.playerHitFlash - dt);
+  }
+
+  function collideEnemyWithBall(b, ballRadius, isPrimary = true) {
+    const e = state.battleEnemy;
+    if (!e || e.hp <= 0) return;
+    const dx = b.x - e.x;
+    const dy = b.y - e.y;
+    const dist = Math.hypot(dx, dy);
+    const minDist = e.r + ballRadius;
+    if (dist < minDist && dist > 0.0001) {
+      const nx = dx / dist;
+      const ny = dy / dist;
+      b.x = e.x + nx * minDist;
+      b.y = e.y + ny * minDist;
+      const dot = b.vx * nx + b.vy * ny;
+      if (dot < 0) {
+        b.vx -= 1.88 * dot * nx;
+        b.vy -= 1.88 * dot * ny;
+      }
+      b.vx += nx * 170;
+      b.vy += ny * 170;
+
+      if (e.cooldown <= 0) {
+        e.cooldown = 0.09;
+        state.combo++;
+        if (state.combo > state.maxComboThisRun) state.maxComboThisRun = state.combo;
+        sfx.bumper(state.combo);
+        chargeAquaGauge(isPrimary ? 8 : 4);
+        const dmg = isPrimary ? getEffectiveBallDamage() : Math.max(1, Math.round(state.ballDamage * 0.6));
+        dealDamageToEnemy(dmg, b.x, b.y - 8, isPrimary ? '#fde047' : '#72efdd', isPrimary ? '⚔' : '🫧');
+
+        if (isPrimary && hasRelic('venom_pearl') && e.hp > 0) {
+          e.poison += 2;
+          spawnPopup(e.x + 18, e.y - 16, '☠毒+2', '#a3e635', 11);
+        }
+        if (isPrimary && hasRelic('vampire_pearl')) {
+          state.vampireHits++;
+          if (state.vampireHits >= 5) {
+            state.vampireHits = 0;
+            state.hp = Math.min(state.maxHp, state.hp + 2);
+            spawnPopup(VIEW_W / 2, 535, '🩸吸血 HP+2', '#fb7185', 12);
+          }
+        }
+        if (state.combo > 0 && state.combo % 10 === 0 && hasRelic('storm_orb') && e.hp > 0) {
+          dealDamageToEnemy(12, e.x, e.y - 26, '#fde047', '⚡雷撃オーブ!');
+        }
+      }
+    }
+  }
+
+  function onEnemyDefeated() {
+    if (state.phase !== 'PLAY') return;
+    state.phase = 'CLEAR_ANIM';
+    setFlippersPressed(true, false);
+    setFlippersPressed(false, false);
+    sfx.roundClear();
+    const e = state.battleEnemy;
+    if (e) {
+      spawnParticles(e.x, e.y, '#ffd97d', 36, 240);
+      spawnShockwave(e.x, e.y, '#ffd97d', 120);
+    }
+
+    // 勝利報酬ゴールド＆癒しレリック
+    let goldEarned = state.currentBattleType === 'boss' ? 80 : (state.currentBattleType === 'elite' ? 48 : 26 + state.round * 3);
+    if (hasRelic('gold_magnet')) goldEarned = Math.round(goldEarned * 1.5);
+    state.gold += goldEarned;
+    state.totalScore += goldEarned * 30;
+
+    if (hasRelic('deep_heal')) {
+      state.hp = Math.min(state.maxHp, state.hp + 12);
+    }
+
+    // エリート撃破時はレリック即ボーナス！
+    let eliteRelicMsg = '';
+    if (state.currentBattleType === 'elite') {
+      const rel = grantRandomRelic();
+      eliteRelicMsg = ` ／ 🎁${rel.icon}${rel.name}獲得!`;
+    }
+
+    const token = state.runToken;
+    if (state.round >= 8 && state.currentBattleType === 'boss') {
+      showCenterBanner('👑 深海の主を撃破!!', '全8層の深海踏破に成功した！', '#ffd97d', 2.2);
+      setTimeout(() => {
+        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
+          showResultScreen(true);
+        }
+      }, 2100);
+    } else {
+      showCenterBanner('⚔️ BATTLE VICTORY!', `🪙+${goldEarned}G 獲得${eliteRelicMsg}`, '#20e3b2', 1.4);
+      setTimeout(() => {
+        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
+          openDraftModal(goldEarned);
+        }
+      }, 1350);
+    }
+  }
+
+  // 分岐マップ生成（全8層：Floor 1=バトル、2〜7=分岐、8=ボス）
+  function generateFloorMap() {
+    const floors = [];
+    const midTypes = ['battle', 'battle', 'elite', 'shop', 'rest', 'event'];
+    for (let f = 1; f <= 8; f++) {
+      let nodes = [];
+      if (f === 1) {
+        nodes = [
+          { type: 'battle', xPct: 32, visited: false, next: [] },
+          { type: 'battle', xPct: 68, visited: false, next: [] }
+        ];
+      } else if (f === 8) {
+        nodes = [{ type: 'boss', xPct: 50, visited: false, next: [] }];
+      } else if (f === 7) {
+        // ボス直前は必ず「泉（休憩）」か「ショップ」を選べるようにする（スレスパ定番！）
+        nodes = [
+          { type: 'rest', xPct: 32, visited: false, next: [] },
+          { type: 'shop', xPct: 68, visited: false, next: [] }
+        ];
+      } else {
+        const count = (f % 2 === 0) ? 3 : 2;
+        const xs = count === 3 ? [22, 50, 78] : [32, 68];
+        for (let i = 0; i < count; i++) {
+          let t = midTypes[Math.floor(Math.random() * midTypes.length)];
+          if (f === 2 && t === 'elite') t = 'battle';
+          if (f === 4 && i === 1) t = 'elite';
+          nodes.push({ type: t, xPct: xs[i], visited: false, next: [] });
+        }
+      }
+      floors.push(nodes);
+    }
+    // 隣接する層同士を自然な分岐エッジで接続
+    for (let f = 0; f < floors.length - 1; f++) {
+      const cur = floors[f];
+      const nxt = floors[f + 1];
+      for (let i = 0; i < cur.length; i++) {
+        const targets = [];
+        for (let j = 0; j < nxt.length; j++) {
+          if (Math.abs(cur[i].xPct - nxt[j].xPct) <= 40 || nxt.length === 1) {
+            targets.push(j);
+          }
+        }
+        cur[i].next = targets.length > 0 ? targets : [Math.min(i, nxt.length - 1)];
+      }
+    }
+    state.mapFloors = floors;
+    state.currentFloor = 0;
+    state.currentNodeIdx = -1;
+  }
+
+  function openMapModal() {
+    state.phase = 'MAP';
+    hideAllOverlays();
+    document.getElementById('place-banner').classList.remove('show');
+    const okBar = document.getElementById('overkill-bar');
+    if (okBar) okBar.classList.remove('show');
+
+    const statusBar = document.getElementById('map-status-bar');
+    statusBar.textContent = `❤️ ${state.hp}/${state.maxHp} ｜ ⚔ ボール攻撃 ${state.ballDamage} ｜ 🪙 ${state.gold}G ｜ 🎁 レリック ${state.relics.length}`;
+
+    const relicsBar = document.getElementById('map-relics-bar');
+    relicsBar.innerHTML = '';
+    if (state.relics.length === 0) {
+      relicsBar.innerHTML = '<span style="font-size:10px; color:#7fa6c4;">所持レリックなし（エリート撃破・報酬・ショップで獲得）</span>';
+    } else {
+      state.relics.forEach(rid => {
+        const rel = RELIC_CATALOG.find(r => r.id === rid);
+        if (!rel) return;
+        const chip = document.createElement('span');
+        chip.className = 'relic-chip';
+        chip.title = rel.desc;
+        chip.textContent = `${rel.icon}${rel.name}`;
+        relicsBar.appendChild(chip);
+      });
+    }
+
+    const wrap = document.getElementById('map-canvas-wrap');
+    const svg = document.getElementById('map-svg');
+    const nodesEl = document.getElementById('map-nodes');
+    svg.innerHTML = '';
+    nodesEl.innerHTML = '';
+
+    const W = 360;
+    const H = 390;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+    const getPos = (fIdx, nIdx) => {
+      const node = state.mapFloors[fIdx][nIdx];
+      // 下（Floor 1）から上（Floor 8 ボス）へ登っていくスレスパ配置！
+      const y = H - 28 - (fIdx / 7) * (H - 58);
+      const x = (node.xPct / 100) * W;
+      return { x, y };
+    };
+
+    // 接続ライン描画
+    for (let f = 0; f < state.mapFloors.length - 1; f++) {
+      const curNodes = state.mapFloors[f];
+      for (let i = 0; i < curNodes.length; i++) {
+        const p1 = getPos(f, i);
+        curNodes[i].next.forEach(j => {
+          const p2 = getPos(f + 1, j);
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', p1.x);
+          line.setAttribute('y1', p1.y);
+          line.setAttribute('x2', p2.x);
+          line.setAttribute('y2', p2.y);
+          const isReachable = (f === state.currentFloor - 1 && i === state.currentNodeIdx);
+          line.setAttribute('stroke', isReachable ? '#70f5ff' : 'rgba(127, 166, 196, 0.35)');
+          line.setAttribute('stroke-width', isReachable ? '2.6' : '1.5');
+          if (!isReachable) line.setAttribute('stroke-dasharray', '4 4');
+          svg.appendChild(line);
+        });
+      }
+    }
+
+    // ノードアイコン配置
+    const iconMap = { battle: '⚔️', elite: '💀', shop: '🛒', rest: '⛺', event: '❓', boss: '👑' };
+    const titleMap = { battle: '通常バトル', elite: 'エリート（強敵・レリック確定）', shop: '海溝ショップ', rest: '深海の泉（回復/強化）', event: '深海イベント', boss: '深海の主（ボス）' };
+
+    for (let f = 0; f < state.mapFloors.length; f++) {
+      for (let i = 0; i < state.mapFloors[f].length; i++) {
+        const node = state.mapFloors[f][i];
+        const p = getPos(f, i);
+        const btn = document.createElement('button');
+        btn.className = `map-node ${node.type}`;
+        if (node.visited) btn.classList.add('visited');
+        if (f === state.currentFloor - 1 && i === state.currentNodeIdx) btn.classList.add('current');
+
+        const isSelectable = (state.currentFloor === 0 && f === 0)
+          || (state.currentFloor > 0 && f === state.currentFloor && state.mapFloors[state.currentFloor - 1][state.currentNodeIdx].next.includes(i));
+        if (isSelectable) {
+          btn.classList.add('selectable');
+          btn.addEventListener('click', () => enterMapNode(f, i));
+        }
+
+        btn.style.left = `${(p.x / W) * 100}%`;
+        btn.style.top = `${(p.y / H) * 100}%`;
+        btn.title = `Floor ${f + 1}: ${titleMap[node.type]}`;
+        btn.textContent = iconMap[node.type] || '⚔️';
+        nodesEl.appendChild(btn);
+      }
+    }
+
+    document.getElementById('ov-map').classList.add('show');
+    updateHUD();
+  }
+
+  function enterMapNode(floorIdx, nodeIdx) {
+    sfx.place();
+    const node = state.mapFloors[floorIdx][nodeIdx];
+    node.visited = true;
+    state.currentFloor = floorIdx + 1;
+    state.currentNodeIdx = nodeIdx;
+    state.round = state.currentFloor;
+
+    if (node.type === 'battle' || node.type === 'elite' || node.type === 'boss') {
+      state.currentBattleType = node.type;
+      startRound(state.currentFloor);
+    } else if (node.type === 'shop') {
+      openShopModal();
+    } else if (node.type === 'rest') {
+      openRestModal();
+    } else if (node.type === 'event') {
+      openEventModal();
+    }
+  }
+
+  function openShopModal() {
+    state.phase = 'SHOP';
+    hideAllOverlays();
+    const itemsEl = document.getElementById('shop-items');
+    itemsEl.innerHTML = '';
+
+    const unownedRelics = RELIC_CATALOG.filter(r => !state.relics.includes(r.id));
+    const shopStock = [
+      { id: 'shop_atk', icon: '⚔️', name: '真珠の鋭研磨 (+3 DMG)', desc: 'ボール基礎ダメージを永続で +3 する！', price: 45, color: '#fde047' },
+      { id: 'shop_heal', icon: '💖', name: '深海の霊薬 (HP +20)', desc: 'プレイヤーHPを 20 回復する。', price: 30, color: '#20e3b2' },
+      { id: 'shop_shield', icon: '🛡️', name: '硬殻コーティング (防御+2)', desc: '防御パーツのシールド獲得量 +2 ＆ 最大HP +6', price: 40, color: '#70f5ff' }
+    ];
+    if (unownedRelics.length > 0) {
+      const r = unownedRelics[Math.floor(Math.random() * unownedRelics.length)];
+      shopStock.push({ id: 'shop_relic', relic: r, icon: r.icon, name: `🎁 ${r.name}`, desc: r.desc, price: r.price, color: r.color });
+    }
+
+    const renderGold = () => {
+      document.getElementById('shop-gold-info').textContent = `所持ゴールド: 🪙 ${state.gold} G ｜ ❤️ ${state.hp}/${state.maxHp} ｜ ⚔ ${state.ballDamage}`;
+      updateHUD();
+    };
+    renderGold();
+
+    shopStock.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'card-item instant';
+      el.innerHTML = `
+        <div class="card-icon" style="border-color:${item.color};">${item.icon}</div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-name" style="color:${item.color};">${item.name}</span>
+            <span class="shop-price-badge">🪙 ${item.price}G</span>
+          </div>
+          <div class="card-desc">${item.desc}</div>
+        </div>
+      `;
+      el.addEventListener('click', () => {
+        if (state.gold < item.price) {
+          sfx.wall();
+          return;
+        }
+        state.gold -= item.price;
+        sfx.jackpot();
+        if (item.id === 'shop_atk') state.ballDamage += 3;
+        else if (item.id === 'shop_heal') state.hp = Math.min(state.maxHp, state.hp + 20);
+        else if (item.id === 'shop_shield') { state.shieldBonus += 2; state.maxHp += 6; state.hp = Math.min(state.maxHp, state.hp + 6); }
+        else if (item.id === 'shop_relic' && item.relic) state.relics.push(item.relic.id);
+        el.classList.add('sold');
+        renderGold();
+      });
+      itemsEl.appendChild(el);
+    });
+
+    document.getElementById('ov-shop').classList.add('show');
+  }
+
+  function openRestModal() {
+    state.phase = 'REST';
+    hideAllOverlays();
+    const healAmt = Math.round(state.maxHp * 0.35);
+    document.getElementById('rest-heal-desc').textContent = `現在 HP ${state.hp}/${state.maxHp} → +${healAmt} 回復する。`;
+    document.getElementById('ov-rest').classList.add('show');
+  }
+
+  function openEventModal() {
+    state.phase = 'EVENT';
+    hideAllOverlays();
+    const ev = EVENT_POOL[Math.floor(Math.random() * EVENT_POOL.length)];
+    document.getElementById('event-title').textContent = ev.title;
+    document.getElementById('event-desc').textContent = ev.desc;
+    const chEl = document.getElementById('event-choices');
+    chEl.innerHTML = '';
+    ev.choices.forEach(ch => {
+      const btn = document.createElement('div');
+      btn.className = 'card-item instant';
+      btn.innerHTML = `
+        <div class="card-icon" style="border-color:${ch.color};">❓</div>
+        <div class="card-body">
+          <div class="card-top"><span class="card-name" style="color:${ch.color};">${ch.label}</span></div>
+          <div class="card-desc">${ch.sub}</div>
+        </div>
+      `;
+      btn.addEventListener('click', () => {
+        sfx.skillShot();
+        if (ch.action === 'chest_risk') { state.hp = Math.max(1, state.hp - 8); state.gold += 35; grantRandomRelic(); }
+        else if (ch.action === 'chest_safe') { state.gold += 30; }
+        else if (ch.action === 'altar_power') { state.hp = Math.max(1, state.hp - 10); state.ballDamage += 5; }
+        else if (ch.action === 'altar_heal') { state.hp = Math.min(state.maxHp, state.hp + 18); }
+        else if (ch.action === 'smith_pay') {
+          if (state.gold >= 45) { state.gold -= 45; state.ballDamage += 4; }
+          else { state.ballDamage += 1; }
+        } else if (ch.action === 'smith_shield') {
+          state.shieldBonus += 2; state.maxHp += 6; state.hp = Math.min(state.maxHp, state.hp + 6);
+        }
+        openMapModal();
+      });
+      chEl.appendChild(btn);
+    });
+    document.getElementById('ov-event').classList.add('show');
   }
 
   function hasFishBuff(groupId) {
@@ -1683,6 +2384,18 @@
     placePartInSlot(2, 'spinner', 1);
     placePartInSlot(5, 'bumper_tri', 1);
 
+    // ローグライク用ステータスの初期化（初期ボールダメージ3・HP50・初期25G）
+    state.hp = 50;
+    state.maxHp = 50;
+    state.shield = 0;
+    state.gold = 25;
+    state.ballDamage = 3;
+    state.shieldBonus = 0;
+    state.relics = [];
+    state.attackBolts = [];
+    state.vampireHits = 0;
+    state.battleEnemy = null;
+
     if (startEndless) {
       placePartInSlot(2, 'spinner', 2);
       placePartInSlot(5, 'bumper_tri', 2);
@@ -1690,10 +2403,13 @@
       placePartInSlot(7, 'detonator', 2);
       state.flipperLevel = 2;
       state.scoreBoosterCount = 3;
+      state.ballDamage = 8;
+      state.gold = 80;
     }
 
     refreshSynergies();
-    startRound(state.round);
+    generateFloorMap();
+    openMapModal();
   }
 
   function placePartInSlot(slotId, type, level = 1, pairSlotId = null) {
@@ -1719,7 +2435,7 @@
     // 盤面上部〜中層の空きスペース（パーツやボスと重なりにくい候補座標）から選択
     const candidates = [
       { x: 187, y: 136 },
-      { x: 187, y: 290 },
+      { x: 187, y: 310 },
       { x: 112, y: 215 },
       { x: 262, y: 215 },
       { x: 187, y: 445 }
@@ -1728,7 +2444,7 @@
     let bestMinDist = -1;
     for (let c = 0; c < candidates.length; c++) {
       const pt = candidates[c];
-      if (state.bossCore.active && Math.hypot(pt.x - state.bossCore.x, pt.y - state.bossCore.y) < 55) continue;
+      if (state.battleEnemy && Math.hypot(pt.x - state.battleEnemy.x, pt.y - state.battleEnemy.y) < 55) continue;
       let minD = 999;
       for (let i = 0; i < state.slots.length; i++) {
         if (!state.slots[i]) continue;
@@ -1765,7 +2481,13 @@
     state.hoverSlotId = -1;
     state.phase = 'PLAY';
 
-    // ラウンド固有モディファイアの設定（R1〜R8固定順）
+    // ローグライク戦闘開始：シールド初期化（真珠の盾レリックで+10）＆敵モンスター出現
+    state.shield = hasRelic('pearl_shield') ? 10 : 0;
+    state.attackBolts = [];
+    state.playerHitFlash = 0;
+    spawnBattleEnemy(roundNum, state.currentBattleType);
+
+    // ラウンド固有モディファイアの設定
     const mod = getRoundModifier(roundNum);
     state.roundModifier = mod;
     state.currentState.enabled = (mod.id === 'current' || mod.id === 'boss_current');
@@ -1783,7 +2505,7 @@
     state.chainLinks = [];
     state.miniBalls = [];
 
-    // 新ギミック・オーバーキル・オーラのリセット
+    // 新ギミック・オーラのリセット
     state.activeHappening = null;
     state.mirrorAuraTimer = 0;
     state.mirrorAuraStacks = 0;
@@ -1796,19 +2518,14 @@
     const okBar = document.getElementById('overkill-bar');
     if (okBar) okBar.classList.remove('show');
 
-    // ラウンド開始時に魚を泳がせておく（R3「魚群」なら3匹、通常は2匹）
+    // ラウンド開始時に魚を泳がせておく
     const initFishes = hasRoundMod('fish_school') ? 3 : 2;
     while (state.activeFishes.length < initFishes) {
       spawnOneFish();
     }
 
-    // R8以降：深海の主（ボス）出現
-    state.bossCore.active = (roundNum >= 8);
-    state.bossCore.x = 187;
-    state.bossCore.y = 315;
-    state.bossCore.baseY = 315;
-    state.bossCore.hpHits = 0;
-    state.bossCore.swimPhase = 0;
+    // ローグライク戦闘では battleEnemy を使用するため旧 bossCore は無効化
+    state.bossCore.active = false;
 
     // 封印された大貝（Mystery Shell）を盤面に配置
     spawnMysteryShell();
@@ -1817,18 +2534,13 @@
     document.getElementById('place-banner').classList.remove('show');
     resetBallToPlunger(false);
 
-    const modTitleSuffix = mod.id !== 'none' ? ` 【${mod.name}】` : '';
-    const baseTitle = roundNum === 8 ? 'FINAL ROUND 8' : (roundNum > 8 ? `TRENCH ROUND ${roundNum}` : `ROUND ${roundNum}`);
-    const titleText = `${baseTitle}${modTitleSuffix}`;
-    const subText = mod.id !== 'none'
-      ? `${mod.desc} (目標: ${state.norma.toLocaleString()})`
-      : `目標ノルマ: ${state.norma.toLocaleString()} PTS`;
-
+    const e = state.battleEnemy;
+    const tag = state.currentBattleType === 'boss' ? '👑 BOSS BATTLE' : (state.currentBattleType === 'elite' ? '💀 ELITE BATTLE' : `⚔️ FLOOR ${roundNum} BATTLE`);
     showCenterBanner(
-      titleText,
-      subText,
-      mod.id !== 'none' ? mod.color : (roundNum >= 8 ? '#ff5c8a' : '#70f5ff'),
-      2.1
+      `${tag}`,
+      `${e.name} (HP ${e.maxHp}) 出現！発射でリアルタイム戦闘開始`,
+      e.color || '#70f5ff',
+      2.0
     );
     updateHUD();
   }
@@ -1973,19 +2685,24 @@
       spawnWaterRipple(x, y, color, isSkillShot ? 74 : 46);
     }
 
-    updateHUD();
-
-    if (state.roundScore >= state.norma && state.phase === 'PLAY') {
-      if (!state.overkillActive) {
-        onNormaAchieved();
-      } else if (!state.overkillRerollGranted && state.roundScore >= Math.round(state.norma * 1.5)) {
-        state.overkillRerollGranted = true;
-        state.bonusRerollsNextDraft++;
-        sfx.jackpot();
-        spawnShockwave(VIEW_W / 2, 220, '#ffd97d', 110);
-        spawnPopup(VIEW_W / 2, 200, '🎲 OVERKILL 150%! リロール+1!!', '#ffd97d', 16);
+    // ハイブリッド戦闘：パーツヒットで防御シールド獲得＆敵へ追撃ダメージ！
+    if (state.battleEnemy && state.battleEnemy.hp > 0 && slotId >= 0 && state.slots[slotId]) {
+      const p = state.slots[slotId];
+      const defenseParts = ['bumper_circle', 'rebound_wall', 'gravity_pearl', 'mirror_mine'];
+      const utilParts = ['spinner', 'warp_gate', 'vortex_reef'];
+      if (defenseParts.includes(p.type)) {
+        gainShield(2 + p.level + (state.shieldBonus || 0), x, y + 10);
+        spawnAttackBolt(x, y, Math.max(1, Math.floor(state.ballDamage * 0.45)), '#70f5ff');
+      } else if (utilParts.includes(p.type)) {
+        gainShield(1 + (state.shieldBonus || 0), x, y + 10);
+        spawnAttackBolt(x, y, Math.max(1, Math.round(state.ballDamage * 0.5)), '#20e3b2');
+      } else {
+        const boltDmg = Math.max(2, Math.round(state.ballDamage * 0.65 * p.level * chainBonusMult));
+        spawnAttackBolt(x, y, boltDmg, color);
       }
     }
+
+    updateHUD();
   }
 
   function spawnParticles(x, y, color, count = 12, speed = 135) {
@@ -2009,90 +2726,15 @@
   }
 
   function onNormaAchieved() {
-    // R8クリア（初回制覇）時はそのまま華々しくクリア演出へ、それ以外は6秒間のOVERKILL（欲張りタイム）突入！
-    if (state.round === 8 && !state.endlessMode) {
-      finishOverkillRound();
-      return;
-    }
-    state.overkillActive = true;
-    state.overkillTimer = 6.0;
-    state.overkillRerollGranted = state.roundScore >= Math.round(state.norma * 1.5);
-    if (state.overkillRerollGranted) {
-      state.bonusRerollsNextDraft++;
-    }
-    sfx.roundClear();
-    spawnParticles(state.ball.x, state.ball.y, '#ffd97d', 28, 220);
-    spawnShockwave(state.ball.x, state.ball.y, '#ffd97d', 95);
-    showCenterBanner('NORMA CLEAR! 🔥OVERKILL!', '6秒間スコア×1.5！150%達成で次ドラフト🎲リロール+1', '#ffd97d', 1.6);
-    const okBar = document.getElementById('overkill-bar');
-    if (okBar) okBar.classList.add('show');
-    updateOverkillBarUI();
+    // ローグライク戦闘では敵撃破（onEnemyDefeated）で勝利するため未使用
   }
 
-  function updateOverkillBarUI() {
-    const titleEl = document.getElementById('overkill-title');
-    const subEl = document.getElementById('overkill-sub');
-    if (!titleEl || !subEl) return;
-    titleEl.textContent = `🔥 OVERKILL ×1.5 (${Math.max(0, state.overkillTimer).toFixed(1)}s)`;
-    if (state.overkillRerollGranted) {
-      subEl.textContent = '✨ 150%達成！次ドラフトの🎲リロール+1獲得済！';
-    } else {
-      const target = Math.round(state.norma * 1.5);
-      const rem = Math.max(0, target - state.roundScore);
-      subEl.textContent = `あと ${rem.toLocaleString()} PTS で次ドラフト🎲リロール+1！`;
-    }
-  }
+  function updateOverkillBarUI() {}
 
-  function finishOverkillRound() {
-    if (state.phase !== 'PLAY') return;
-    state.overkillActive = false;
-    state.overkillTimer = 0;
-    const okBar = document.getElementById('overkill-bar');
-    if (okBar) okBar.classList.remove('show');
-
-    state.phase = 'CLEAR_ANIM';
-    setFlippersPressed(true, false);
-    setFlippersPressed(false, false);
-    sfx.roundClear();
-    spawnParticles(state.ball.x, state.ball.y, '#20e3b2', 30, 230);
-    spawnShockwave(state.ball.x, state.ball.y, '#20e3b2', 95);
-
-    const unusedBalls = Math.max(0, state.ballsLeft - 1);
-    const ballBonus = unusedBalls * (400 * state.round);
-    if (ballBonus > 0) {
-      state.totalScore += ballBonus;
-      spawnPopup(VIEW_W / 2, 260, `PEARL BONUS +${ballBonus.toLocaleString()}`, '#20e3b2', 15);
-    }
-
-    const token = state.runToken;
-    if (state.round === 8 && !state.endlessMode) {
-      showCenterBanner('ALL ROUNDS CLEAR!!', '見事！深海の全8ラウンドを制覇！', '#ffd97d', 2.2);
-      setTimeout(() => {
-        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
-          showResultScreen(true);
-        }
-      }, 2100);
-    } else {
-      const subMsg = ballBonus > 0
-        ? `残り真珠ボーナス +${ballBonus.toLocaleString()} PTS！ドラフトへ`
-        : 'ノルマ達成！深海カードドラフトへ';
-      showCenterBanner(`ROUND ${state.round} CLEAR!`, subMsg, '#20e3b2', 1.4);
-      setTimeout(() => {
-        if (state.runToken === token && state.phase === 'CLEAR_ANIM') {
-          openDraftModal(ballBonus);
-        }
-      }, 1350);
-    }
-  }
+  function finishOverkillRound() {}
 
   function onBallLost() {
     if (state.phase !== 'PLAY') return;
-
-    // オーバーキル中にボールが落ちた場合は残機を減らさずそのままクリア遷移
-    if (state.overkillActive) {
-      finishOverkillRound();
-      return;
-    }
 
     // 1. 時間制ボールセーバー有効時
     if (state.ballSaverTimer > 0) {
@@ -2113,10 +2755,16 @@
       return;
     }
 
-    sfx.ballLost();
-    state.ballsLeft--;
-    // R6「コンボ持続」モディファイア有効時はドレインしてもコンボをリセットしない
+    // ローグライク戦闘：落球時は3ダメージ（シールドで防げる）を受けて即プランジャーへ再セット！
     const keepComboOnDrain = hasRoundMod('combo_keep');
+    if (!keepComboOnDrain) {
+      state.combo = 0;
+    }
+    damagePlayer(3, '落球ダメージ');
+    if (state.phase === 'PLAY' && state.hp > 0) {
+      resetBallToPlunger(keepComboOnDrain);
+    }
+    return;
     if (!keepComboOnDrain) {
       state.combo = 0;
     }
@@ -2375,6 +3023,18 @@
     if (card.id === 'flipper_up') {
       return `フリッパー強化: Lv${state.flipperLevel} → Lv${state.flipperLevel + 1} (最大Lv3)`;
     }
+    if (card.id === 'ball_atk_2') {
+      return `ボール基本攻撃力: ⚔${state.ballDamage} → ⚔${state.ballDamage + 2}`;
+    }
+    if (card.id === 'ball_atk_5') {
+      return `ボール基本攻撃力: ⚔${state.ballDamage} → ⚔${state.ballDamage + 5}（大幅強化！）`;
+    }
+    if (card.id === 'shield_boost') {
+      return `防御パーツ効率 +${state.shieldBonus} → +${state.shieldBonus + 2} ＆ 最大HP +8`;
+    }
+    if (card.id === 'relic_random') {
+      return `未所持の深海レリックを1個獲得（現在 ${state.relics.length}/${RELIC_CATALOG.length}個）`;
+    }
     return '';
   }
 
@@ -2504,27 +3164,28 @@
     rerollBtn.disabled = state.rerollsLeft <= 0;
   }
 
-  function openDraftModal(ballBonus = 0) {
+  function openDraftModal(goldEarned = 0) {
     state.phase = 'DRAFT';
     hideAllOverlays();
     const ov = document.getElementById('ov-draft');
     ov.classList.remove('peek-mode');
     document.getElementById('btn-peek-board').textContent = '👁 盤面を確認';
-    document.getElementById('draft-header').textContent = `ROUND ${state.round} CLEAR!`;
-    const nextMod = getRoundModifier(state.round + 1);
-    const nextModNotice = nextMod && nextMod.id !== 'none' ? ` ／ 次R${state.round + 1}: 【${nextMod.name}】` : '';
-    document.getElementById('draft-bonus-info').textContent = ballBonus > 0
-      ? `残り真珠ボーナス +${ballBonus.toLocaleString()} PTS 獲得！報酬カードを1枚選択${nextModNotice}`
-      : `報酬カードを1枚選んで深海の盤面を構築しよう${nextModNotice}`;
+    document.getElementById('draft-header').textContent = `BATTLE VICTORY! (FLOOR ${state.round})`;
+    document.getElementById('draft-bonus-info').textContent = goldEarned > 0
+      ? `🪙+${goldEarned}G 獲得！報酬カードを1枚選択してマップへ進もう`
+      : `報酬カードを1枚選んで深海の盤面・真珠を強化しよう`;
 
     const fishBuffsEl = document.getElementById('draft-fish-buffs');
     const bSpec = getBallSpec();
-    const ballText = `現在ボール: ${bSpec.shortBadge} (${bSpec.desc})`;
-    if (state.activeFishGroups.size > 0) {
-      const list = Array.from(state.activeFishGroups).map(gid => `${FISH_GROUPS[gid].icon}${FISH_GROUPS[gid].name}`).join(' / ');
-      fishBuffsEl.textContent = `${ballText} ｜ 🐟魚効果: ${list}`;
+    const ballText = `⚔ボールATK:${state.ballDamage} (${bSpec.shortBadge}) ｜ ❤️HP:${state.hp}/${state.maxHp} ｜ 🪙${state.gold}G`;
+    if (state.relics.length > 0) {
+      const relicIcons = state.relics.map(id => {
+        const r = RELIC_CATALOG.find(item => item.id === id);
+        return r ? r.icon : '';
+      }).join('');
+      fishBuffsEl.textContent = `${ballText} ｜ 遺物:${relicIcons}`;
     } else {
-      fishBuffsEl.textContent = `${ballText} ｜ 🐟魚に当てるとパッシブ発動`;
+      fishBuffsEl.textContent = `${ballText} ｜ パーツや攻撃力を強化しよう`;
     }
 
     renderDraftCards();
@@ -2535,25 +3196,51 @@
     sfx.place();
     document.getElementById('ov-draft').classList.remove('show');
 
+    if (card.id === 'ball_atk_2') {
+      state.ballDamage += 2;
+      openMapModal();
+      return;
+    }
+    if (card.id === 'ball_atk_5') {
+      state.ballDamage += 5;
+      sfx.jackpot();
+      openMapModal();
+      return;
+    }
+    if (card.id === 'shield_boost') {
+      state.shieldBonus += 2;
+      state.maxHp += 8;
+      state.hp = Math.min(state.maxHp, state.hp + 8);
+      openMapModal();
+      return;
+    }
+    if (card.id === 'relic_random') {
+      grantRandomRelic();
+      openMapModal();
+      return;
+    }
     if (card.category === 'ball' && card.ballType) {
       state.ballType = card.ballType;
-      startRound(state.round + 1);
+      openMapModal();
       return;
     }
     if (card.id === 'extra_ball') {
       state.extraBallPurchases++;
       state.maxBallsPerRound++;
-      startRound(state.round + 1);
+      state.maxHp += 10;
+      state.hp = Math.min(state.maxHp, state.hp + 10);
+      openMapModal();
       return;
     }
     if (card.id === 'score_booster') {
       state.scoreBoosterCount++;
-      startRound(state.round + 1);
+      state.ballDamage += 1;
+      openMapModal();
       return;
     }
     if (card.id === 'flipper_up') {
       state.flipperLevel = Math.min(3, state.flipperLevel + 1);
-      startRound(state.round + 1);
+      openMapModal();
       return;
     }
 
@@ -2727,7 +3414,7 @@
     state.pendingCard = null;
     state.warpFirstSlot = null;
     document.getElementById('place-banner').classList.remove('show');
-    startRound(state.round + 1);
+    openMapModal();
   }
 
   // =========================================================================
@@ -2757,6 +3444,8 @@
       flipper.angle += dir * maxStep;
     }
   }
+
+  let flipperShieldCooldown = 0;
 
   function collideFlipper(flipper, targetBall = state.ball, ballRadius = BALL_R) {
     const b = targetBall;
@@ -2799,6 +3488,11 @@
           const tipBoost = (0.45 + 0.78 * cp.t) * (1 + state.flipperLevel * 0.14 + (hasFishBuff('agile') ? 0.12 : 0) + ballFlipperBonus);
           b.vx += fvx * tipBoost;
           b.vy += fvy * tipBoost;
+          // 貝殻フリッパー遺物：フリッパーで弾くたびにシールド+1（0.35秒クールダウン）
+          if (targetBall === state.ball && hasRelic('shell_flipper') && flipperShieldCooldown <= 0) {
+            flipperShieldCooldown = 0.35;
+            gainShield(1, b.x, b.y - 12);
+          }
         }
       }
     }
@@ -3864,6 +4558,8 @@
 
   function stepPhysics(dt) {
     updateMarineEnvironment(dt);
+    updateBattleEnemy(dt);
+    if (flipperShieldCooldown > 0) flipperShieldCooldown = Math.max(0, flipperShieldCooldown - dt);
 
     if (state.hitStopTimer > 0) {
       state.hitStopTimer = Math.max(0, state.hitStopTimer - dt);
@@ -4147,10 +4843,14 @@
           }
         }
 
-        // 磁石真珠（ボールカード）：近くの魚・封印大貝・ジャックポットへ磁力カーブ
+        // 磁石真珠（ボールカード）：近くの敵・魚・封印大貝・ジャックポットへ磁力カーブ
         if (state.ballType === 'magnet_pearl') {
           let target = null;
-          let bestDist = 145;
+          let bestDist = 155;
+          if (state.battleEnemy && state.battleEnemy.hp > 0) {
+            const d = Math.hypot(state.battleEnemy.x - b.x, state.battleEnemy.y - b.y);
+            if (d < bestDist) { bestDist = d; target = state.battleEnemy; }
+          }
           if (state.mysteryShell.active) {
             const d = Math.hypot(state.mysteryShell.x - b.x, state.mysteryShell.y - b.y);
             if (d < bestDist) { bestDist = d; target = state.mysteryShell; }
@@ -4167,7 +4867,7 @@
           if (target && bestDist > 14) {
             const mdx = target.x - b.x;
             const mdy = target.y - b.y;
-            const mPull = 380 * (1 - bestDist / 145);
+            const mPull = 380 * (1 - bestDist / 155);
             b.vx += (mdx / bestDist) * mPull * subDt;
             b.vy += (mdy / bestDist) * mPull * subDt;
           }
@@ -4188,6 +4888,7 @@
       collideFlipper(state.rightFlipper, b, ballR);
       collideWalls(b, ballR, false);
       checkBoardGimmicks(subDt);
+      collideEnemyWithBall(b, ballR, true);
       collideMysteryShell(b, ballR);
       collidePartsForBall(b, ballR, subDt, true);
       collideFishes();
@@ -4214,6 +4915,7 @@
         collideFlipper(state.leftFlipper, mb, mb.r);
         collideFlipper(state.rightFlipper, mb, mb.r);
         collideWalls(mb, mb.r, true);
+        collideEnemyWithBall(mb, mb.r, false);
         collideBossWithBall(mb, mb.r);
         collideMysteryShell(mb, mb.r);
         collidePartsForBall(mb, mb.r, subDt, false);
@@ -4254,8 +4956,121 @@
   }
 
   // =========================================================================
-  // 10. Canvas 描画処理（深海グラデーション・魚・発光生物・真珠ボール）
+  // 10. Canvas 描画処理（深海グラデーション・魚・発光生物・真珠ボール・敵バトル）
   // =========================================================================
+  function drawBattleEnemy() {
+    const e = state.battleEnemy;
+    if (!e || e.hp <= 0 || state.phase === 'TITLE') return;
+
+    const now = performance.now() * 0.001;
+    const isUrgent = !state.ball.waitingLaunch && e.atkTimer < 1.5;
+    const intent = getEnemyIntentInfo(e);
+    const pulseScale = e.pulse || 1;
+    const drawR = e.r * pulseScale;
+
+    ctx.save();
+    ctx.translate(e.x, e.y);
+
+    // 敵のオーラ＆攻撃直前の赤い警告リング
+    const auraColor = isUrgent ? '#ff4d6d' : (e.color || '#ff6b8b');
+    const auraPulse = isUrgent ? (0.55 + Math.sin(now * 16) * 0.35) : (0.28 + Math.sin(now * 3.2) * 0.1);
+    const auraGrad = ctx.createRadialGradient(0, 0, drawR * 0.3, 0, 0, drawR * 1.65);
+    auraGrad.addColorStop(0, isUrgent ? `rgba(255, 77, 109, ${auraPulse})` : `rgba(120, 220, 255, ${auraPulse * 0.65})`);
+    auraGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, drawR * 1.65, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ターゲットリング
+    ctx.strokeStyle = auraColor;
+    ctx.globalAlpha = isUrgent ? 0.92 : 0.62;
+    ctx.lineWidth = isUrgent ? 3 : 2;
+    ctx.shadowColor = auraColor;
+    ctx.shadowBlur = isUrgent ? 16 : 8;
+    ctx.beginPath();
+    ctx.arc(0, 0, drawR + 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+
+    // 敵スプライト本体
+    const img = getAssetImage(e.img);
+    const spriteSize = drawR * 2.55;
+    ctx.save();
+    if (e.vx > 0) ctx.scale(-1, 1);
+    if (e.flash > 0) {
+      ctx.filter = 'brightness(2.2) saturate(1.4)';
+    }
+    if (img) {
+      ctx.drawImage(img, -spriteSize / 2, -spriteSize / 2, spriteSize, spriteSize);
+    } else {
+      ctx.fillStyle = e.color || '#ff6b8b';
+      ctx.beginPath();
+      ctx.arc(0, 0, drawR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // 敵の頭上：次の行動（インテント）＆攻撃チャージバー
+    const topY = -drawR - 22;
+    const intentColor = intent.type === 'defend' ? '#93c5fd'
+      : (intent.type === 'poison_atk' ? '#a3e635'
+        : (intent.type === 'heavy' ? '#ff9f43' : '#ff6b8b'));
+    const pillW = 66;
+    const pillH = 18;
+    ctx.fillStyle = 'rgba(4, 15, 32, 0.88)';
+    ctx.strokeStyle = isUrgent ? '#ff4d6d' : intentColor;
+    ctx.lineWidth = isUrgent ? 1.8 : 1.2;
+    ctx.beginPath();
+    ctx.roundRect(-pillW / 2, topY - pillH / 2, pillW, pillH, 9);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = isUrgent ? '#ffe5ec' : intentColor;
+    ctx.font = '800 10.5px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(intent.label, 0, topY + 0.5);
+
+    // 攻撃チャージゲージ（満タンで行動発動）
+    const chargeW = 54;
+    const chargeH = 4;
+    const chargeY = topY + 12;
+    const chargePct = Math.max(0, Math.min(1, 1 - (e.atkTimer / Math.max(0.1, e.atkInterval))));
+    ctx.fillStyle = 'rgba(2, 10, 24, 0.85)';
+    ctx.fillRect(-chargeW / 2, chargeY, chargeW, chargeH);
+    ctx.fillStyle = isUrgent ? '#ff4d6d' : '#ffd97d';
+    ctx.fillRect(-chargeW / 2, chargeY, chargeW * chargePct, chargeH);
+
+    // 敵の足元：HPバー＆シールド/毒バッジ
+    const hpW = Math.max(64, drawR * 2.2);
+    const hpH = 7;
+    const hpY = drawR + 9;
+    const hpPct = Math.max(0, Math.min(1, e.hp / Math.max(1, e.maxHp)));
+    ctx.fillStyle = 'rgba(2, 10, 24, 0.88)';
+    ctx.fillRect(-hpW / 2 - 1, hpY - 1, hpW + 2, hpH + 2);
+    const hpGrad = ctx.createLinearGradient(-hpW / 2, 0, hpW / 2, 0);
+    hpGrad.addColorStop(0, '#ff4d6d');
+    hpGrad.addColorStop(1, '#ff9f43');
+    ctx.fillStyle = hpGrad;
+    ctx.fillRect(-hpW / 2, hpY, hpW * hpPct, hpH);
+
+    // HP数値＋シールド・毒ステータス
+    let statusTxt = `${e.hp}/${e.maxHp}`;
+    if (e.shield > 0) statusTxt += ` 🛡${e.shield}`;
+    if (e.poison > 0) statusTxt += ` ☠${e.poison}`;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = 4;
+    ctx.fillText(statusTxt, 0, hpY + hpH + 2);
+
+    ctx.restore();
+  }
+
   function drawBoard() {
     ctx.clearRect(0, 0, VIEW_W, VIEW_H);
 
@@ -4343,7 +5158,27 @@
       ctx.restore();
     }
 
+    // パーツからの追撃エネルギーボルト描画
+    if (state.attackBolts.length > 0) {
+      ctx.save();
+      for (let i = 0; i < state.attackBolts.length; i++) {
+        const bolt = state.attackBolts[i];
+        const alpha = Math.max(0, bolt.timer / bolt.maxTimer);
+        ctx.strokeStyle = bolt.color;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = 3.2;
+        ctx.shadowColor = bolt.color;
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.moveTo(bolt.x1, bolt.y1);
+        ctx.lineTo(bolt.x2, bolt.y2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
     drawSwimmingFishes();
+    drawBattleEnemy();
 
     ctx.save();
     for (let i = 0; i < state.shockwaves.length; i++) {
@@ -4399,6 +5234,16 @@
     drawFlipper(state.rightFlipper);
 
     drawBall();
+
+    // 被ダメージ時の赤い画面枠フラッシュ
+    if (state.playerHitFlash > 0) {
+      ctx.save();
+      const hitAlpha = Math.min(0.65, state.playerHitFlash * 1.8);
+      ctx.strokeStyle = `rgba(255, 65, 95, ${hitAlpha})`;
+      ctx.lineWidth = 14;
+      ctx.strokeRect(0, 0, VIEW_W, VIEW_H);
+      ctx.restore();
+    }
 
     ctx.save();
     for (let i = 0; i < state.particles.length; i++) {
@@ -5513,16 +6358,25 @@
   // =========================================================================
   function updateHUD() {
     const rBadge = document.getElementById('round-badge');
-    const mod = state.roundModifier || ROUND_MODIFIERS[1];
-    const modSuffix = (mod && mod.id !== 'none') ? ` [${mod.name}]` : '';
-    if (state.round === 8 && !state.endlessMode) {
-      rBadge.textContent = `R8 (${mod.name})`;
-    } else if (state.round > 8 || state.endlessMode) {
-      rBadge.textContent = `TRENCH R${state.round}${modSuffix}`;
-    } else {
-      rBadge.textContent = `ROUND ${state.round} / 8${modSuffix}`;
+    const battleTag = state.currentBattleType === 'boss' ? '👑BOSS'
+      : (state.currentBattleType === 'elite' ? '💀ELITE' : '⚔BATTLE');
+    if (rBadge) {
+      rBadge.textContent = `FLOOR ${state.round}/8 ${battleTag}`;
+      rBadge.classList.toggle('boss', state.round >= 8 || state.currentBattleType === 'boss' || state.currentBattleType === 'elite');
     }
-    rBadge.classList.toggle('boss', state.round >= 8);
+
+    // ローグライクステータス（HP / シールド / ボール攻撃力 / ゴールド）
+    const hpEl = document.getElementById('hud-hp');
+    if (hpEl) {
+      hpEl.textContent = `❤️ ${state.hp}/${state.maxHp}`;
+      hpEl.classList.toggle('danger', state.hp <= Math.ceil(state.maxHp * 0.3));
+    }
+    const shieldEl = document.getElementById('hud-shield');
+    if (shieldEl) shieldEl.textContent = `🛡 ${state.shield}`;
+    const atkEl = document.getElementById('hud-atk');
+    if (atkEl) atkEl.textContent = `⚔ ${state.ballDamage}`;
+    const goldEl = document.getElementById('hud-gold');
+    if (goldEl) goldEl.textContent = `🪙 ${state.gold}`;
 
     // 現在のボール種別バッジとラウンドモディファイアバッジをHUDに表示
     const ballTag = document.getElementById('ball-type-tag');
@@ -5533,12 +6387,13 @@
       ballTag.style.borderColor = bSpec.glowColor;
       ballTag.style.color = bSpec.color;
     }
+    const mod = state.roundModifier || ROUND_MODIFIERS[1];
     const modTag = document.getElementById('mod-tag');
     if (modTag) {
       if (mod && mod.id !== 'none') {
         modTag.style.display = 'inline-block';
         modTag.textContent = mod.badge;
-        modTag.title = `【R${state.round} ${mod.name}】${mod.desc}`;
+        modTag.title = `【F${state.round} ${mod.name}】${mod.desc}`;
         modTag.style.borderColor = mod.color;
         modTag.style.color = mod.color;
       } else {
@@ -5559,60 +6414,92 @@
     }
 
     const dotsWrap = document.getElementById('balls-dots');
-    dotsWrap.innerHTML = '';
-    for (let i = 0; i < state.maxBallsPerRound; i++) {
-      const d = document.createElement('div');
-      d.className = `ball-dot ${i < state.ballsLeft ? 'active' : ''}`;
-      dotsWrap.appendChild(d);
+    if (dotsWrap) {
+      dotsWrap.innerHTML = '';
+      for (let i = 0; i < state.maxBallsPerRound; i++) {
+        const d = document.createElement('div');
+        d.className = `ball-dot ${i < state.ballsLeft ? 'active' : ''}`;
+        dotsWrap.appendChild(d);
+      }
     }
 
-    document.getElementById('score-current').textContent = state.roundScore.toLocaleString();
-    document.getElementById('score-norma').textContent = `/ ${state.norma.toLocaleString()}`;
+    // 敵ステータスバー（HP / インテント / HPゲージ）
+    const e = state.battleEnemy;
+    const enemyNameEl = document.getElementById('enemy-name-hud');
+    const scoreCurEl = document.getElementById('score-current');
+    const scoreNormaEl = document.getElementById('score-norma');
+    const intentHudEl = document.getElementById('enemy-intent-hud');
+    const nBar = document.getElementById('norma-bar');
+
+    if (e && e.hp > 0) {
+      const intent = getEnemyIntentInfo(e);
+      if (enemyNameEl) enemyNameEl.textContent = e.name + (e.shield > 0 ? ` 🛡${e.shield}` : '') + (e.poison > 0 ? ` ☠${e.poison}` : '');
+      if (scoreCurEl) scoreCurEl.textContent = `${e.hp}`;
+      if (scoreNormaEl) scoreNormaEl.textContent = `/ ${e.maxHp} HP`;
+      if (intentHudEl) {
+        intentHudEl.textContent = `${intent.label} (${Math.max(0, e.atkTimer).toFixed(1)}s)`;
+        intentHudEl.classList.toggle('urgent', !state.ball.waitingLaunch && e.atkTimer < 1.5);
+      }
+      if (nBar) {
+        const pct = Math.max(0, Math.min(100, (e.hp / Math.max(1, e.maxHp)) * 100));
+        nBar.style.width = `${pct}%`;
+        nBar.classList.toggle('fever', state.feverTimer > 0);
+      }
+    } else {
+      if (enemyNameEl) enemyNameEl.textContent = '深海アクアリウム';
+      if (scoreCurEl) scoreCurEl.textContent = state.totalScore.toLocaleString();
+      if (scoreNormaEl) scoreNormaEl.textContent = 'PTS';
+      if (intentHudEl) intentHudEl.textContent = '待機中';
+      if (nBar) nBar.style.width = '100%';
+    }
 
     const mult = getComboMultiplier();
     const cBadge = document.getElementById('combo-badge');
-    cBadge.textContent = `${state.combo} HIT (×${mult.toFixed(2)})`;
-    cBadge.classList.toggle('fever', state.feverTimer > 0);
+    if (cBadge) {
+      cBadge.textContent = `${state.combo} HIT (×${mult.toFixed(2)})`;
+      cBadge.classList.toggle('fever', state.feverTimer > 0);
+    }
 
     // 発動中の魚パッシブ効果バッジ表示（HUDの端にアイコン＋名前で小さく表示）
     const fishBuffBar = document.getElementById('fish-buff-bar');
-    fishBuffBar.innerHTML = '';
-    state.activeFishGroups.forEach(gid => {
-      const grp = FISH_GROUPS[gid];
-      if (!grp) return;
-      const pill = document.createElement('span');
-      pill.className = 'fish-buff-pill';
-      pill.title = `【${grp.name}】${grp.effectDesc}`;
-      pill.textContent = `${grp.icon}${grp.name}`;
-      fishBuffBar.appendChild(pill);
-    });
+    if (fishBuffBar) {
+      fishBuffBar.innerHTML = '';
+      state.activeFishGroups.forEach(gid => {
+        const grp = FISH_GROUPS[gid];
+        if (!grp) return;
+        const pill = document.createElement('span');
+        pill.className = 'fish-buff-pill';
+        pill.title = `【${grp.name}】${grp.effectDesc}`;
+        pill.textContent = `${grp.icon}${grp.name}`;
+        fishBuffBar.appendChild(pill);
+      });
+    }
 
     const synTag = document.getElementById('synergy-tag');
-    if (state.activeSynergies.length > 0) {
-      synTag.style.display = 'inline-block';
-      synTag.textContent = `✨シナジー×${state.activeSynergies.length}`;
-    } else {
-      synTag.style.display = 'none';
+    if (synTag) {
+      if (state.activeSynergies.length > 0) {
+        synTag.style.display = 'inline-block';
+        synTag.textContent = `✨シナジー×${state.activeSynergies.length}`;
+      } else {
+        synTag.style.display = 'none';
+      }
     }
 
     const boostTag = document.getElementById('boost-tag');
-    if (state.scoreBoosterCount > 0) {
-      boostTag.style.display = 'inline-block';
-      boostTag.textContent = `+${state.scoreBoosterCount * 10}%`;
-    } else {
-      boostTag.style.display = 'none';
+    if (boostTag) {
+      if (state.relics.length > 0) {
+        boostTag.style.display = 'inline-block';
+        boostTag.textContent = `遺物×${state.relics.length}`;
+      } else {
+        boostTag.style.display = 'none';
+      }
     }
 
-    const pct = Math.min(100, (state.roundScore / state.norma) * 100);
-    const nBar = document.getElementById('norma-bar');
-    nBar.style.width = `${pct}%`;
-    nBar.classList.toggle('fever', state.feverTimer > 0);
-
     const launchBtn = document.getElementById('ctrl-launch');
-    launchBtn.classList.toggle('disabled', !state.ball.waitingLaunch || state.phase !== 'PLAY');
+    if (launchBtn) launchBtn.classList.toggle('disabled', !state.ball.waitingLaunch || state.phase !== 'PLAY');
 
     const nudgeBtn = document.getElementById('btn-nudge');
-    nudgeBtn.classList.toggle('tilted', state.tiltPenalty);
+    if (nudgeBtn) nudgeBtn.classList.toggle('tilted', state.tiltPenalty);
 
     const burstBtn = document.getElementById('btn-burst');
     if (burstBtn) {
@@ -5622,8 +6509,10 @@
       burstBtn.classList.toggle('ready', isReady);
     }
 
-    document.getElementById('ctrl-left').classList.toggle('disabled', state.tiltPenalty);
-    document.getElementById('ctrl-right').classList.toggle('disabled', state.tiltPenalty);
+    const leftBtn = document.getElementById('ctrl-left');
+    const rightBtn = document.getElementById('ctrl-right');
+    if (leftBtn) leftBtn.classList.toggle('disabled', state.tiltPenalty);
+    if (rightBtn) rightBtn.classList.toggle('disabled', state.tiltPenalty);
   }
 
   function updateTitleRecords() {
@@ -5876,11 +6765,19 @@
 
       const discoveredFusionCount = Object.keys(unlockedFusionsMap).filter(k => unlockedFusionsMap[k] > 0).length;
       const bSpec = getBallSpec();
-      const mod = state.roundModifier || ROUND_MODIFIERS[1];
+      const relicHtml = state.relics.length > 0
+        ? state.relics.map(id => {
+            const r = RELIC_CATALOG.find(item => item.id === id);
+            return r ? `・<span class="syn-hl">${r.icon}【${r.name}】</span>: ${r.desc}` : '';
+          }).filter(Boolean).join('<br>')
+        : '・まだ深海レリックは所持していません（エリート撃破・ショップ・イベントで獲得）';
+
       document.getElementById('pause-stats').innerHTML = `
-        <b>現在ラウンド</b>: ROUND ${state.round} 【${mod.name}: ${mod.desc}】<br>
-        <b>総スコア</b>: ${state.totalScore.toLocaleString()} PTS / <b>現在ボール</b>: <span class="syn-hl">${bSpec.shortBadge}</span> (${bSpec.desc})<br>
-        <b>海神の祝福</b>: +${state.scoreBoosterCount * 10}% / <b>フィン強化</b>: Lv${state.flipperLevel} / <b>⚗合成発見</b>: ${discoveredFusionCount}/${FUSION_RECIPES.length}種<br><br>
+        <b>現在フロア</b>: FLOOR ${state.round} / 8 ｜ <b>❤️HP</b>: ${state.hp}/${state.maxHp} ｜ <b>🛡シールド</b>: ${state.shield}<br>
+        <b>⚔ボールATK</b>: ${state.ballDamage} (防御効率+${state.shieldBonus}) ｜ <b>🪙ゴールド</b>: ${state.gold}G<br>
+        <b>現在ボール</b>: <span class="syn-hl">${bSpec.shortBadge}</span> (${bSpec.desc}) ｜ <b>⚗合成発見</b>: ${discoveredFusionCount}/${FUSION_RECIPES.length}種<br><br>
+        <b>【🔮所持レリック (${state.relics.length}個)】</b><br>
+        ${relicHtml}<br><br>
         <b>【🐟発動中の深海魚パッシブ (${state.activeFishGroups.size}/5系統)】</b><br>
         ${fishHtml}<br><br>
         <b>【✨発動中の構築シナジー (${state.activeSynergies.length}個)】</b><br>
@@ -5893,6 +6790,32 @@
       state.phase = state.prevPhaseBeforePause;
       document.getElementById('ov-pause').classList.remove('show');
     }
+  }
+
+  // ローグライク：ショップ・休憩所のボタンイベント
+  const btnShopLeave = document.getElementById('btn-shop-leave');
+  if (btnShopLeave) {
+    btnShopLeave.addEventListener('click', () => {
+      sfx.place();
+      openMapModal();
+    });
+  }
+  const btnRestHeal = document.getElementById('btn-rest-heal');
+  if (btnRestHeal) {
+    btnRestHeal.addEventListener('click', () => {
+      sfx.skillShot();
+      const healAmt = Math.round(state.maxHp * 0.35);
+      state.hp = Math.min(state.maxHp, state.hp + healAmt);
+      openMapModal();
+    });
+  }
+  const btnRestForge = document.getElementById('btn-rest-forge');
+  if (btnRestForge) {
+    btnRestForge.addEventListener('click', () => {
+      sfx.jackpot();
+      state.ballDamage += 3;
+      openMapModal();
+    });
   }
 
   document.getElementById('btn-pause').addEventListener('click', togglePause);
