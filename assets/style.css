@@ -56,21 +56,25 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3px;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 .hud-group {
   display: flex;
   align-items: center;
-  gap: 7px;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .round-badge {
   background: rgba(0, 229, 255, 0.14);
   border: 1px solid var(--aqua-main);
   color: var(--aqua-bright);
   font-weight: 800;
-  font-size: 11.5px;
-  padding: 2px 7px;
+  font-size: 11px;
+  padding: 2px 6px;
   border-radius: 5px;
+  white-space: nowrap;
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
 }
 .round-badge.boss {
@@ -107,18 +111,20 @@ html, body {
 }
 .icon-btns {
   display: flex;
-  gap: 4px;
+  gap: 3px;
+  margin-left: auto;
 }
 .icon-btn {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border-sea);
   color: var(--text-main);
-  min-width: 27px;
-  height: 24px;
+  min-width: 26px;
+  height: 23px;
   padding: 0 5px;
   border-radius: 5px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -880,5 +886,175 @@ canvas {
 #app.aquarium-view #controls {
   display: none;
 }
+
+/* Roguelike Battle HUD */
+.rogue-pill {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(5, 22, 44, 0.85);
+}
+.rogue-pill.hp { color: #ff7aa2; border-color: rgba(255, 92, 138, 0.5); }
+.rogue-pill.hp.danger { background: rgba(255, 45, 85, 0.32); color: #ffe5ec; border-color: #ff4d6d; animation: pulseBoss 0.7s infinite alternate; }
+.rogue-pill.shield { color: #70f5ff; border-color: rgba(112, 245, 255, 0.5); }
+.rogue-pill.atk { color: #fde047; border-color: rgba(253, 224, 71, 0.5); }
+.rogue-pill.gold { color: #ffd97d; border-color: rgba(255, 217, 125, 0.45); }
+
+.enemy-hud-area {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.enemy-name-hud {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffb3c6;
+}
+.enemy-intent-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 77, 109, 0.2);
+  border: 1px solid rgba(255, 77, 109, 0.55);
+  color: #ffd166;
+}
+.enemy-intent-pill.urgent {
+  background: rgba(255, 45, 85, 0.48);
+  border-color: #ff4d6d;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.7);
+}
+.enemy-hp-bar-bg {
+  background: rgba(45, 10, 24, 0.85);
+}
+.enemy-hp-fill {
+  background: linear-gradient(90deg, #ff4d6d, #ff9e00);
+  box-shadow: 0 0 10px rgba(255, 77, 109, 0.55);
+}
+
+/* Branching Roguelike Map */
+.map-modal-box {
+  padding: 12px 12px 10px;
+}
+.map-status-bar {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #e6f6ff;
+  background: rgba(3, 16, 36, 0.85);
+  border: 1px solid rgba(112, 245, 255, 0.3);
+  border-radius: 8px;
+  padding: 5px 8px;
+  margin-bottom: 6px;
+}
+.map-relics-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  min-height: 18px;
+}
+.relic-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(168, 85, 247, 0.18);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #f3e8ff;
+}
+.map-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 390px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 50% 10%, rgba(12, 58, 96, 0.55), rgba(3, 12, 28, 0.92));
+  border: 1px solid rgba(112, 245, 255, 0.25);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.map-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.map-nodes {
+  position: absolute;
+  inset: 0;
+}
+.map-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(127, 166, 196, 0.45);
+  background: rgba(6, 22, 44, 0.92);
+  color: #e6f6ff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  opacity: 0.48;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.map-node.visited {
+  opacity: 0.72;
+  border-color: #20e3b2;
+  background: rgba(12, 52, 56, 0.9);
+}
+.map-node.current {
+  opacity: 1;
+  border-color: #ffd97d;
+  box-shadow: 0 0 12px rgba(255, 217, 125, 0.7);
+}
+.map-node.selectable {
+  opacity: 1;
+  cursor: pointer;
+  border-color: #70f5ff;
+  background: rgba(8, 42, 72, 0.96);
+  box-shadow: 0 0 16px rgba(112, 245, 255, 0.75);
+  animation: mapNodePulse 1.2s ease-in-out infinite;
+}
+.map-node.selectable:hover {
+  transform: translate(-50%, -50%) scale(1.14);
+}
+.map-node.boss {
+  width: 46px;
+  height: 46px;
+  font-size: 21px;
+  border-color: #ff5c8a;
+}
+@keyframes mapNodePulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(112, 245, 255, 0.6); }
+  50% { box-shadow: 0 0 22px rgba(255, 217, 125, 0.95); }
+}
+.map-legend {
+  font-size: 9.8px;
+  color: #8ab4d4;
+  text-align: center;
+}
+.shop-price-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #ffd97d;
+  background: rgba(255, 217, 125, 0.14);
+  border: 1px solid rgba(255, 217, 125, 0.45);
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+.card-item.sold {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 
 
